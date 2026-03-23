@@ -520,20 +520,87 @@ async function fetchNEU(id) {
   neuCache[id]=null; return null;
 }
 
-/* ─── AH Price Fetch (Coflnet) ────────────────────────────────── */
+/* ─── AH Stats — IQR outlier filter ──────────────────────────── */
+// Takes raw Coflnet history buckets [{time,avg,min,max,volume}]
+// Returns cleaned {avg, min, median, max, volume, buckets, filtered, cleanPts}
+function cleanAHStats(history) {
+  if(!Array.isArray(history)||!history.length) return null;
+
+  // 1. Drop buckets where avg is zero or missing
+  let pts = history.filter(d => d.avg > 0);
+  if(!pts.length) return null;
+
+  // 2. IQR on avg prices to kill manipulated/anomalous hours
+  const sorted = [...pts].sort((a,b)=>a.avg-b.avg);
+  const q1 = sorted[Math.floor(sorted.length*0.25)].avg;
+  const q3 = sorted[Math.floor(sorted.length*0.75)].avg;
+  const iqr = q3 - q1;
+  // Use 2× IQR for a wider band — AH prices are naturally volatile
+  const lo = q1 - 2*iqr, hi = q3 + 2*iqr;
+  let clean = pts.filter(d => d.avg >= lo && d.avg <= hi);
+  if(clean.length < 2) clean = pts; // don't over-filter sparse items
+
+  // 3. Volume-weighted average from clean buckets
+  const totalVol = clean.reduce((s,d)=>s+(d.volume||1),0);
+  const wAvg = clean.reduce((s,d)=>s+d.avg*(d.volume||1),0) / totalVol;
+
+  // 4. Median of clean avg values
+  const cleanAvgs = clean.map(d=>d.avg).sort((a,b)=>a-b);
+  const mid = Math.floor(cleanAvgs.length/2);
+  const median = cleanAvgs.length%2===0
+    ? (cleanAvgs[mid-1]+cleanAvgs[mid])/2
+    : cleanAvgs[mid];
+
+  // 5. Clean min = 10th-percentile of clean avg buckets
+  //    Never trust the raw .min field — it captures joke listings / 0g BINs
+  const p10 = cleanAvgs[Math.max(0,Math.floor(cleanAvgs.length*0.10))];
+  // Also sanity-floor: min can't be less than 20% of weighted avg
+  const cleanMin = Math.max(p10, wAvg*0.20);
+
+  // 6. Clean max = 90th-percentile (not absolute max)
+  const p90 = cleanAvgs[Math.min(cleanAvgs.length-1,Math.floor(cleanAvgs.length*0.90))];
+
+  return {
+    avg:    Math.round(wAvg),
+    min:    Math.round(cleanMin),
+    median: Math.round(median),
+    max:    Math.round(p90),
+    volume: totalVol,
+    buckets: clean.length,
+    rawBuckets: pts.length,
+    filtered: pts.length - clean.length,
+    cleanPts: clean   // for chart rendering
+  };
+}
+
+/* ─── AH Price Fetch (history → clean stats) ─────────────────── */
+// Primary source: day history (hourly) → cleanAHStats
+// Fallback: snapshot endpoint if history unavailable
 async function fetchAHPrice(id) {
   if(ahPriceCache[id]) return ahPriceCache[id];
   try {
-    const res=await fetch(`${WORKER}/ah-price/${encodeURIComponent(id)}`,{signal:AbortSignal.timeout(6000)});
-    if(!res.ok) return null;
-    const d=await res.json();
-    ahPriceCache[id]=d; return d;
-  } catch { return null; }
+    // Try day history first — much more reliable than raw snapshot
+    const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=day`,{signal:AbortSignal.timeout(7000)});
+    if(res.ok){
+      const hist=await res.json();
+      const stats=cleanAHStats(hist);
+      if(stats){ ahPriceCache[id]=stats; return stats; }
+    }
+    // Fallback: snapshot (less reliable but better than nothing)
+    const res2=await fetch(`${WORKER}/ah-price/${encodeURIComponent(id)}`,{signal:AbortSignal.timeout(5000)});
+    if(res2.ok){
+      const d=await res2.json();
+      // Minimal sanity: if min is 0 or clearly wrong, use avg instead
+      if(d.min===0||d.min==null) d.min=d.avg;
+      ahPriceCache[id]=d; return d;
+    }
+  } catch {}
+  return null;
 }
 
 async function fetchAHHistory(id,period) {
   try {
-    const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=${period}`,{signal:AbortSignal.timeout(6000)});
+    const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=${period}`,{signal:AbortSignal.timeout(7000)});
     if(!res.ok) return null;
     return await res.json();
   } catch { return null; }
@@ -716,12 +783,12 @@ async function loadBZHistory(id, period) {
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
   const data=await fetchAHHistory(id,period);
   if(!data||!Array.isArray(data)||!data.length){
-    wrap.innerHTML='<canvas id="history-chart"></canvas>';
     wrap.innerHTML='<div class="no-recipe" style="padding:30px">No AH history data for this item.</div>';
     return;
   }
   wrap.innerHTML='<canvas id="history-chart"></canvas>';
-  renderHistoryChart('history-chart',data,period);
+  const stats=period==='day'?cleanAHStats(data):null;
+  renderHistoryChart('history-chart',data,period,stats);
 }
 
 /* ─── Bazaar Tab Switch ───────────────────────────────────────── */
@@ -800,36 +867,49 @@ function renderAHCard(id) {
 async function loadAHPrices(id) {
   const el=document.getElementById('ah-price-body');
   if(!el) return;
-  const data=await fetchAHPrice(id);
-  if(!el.parentElement) return;
+  const stats=await fetchAHPrice(id);
+  const container=el.parentElement;
+  if(!container) return;
 
-  if(!data||(data.avg==null&&data.min==null)){
-    el.parentElement.innerHTML='<div class="no-recipe">⛏ No recent AH price data found.<br><small style="font-size:14px;color:var(--muted2)">This item may not have been sold recently.</small></div>';
+  if(!stats||(stats.avg==null&&stats.min==null)){
+    container.innerHTML='<div class="no-recipe">⛏ No recent AH price data found.<br><small style="font-size:14px;color:var(--muted2)">This item may not have been sold recently.</small></div>';
     return;
   }
 
-  el.parentElement.innerHTML=`
+  // Confidence indicator based on how many buckets survived filtering
+  const buckets = stats.buckets ?? 0;
+  const rawBuckets = stats.rawBuckets ?? buckets;
+  const filtered = stats.filtered ?? 0;
+  const confColor = buckets >= 12 ? 'var(--green)' : buckets >= 4 ? 'var(--gold)' : 'var(--red)';
+  const confLabel = buckets >= 12 ? 'HIGH' : buckets >= 4 ? 'MEDIUM' : 'LOW';
+
+  container.innerHTML=`
     <div class="ah-price-grid">
       <div class="ah-cell">
-        <div class="plabel">Lowest BIN / Min</div>
-        <div class="pvalue">${full(data.min)}<span class="coin">g</span></div>
+        <div class="plabel">Clean Min</div>
+        <div class="pvalue" style="color:var(--aqua)">${full(stats.min)}<span class="coin">g</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:3px">10th pct of clean data</div>
       </div>
       <div class="ah-cell">
-        <div class="plabel">Average Sale</div>
-        <div class="pvalue" style="color:var(--gold)">${full(data.avg)}<span class="coin">g</span></div>
+        <div class="plabel">Weighted Avg</div>
+        <div class="pvalue" style="color:var(--gold)">${full(stats.avg)}<span class="coin">g</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:3px">volume-weighted, ${buckets}h of data</div>
       </div>
       <div class="ah-cell">
         <div class="plabel">Median</div>
-        <div class="pvalue">${full(data.median)}<span class="coin">g</span></div>
+        <div class="pvalue">${full(stats.median)}<span class="coin">g</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:3px">midpoint of clean hours</div>
       </div>
     </div>
-    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
-      <div class="stat-cell"><div class="slabel">HIGH</div><div class="svalue">${short(data.max)}</div></div>
-      <div class="stat-cell"><div class="slabel">VOLUME</div><div class="svalue">${short(data.volume)}</div></div>
-      <div class="stat-cell"><div class="slabel">SPREAD</div><div class="svalue">${(data.max!=null&&data.min!=null)?short(data.max-data.min):'—'}</div></div>
+    <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-cell"><div class="slabel">90TH PCT</div><div class="svalue">${short(stats.max)}</div></div>
+      <div class="stat-cell"><div class="slabel">VOLUME</div><div class="svalue">${short(stats.volume)}</div></div>
+      <div class="stat-cell"><div class="slabel">OUTLIERS CUT</div><div class="svalue" style="color:${filtered>0?'var(--red)':'var(--muted2)'}">${filtered}</div></div>
+      <div class="stat-cell"><div class="slabel">CONFIDENCE</div><div class="svalue" style="color:${confColor};font-size:13px">${confLabel}</div></div>
     </div>
-    <div style="padding:10px 20px;border-top:1px solid var(--dk);background:rgba(0,0,0,.15);font-size:15px;color:var(--muted2)">
-      ℹ Prices reflect recent AH sales tracked by Coflnet. Click <strong style="color:var(--muted)">📈 History</strong> for trends.
+    <div style="padding:10px 20px;border-top:1px solid var(--dk);background:rgba(0,0,0,.15);font-size:14px;color:var(--muted2);line-height:1.6">
+      Prices cleaned via IQR filter across ${rawBuckets} hourly buckets${filtered>0?` · <span style="color:var(--red)">${filtered} outlier hour${filtered!==1?'s':''} removed</span>`:''}.
+      Raw min/max ignored — use <strong style="color:var(--muted)">📈 History</strong> to see full trend.
     </div>`;
 }
 
@@ -849,45 +929,95 @@ async function loadAHHistory(id, period) {
   const wrap=document.getElementById('ah-history-wrap');
   if(!wrap) return;
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
-  const data=await fetchAHHistory(id,period);
-  if(!data||!Array.isArray(data)||!data.length){
+  const raw=await fetchAHHistory(id,period);
+  if(!raw||!Array.isArray(raw)||!raw.length){
     wrap.innerHTML='<div class="no-recipe" style="padding:30px">No history data available.</div>';
     return;
   }
   wrap.innerHTML='<canvas id="ah-history-chart"></canvas>';
-  renderHistoryChart('ah-history-chart',data,period);
+  // For week period use raw (already daily buckets, less manipulation noise)
+  // For day period, run the cleaner and visually flag outlier hours
+  if(period==='day'){
+    const stats=cleanAHStats(raw);
+    renderHistoryChart('ah-history-chart', raw, period, stats);
+  } else {
+    // Week: still clean but more lenient (3× IQR)
+    renderHistoryChart('ah-history-chart', raw, period, null);
+  }
 }
 
 /* ─── History Chart Renderer ──────────────────────────────────── */
-function renderHistoryChart(canvasId, data, period) {
+function renderHistoryChart(canvasId, rawData, period, stats=null) {
   if(chartInst){chartInst.destroy();chartInst=null;}
   const ctx=document.getElementById(canvasId);
   if(!ctx) return;
 
-  const labels=data.map(d=>{
+  // If we have clean stats, figure out which points are outliers
+  let cleanSet = null;
+  if(stats?.cleanPts){
+    const cleanTimes = new Set(stats.cleanPts.map(d=>d.time));
+    cleanSet = cleanTimes;
+  }
+
+  const labels=rawData.map(d=>{
     const dt=new Date(d.time);
     return period==='day'
       ? dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
       : dt.toLocaleDateString([],{month:'short',day:'numeric'});
   });
 
+  // Avg line: outlier points get null so they show as gaps
+  // We draw a second "outlier" scatter on top to show them dimmed
+  const avgClean  = rawData.map(d => (!cleanSet || cleanSet.has(d.time)) ? d.avg  : null);
+  const avgDirty  = rawData.map(d => (cleanSet  && !cleanSet.has(d.time)) ? d.avg : null);
+  const minData   = rawData.map(d => (!cleanSet || cleanSet.has(d.time)) ? (d.min>0?d.min:null) : null);
+  const maxData   = rawData.map(d => (!cleanSet || cleanSet.has(d.time)) ? d.max  : null);
+
+  const datasets = [
+    // Shaded area between min and max for clean points
+    {
+      label:'Max',data:maxData,
+      borderColor:'rgba(255,85,85,0)',backgroundColor:'rgba(255,85,85,.06)',
+      fill:'+1',tension:.3,pointRadius:0,borderWidth:0,spanGaps:true,
+    },{
+      label:'Min',data:minData,
+      borderColor:'rgba(85,255,85,0)',backgroundColor:'rgba(85,255,85,.06)',
+      fill:false,tension:.3,pointRadius:0,borderWidth:0,spanGaps:true,
+    },
+    // Main avg line (clean)
+    {
+      label:'Avg',data:avgClean,
+      borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.08)',
+      fill:false,tension:.3,pointRadius:0,borderWidth:2.5,spanGaps:false,
+    },
+    // Outlier hours — shown dimmed in red so user sees what was filtered
+    {
+      label:'Outlier',data:avgDirty,
+      borderColor:'rgba(255,85,85,.0)',
+      backgroundColor:'rgba(255,85,85,.5)',
+      pointRadius:rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?4:0),
+      pointStyle:'crossRot',
+      showLine:false,
+      tension:0,
+    },
+  ];
+
+  // If no clean/dirty distinction, just show everything normally
+  if(!cleanSet){
+    datasets.length=0;
+    datasets.push(
+      {label:'Avg',data:rawData.map(d=>d.avg),borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+      {label:'Min',data:rawData.map(d=>d.min>0?d.min:null),borderColor:'#55ff5566',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4],spanGaps:true},
+      {label:'Max',data:rawData.map(d=>d.max),borderColor:'#ff555566',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4]}
+    );
+  }
+
+  // Add a horizontal line for clean avg if available
+  const cleanAvgVal = stats?.avg ?? null;
+
   chartInst=new Chart(ctx,{
     type:'line',
-    data:{labels,datasets:[
-      {
-        label:'Avg',data:data.map(d=>d.avg),
-        borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.07)',
-        fill:true,tension:.3,pointRadius:0,borderWidth:2,
-      },{
-        label:'Min',data:data.map(d=>d.min),
-        borderColor:'#55ff5588',backgroundColor:'transparent',
-        tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4],
-      },{
-        label:'Max',data:data.map(d=>d.max),
-        borderColor:'#ff555588',backgroundColor:'transparent',
-        tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4],
-      }
-    ]},
+    data:{labels,datasets},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
@@ -896,8 +1026,28 @@ function renderHistoryChart(canvasId, data, period) {
         tooltip:{
           backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,
           titleColor:'#666',bodyColor:'#fff',padding:8,
-          callbacks:{label:c=>`${c.dataset.label}: ${short(c.parsed.y)}`}
-        }
+          filter: item => item.dataset.label!=='Outlier'||item.parsed.y!=null,
+          callbacks:{
+            label:c=>{
+              if(c.parsed.y==null) return null;
+              if(c.dataset.label==='Outlier') return `⚠ Outlier: ${short(c.parsed.y)}`;
+              return `${c.dataset.label}: ${short(c.parsed.y)}`;
+            }
+          }
+        },
+        ...(cleanAvgVal!=null ? {
+          annotation:{
+            annotations:{
+              avgLine:{
+                type:'line',scaleID:'y',value:cleanAvgVal,
+                borderColor:'rgba(255,170,0,.4)',borderWidth:1,borderDash:[6,4],
+                label:{display:true,content:`Avg ${short(cleanAvgVal)}`,
+                  backgroundColor:'rgba(255,170,0,.15)',color:'#ffaa00',
+                  font:{family:'JetBrains Mono',size:9},position:'start',padding:3}
+              }
+            }
+          }
+        } : {})
       },
       scales:{
         x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
