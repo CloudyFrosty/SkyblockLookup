@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyBlock Bazaar</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:       #16161a;
+  --panel:    #2b2b2f;
+  --panel2:   #363639;
+  --slot:     #101013;
+  --lt:       #545458;
+  --dk:       #09090b;
+  --text:     #ffffff;
+  --muted:    #aaaaaa;
+  --muted2:   #666669;
+  --gold:     #ffaa00;
+  --gold-dk:  #995f00;
+  --green:    #55ff55;
+  --green-dk: #007700;
+  --red:      #ff5555;
+  --red-dk:   #770000;
+  --aqua:     #55ffff;
+  --blue:     #5599ff;
+  --purple:   #bb55ff;
+  --yellow:   #ffff55;
+}
+
+body{
+  font-family:'VT323',monospace;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:44px 16px 64px;
+  background-image:
+    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+  background-size:16px 16px;
+}
+
+.wrap{width:100%;max-width:700px}
+
+/* ── Minecraft panel / slot border trick ─────────── */
+.mc-panel{
+  background:var(--panel);
+  border:3px solid;
+  border-color:var(--lt) var(--dk) var(--dk) var(--lt);
+  position:relative;
+}
+.mc-panel::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border:1px solid;
+  border-color:rgba(255,255,255,.06) rgba(0,0,0,.25) rgba(0,0,0,.25) rgba(255,255,255,.06);
+  pointer-events:none;
+}
+.mc-slot{
+  background:var(--slot);
+  border:3px solid;
+  border-color:var(--dk) var(--lt) var(--lt) var(--dk);
+}
+.mc-slot::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border:1px solid;
+  border-color:rgba(0,0,0,.3) rgba(255,255,255,.05) rgba(255,255,255,.05) rgba(0,0,0,.3);
+  pointer-events:none;
+}
+
+/* ── Header ──────────────────────────────────────── */
+.header{margin-bottom:32px;text-align:center}
+.header h1{
+  font-family:'Press Start 2P',monospace;
+  font-size:20px;
+  line-height:1.5;
+  color:var(--gold);
+  text-shadow:3px 3px 0 var(--gold-dk),0 0 40px rgba(255,170,0,.25);
+  letter-spacing:.02em;
+}
+.header h1 em{color:#fff;font-style:normal}
+.header p{font-size:18px;color:var(--muted2);margin-top:8px;letter-spacing:.08em}
+
+/* ── Status ──────────────────────────────────────── */
+#status{
+  font-size:17px;color:var(--muted2);
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;min-height:22px;
+}
+.dot{width:8px;height:8px;flex-shrink:0;image-rendering:pixelated;background:var(--gold);animation:blink 1s steps(1) infinite}
+.dot.ok{background:var(--green);animation:none}
+.dot.err{background:var(--red);animation:none}
+@keyframes blink{50%{opacity:0}}
+
+/* ── Search ──────────────────────────────────────── */
+.search-wrap{position:relative;margin-bottom:20px}
+.search-input{
+  width:100%;
+  background:var(--slot);
+  border:3px solid;
+  border-color:var(--dk) var(--lt) var(--lt) var(--dk);
+  color:var(--text);
+  font-family:'VT323',monospace;
+  font-size:22px;
+  padding:10px 16px;
+  outline:none;
+  letter-spacing:.04em;
+  transition:border-color .1s;
+}
+.search-input:focus{border-color:var(--gold-dk) var(--gold) var(--gold) var(--gold-dk)}
+.search-input::placeholder{color:var(--muted2)}
+.search-input:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── Dropdown ─────────────────────────────────────── */
+.dropdown{
+  position:absolute;top:calc(100% + 3px);left:0;right:0;
+  background:var(--panel2);
+  border:3px solid;border-color:var(--lt) var(--dk) var(--dk) var(--lt);
+  z-index:200;max-height:300px;overflow-y:auto;
+}
+.dropdown::-webkit-scrollbar{width:6px;background:var(--slot)}
+.dropdown::-webkit-scrollbar-thumb{background:var(--lt)}
+.dd-item{
+  padding:8px 14px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;border-bottom:1px solid rgba(0,0,0,.4);font-size:19px;
+  transition:background .05s;
+}
+.dd-item:hover,.dd-item.active{background:rgba(255,170,0,.09)}
+.dd-item .dname{color:var(--text);display:flex;align-items:center;gap:8px}
+.dd-item .dprice{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:12px}
+.dd-px{width:10px;height:10px;flex-shrink:0;image-rendering:pixelated}
+.dd-empty{padding:14px;text-align:center;color:var(--muted2);font-size:18px}
+
+/* ── Card ─────────────────────────────────────────── */
+.card{overflow:hidden;animation:rise .12s steps(3) forwards}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.card-head{
+  padding:16px 20px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  border-bottom:2px solid var(--dk);
+  background:rgba(0,0,0,.2);
+}
+.item-name{
+  font-size:28px;line-height:1.1;
+  color:var(--gold);
+  text-shadow:2px 2px 0 var(--gold-dk);
+  letter-spacing:.03em;
+}
+.item-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:4px}
+.live-tag{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--green);
+  border:2px solid var(--green-dk);
+  padding:5px 8px;
+  background:rgba(85,255,85,.06);
+  letter-spacing:.12em;flex-shrink:0;
+  animation:blink 2s steps(1) infinite;
+}
+
+/* ── Tabs ─────────────────────────────────────────── */
+.tabs{display:flex;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.15)}
+.tab-btn{
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  padding:10px 16px;background:none;border:none;
+  color:var(--muted2);cursor:pointer;letter-spacing:.05em;
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:color .1s;
+}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(255,170,0,.04)}
+.tab-btn:hover:not(.active){color:var(--text)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── Prices Tab ───────────────────────────────────── */
+.price-grid{display:grid;grid-template-columns:1fr 1fr}
+.price-col{padding:18px 20px}
+.price-col.sell{border-right:1px solid var(--dk)}
+.col-label{
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  letter-spacing:.1em;margin-bottom:16px;
+  display:flex;align-items:center;gap:7px;
+}
+.price-col.sell .col-label{color:var(--red)}
+.price-col.buy  .col-label{color:var(--green)}
+.col-dot{width:8px;height:8px;flex-shrink:0;image-rendering:pixelated}
+.price-col.sell .col-dot{background:var(--red)}
+.price-col.buy  .col-dot{background:var(--green)}
+
+.price-row{margin-bottom:14px}
+.price-row:last-child{margin-bottom:0}
+.plabel{font-size:15px;color:var(--muted);line-height:1}
+.pvalue{
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px;font-weight:600;
+  color:var(--text);line-height:1;margin-top:2px;
+}
+.pvalue .coin{font-size:12px;color:var(--gold);font-family:'VT323',monospace;font-weight:400;margin-left:3px}
+.ptag{
+  display:inline-block;font-family:'VT323',monospace;
+  font-size:13px;padding:1px 7px;margin-top:3px;letter-spacing:.04em;
+}
+.ptag-i{background:rgba(85,99,255,.18);color:#aaaaff;border:1px solid rgba(85,99,255,.3)}
+.ptag-o{background:rgba(187,85,255,.18);color:#dd99ff;border:1px solid rgba(187,85,255,.3)}
+
+.fill-strip{
+  display:flex;align-items:center;flex-wrap:wrap;gap:16px;
+  padding:10px 20px;
+  border-top:1px solid var(--dk);
+  background:rgba(0,0,0,.2);
+  font-size:16px;
+}
+.fill-label{color:var(--muted)}
+.fill-val{color:var(--aqua);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+.fill-val.gold{color:var(--gold)}
+
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:2px solid var(--dk);
+}
+.stat-cell{
+  padding:12px 8px;text-align:center;
+  border-right:1px solid var(--dk);
+}
+.stat-cell:last-child{border-right:none}
+.slabel{font-size:11px;color:var(--muted2);letter-spacing:.07em;margin-bottom:4px}
+.svalue{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600}
+
+.chart-section{padding:16px 20px 22px;border-top:1px solid rgba(255,255,255,.03)}
+.section-title{
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  color:var(--muted2);letter-spacing:.1em;margin-bottom:14px;
+}
+.section-title small{font-size:6px;color:var(--muted2);opacity:.7;letter-spacing:.07em}
+.chart-wrap{position:relative;height:160px}
+
+/* ── Crafting Tab ─────────────────────────────────── */
+.craft-section{padding:20px}
+
+.craft-grid-area{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-bottom:24px;
+}
+.craft-grid{
+  display:grid;
+  grid-template-columns:repeat(3,60px);
+  grid-template-rows:repeat(3,60px);
+  gap:3px;
+  padding:8px;
+  background:rgba(0,0,0,.25);
+  border:2px solid var(--dk);
+}
+.g-slot{
+  width:60px;height:60px;
+  position:relative;
+  cursor:default;
+  overflow:hidden;
+}
+.g-slot.clickable{cursor:pointer;transition:filter .1s}
+.g-slot.clickable:hover{filter:brightness(1.3)}
+.g-slot.clickable:hover .slot-tip{display:block}
+.slot-tip{
+  display:none;
+  position:absolute;
+  bottom:calc(100% + 4px);left:50%;
+  transform:translateX(-50%);
+  background:#1a1a1e;
+  border:2px solid var(--lt);
+  color:var(--gold);
+  font-size:14px;
+  white-space:nowrap;
+  padding:2px 8px;
+  z-index:100;
+  pointer-events:none;
+}
+.slot-abbr{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:600;
+  line-height:1;text-align:center;
+}
+.slot-qty{
+  position:absolute;bottom:2px;right:3px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:600;
+  color:#fff;
+  text-shadow:1px 1px 0 #000,0 0 4px #000;
+  line-height:1;pointer-events:none;
+}
+.craft-arrow{
+  display:flex;flex-direction:column;align-items:center;
+  gap:6px;color:var(--muted2);
+}
+.craft-arrow svg{opacity:.7}
+.craft-arrow span{font-size:13px;color:var(--muted)}
+.out-slot{
+  width:76px;height:76px;
+  position:relative;
+  cursor:pointer;
+  transition:filter .1s;
+}
+.out-slot:hover{filter:brightness(1.3)}
+
+/* ── Ingredient Table ─────────────────────────────── */
+.ing-table{width:100%;border-collapse:collapse;font-size:17px}
+.ing-table thead th{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--muted2);letter-spacing:.09em;text-align:left;
+  padding:6px 8px;
+  border-bottom:2px solid var(--dk);
+  background:rgba(0,0,0,.2);
+}
+.ing-table thead th.r{text-align:right}
+.ing-table tbody td{
+  padding:7px 8px;
+  border-bottom:1px solid rgba(0,0,0,.3);
+  vertical-align:middle;
+}
+.ing-table tbody tr:last-child td{border-bottom:none}
+.ing-table tfoot td{
+  padding:8px;
+  border-top:2px solid var(--dk);
+  background:rgba(0,0,0,.2);
+}
+.ing-table tbody tr.ing-row{cursor:pointer}
+.ing-table tbody tr.ing-row:hover td{background:rgba(255,170,0,.06)}
+.ing-swatch{
+  display:inline-block;width:12px;height:12px;
+  image-rendering:pixelated;
+  vertical-align:middle;margin-right:8px;flex-shrink:0;
+}
+.ing-name{color:var(--text)}
+.ing-qty{color:var(--muted);font-size:15px}
+.cell-r{text-align:right}
+.price-i{color:var(--red);font-family:'JetBrains Mono',monospace;font-size:14px}
+.price-o{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:14px}
+.price-na{color:var(--muted2);font-size:14px}
+.fill-t{color:var(--aqua);font-family:'JetBrains Mono',monospace;font-size:13px}
+.total-lbl{
+  font-family:'Press Start 2P',monospace;font-size:6px;
+  color:var(--muted2);letter-spacing:.09em;
+}
+
+/* ── Profit Box ───────────────────────────────────── */
+.profit-box{margin-top:20px;background:rgba(0,0,0,.2);border:2px solid var(--dk);padding:16px}
+.profit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.ps{padding:12px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.04);position:relative}
+.ps-lbl{font-size:13px;color:var(--muted);line-height:1.3;margin-bottom:8px}
+.ps-val{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:600;line-height:1}
+.ps-val.pos{color:var(--green)}
+.ps-val.neg{color:var(--red)}
+.ps-pct{font-size:14px;color:var(--muted);margin-top:3px}
+.ps-best{
+  position:absolute;top:6px;right:8px;
+  font-family:'Press Start 2P',monospace;font-size:5px;
+  color:var(--yellow);
+  border:1px solid rgba(255,255,85,.3);
+  padding:2px 5px;
+  background:rgba(255,255,85,.05);
+  letter-spacing:.08em;
+}
+
+/* ── Loading/Empty states ──────────────────────────── */
+.craft-loading{
+  padding:40px;text-align:center;
+  color:var(--muted2);font-size:20px;
+  animation:blink 1s steps(1) infinite;
+}
+.no-recipe{padding:36px;text-align:center;color:var(--muted2);font-size:20px}
+
+/* ── Card Footer ──────────────────────────────────── */
+.card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;
+  border-top:2px solid var(--dk);
+  background:rgba(0,0,0,.2);
+}
+.updated{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
+.refresh-btn{
+  font-family:'Press Start 2P',monospace;font-size:7px;
+  background:var(--panel2);
+  border:2px solid var(--lt);
+  color:var(--muted);
+  padding:6px 12px;cursor:pointer;
+  letter-spacing:.04em;
+  transition:all .1s;
+}
+.refresh-btn:hover{border-color:var(--gold-dk);color:var(--gold);background:rgba(255,170,0,.06)}
+
+/* ── Empty / Error ────────────────────────────────── */
+.empty-state{
+  padding:44px 0;color:var(--muted2);font-size:20px;text-align:center;
+}
+.empty-icon{display:block;font-size:48px;margin-bottom:12px;opacity:.4}
+.retry-btn{
+  display:inline-block;margin-top:14px;
+  font-family:'Press Start 2P',monospace;font-size:8px;
+  background:var(--panel2);border:2px solid var(--lt);
+  color:var(--text);padding:8px 16px;cursor:pointer;
+  letter-spacing:.04em;
+}
+.retry-btn:hover{border-color:var(--gold-dk);color:var(--gold)}
+
+/* ── Footer ───────────────────────────────────────── */
+footer{margin-top:36px;font-size:17px;color:var(--muted2);text-align:center}
+footer strong{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1><em>Sky</em>Block Bazaar</h1>
+    <p>Live Prices &amp; Craft Analysis</p>
+  </div>
+
+  <div id="status"><span class="dot"></span><span id="status-text">Loading...</span></div>
+
+  <div class="search-wrap">
+    <input type="text" id="search" class="search-input" placeholder="Search items..." autocomplete="off" disabled>
+    <div class="dropdown" id="dd" style="display:none"></div>
+  </div>
+
+  <div id="result">
+    <div class="empty-state">
+      <span class="empty-icon">⛏</span>
+      Search for an item above to get started.
+    </div>
+  </div>
+
+</div>
+
+<footer>made by <strong>XxSweat</strong></footer>
+
+<script>
+/* ─── Constants ───────────────────────────────────────────────── */
+const BAZAAR_URL = 'https://solitary-lake-43dd.xxsweatapi.workers.dev/';
+const NEU_BASE   = 'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/';
+
+/* ─── State ───────────────────────────────────────────────────── */
+let products   = {};
+let items      = [];
+let updated    = null;
+let currentId  = null;
+let currentTab = 'prices';
+let chartInst  = null;
+let neuCache   = {};
+let activeIdx  = -1;
+
+/* ─── Item Color ──────────────────────────────────────────────── */
+function itemColor(id) {
+  if (!id) return '#333';
+  const s = id.toUpperCase();
+  if (s.includes('ENCHANTED'))   return '#bb55ff';
+  if (s.includes('DIAMOND'))     return '#55ffff';
+  if (s.includes('EMERALD'))     return '#55ff55';
+  if (s.includes('GOLD') || s.includes('GOLDEN')) return '#ffaa00';
+  if (s.includes('IRON'))        return '#aaaaaa';
+  if (s.includes('NETHERITE'))   return '#666';
+  if (s.includes('REDSTONE'))    return '#ff5555';
+  if (s.includes('LAPIS'))       return '#5599ff';
+  if (s.includes('COAL'))        return '#555';
+  if (s.includes('NETHER_WART')) return '#dd3333';
+  if (s.includes('NETHER_BRICK'))return '#993333';
+  if (s.includes('QUARTZ'))      return '#ffeeee';
+  if (s.includes('SUGAR'))       return '#ff88ee';
+  if (s.includes('CANE'))        return '#88ff44';
+  if (s.includes('WHEAT') || s.includes('SEED')) return '#ffff55';
+  if (s.includes('CARROT'))      return '#ff8822';
+  if (s.includes('POTATO'))      return '#ddcc88';
+  if (s.includes('MELON'))       return '#ff5544';
+  if (s.includes('PUMPKIN'))     return '#ff7722';
+  if (s.includes('MUSHROOM'))    return '#cc8855';
+  if (s.includes('CACTUS'))      return '#55aa33';
+  if (s.includes('INK'))         return '#2244aa';
+  if (s.includes('SLIME'))       return '#88ff55';
+  if (s.includes('BONE'))        return '#ddddaa';
+  if (s.includes('ROTTEN') || s.includes('ZOMBIE'))  return '#66aa33';
+  if (s.includes('BLAZE'))       return '#ffaa22';
+  if (s.includes('SPIDER'))      return '#886644';
+  if (s.includes('ENDER'))       return '#7744aa';
+  if (s.includes('OBSIDIAN'))    return '#330044';
+  if (s.includes('ICE') || s.includes('SNOW'))  return '#aaddff';
+  if (s.includes('GRAVEL') || s.includes('FLINT')) return '#999';
+  if (s.includes('SAND'))        return '#ddcc99';
+  if (s.includes('LOG') || s.includes('WOOD')) return '#8B6431';
+  if (s.includes('LEATHER'))     return '#aa7744';
+  if (s.includes('FEATHER'))     return '#eeeedd';
+  if (s.includes('INK'))         return '#333377';
+  // Deterministic pastel fallback
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = (((h << 5) + h) ^ s.charCodeAt(i)) >>> 0;
+  const palette = ['#5588ff','#55ffaa','#ffaa55','#ff55aa','#aaff55','#55aaff','#dd99ff'];
+  return palette[h % palette.length];
+}
+
+function getAbbr(id) {
+  const words = id.replace(/:/g,'_').split('_').filter(w => w && w !== '0' && isNaN(w));
+  if (!words.length) return '??';
+  if (words.length === 1) return words[0].slice(0,3).toUpperCase();
+  if (words.length === 2) return (words[0][0]+words[1].slice(0,2)).toUpperCase();
+  return words.slice(0,3).map(w=>w[0]).join('').toUpperCase();
+}
+
+/* ─── Formatting ──────────────────────────────────────────────── */
+function toName(id) {
+  return (id||'').replace(/:/g,'_').split('_').filter(w=>w)
+    .map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
+}
+function short(n) {
+  if (typeof n!=='number'||isNaN(n)) return 'N/A';
+  if (n>=1e9) return (n/1e9).toFixed(2)+'B';
+  if (n>=1e6) return (n/1e6).toFixed(2)+'M';
+  if (n>=1e3) return (n/1e3).toFixed(1)+'K';
+  return Math.round(n).toLocaleString();
+}
+function full(n) {
+  return typeof n==='number'&&!isNaN(n)?Math.round(n).toLocaleString():'N/A';
+}
+function stripMC(s) {
+  return (s||'').replace(/§./g,'').trim();
+}
+
+/* ─── Fill Time ───────────────────────────────────────────────── */
+function estimateFill(itemId, qty=1) {
+  const p = products[itemId];
+  if (!p) return '?';
+  const daily = (p.quick_status.movingWeek||0)/7;
+  if (!daily) return '?';
+  const h = (qty/daily)*24;
+  if (h<0.017) return '<1m';
+  if (h<1)     return `~${Math.round(h*60)}m`;
+  if (h<24)    return `~${h.toFixed(1)}h`;
+  return `~${(h/24).toFixed(1)}d`;
+}
+
+/* ─── Status ──────────────────────────────────────────────────── */
+function setStatus(msg, type='loading') {
+  document.querySelector('#status .dot').className =
+    'dot'+(type==='ok'?' ok':type==='err'?' err':'');
+  document.getElementById('status-text').textContent = msg;
+}
+
+/* ─── Load Bazaar ─────────────────────────────────────────────── */
+async function loadBazaar() {
+  setStatus('Connecting to Hypixel...');
+  try {
+    const res = await fetch(BAZAAR_URL,{signal:AbortSignal.timeout(9000)});
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data.success) throw new Error('API failure');
+    products = data.products;
+    updated  = new Date(data.lastUpdated);
+    items    = Object.keys(products).map(id=>({id,name:toName(id)})).sort((a,b)=>a.name.localeCompare(b.name));
+    const el = document.getElementById('search');
+    el.disabled=false;
+    el.placeholder=`Search ${items.length.toLocaleString()} items...`;
+    setStatus(`${items.length.toLocaleString()} items loaded · ${updated.toLocaleTimeString()}`,'ok');
+  } catch(err) {
+    setStatus(`Failed: ${err.message}`,'err');
+    document.getElementById('result').innerHTML=`
+      <div class="empty-state">
+        <span class="empty-icon">⚠</span>
+        Couldn't reach the API.<br>
+        <button class="retry-btn" onclick="loadBazaar()">↻ Retry</button>
+      </div>`;
+  }
+}
+
+/* ─── NEU Repo Fetch ──────────────────────────────────────────── */
+async function fetchNEU(id) {
+  if (id in neuCache) return neuCache[id];
+  try {
+    const res = await fetch(NEU_BASE+id+'.json',{signal:AbortSignal.timeout(5000)});
+    const d = res.ok ? await res.json() : null;
+    neuCache[id]=d; return d;
+  } catch { neuCache[id]=null; return null; }
+}
+
+/* ─── Recipe Parsing ──────────────────────────────────────────── */
+const SLOT_KEYS=['A1','A2','A3','B1','B2','B3','C1','C2','C3'];
+
+function parseRecipe(neu) {
+  if (!neu?.recipe) return null;
+  const slots = SLOT_KEYS.map(k=>{
+    const v=(neu.recipe[k]||'').trim();
+    if (!v||v==='null') return null;
+    const parts=v.split(':'), id=parts[0];
+    const n=parseInt(parts[1])||0;
+    if (!id) return null;
+    return {id, qty: n>1?n:1};
+  });
+  const ingMap={};
+  for (const s of slots) {
+    if (!s) continue;
+    ingMap[s.id]=(ingMap[s.id]||0)+s.qty;
+  }
+  const text=stripMC(neu.crafttext||'');
+  const m=text.match(/(\d+)x/);
+  return {slots, ingMap, outQty: m?parseInt(m[1]):1};
+}
+
+/* ─── Craft Cost ──────────────────────────────────────────────── */
+function craftCost(ingMap) {
+  const r={};
+  for (const [id,qty] of Object.entries(ingMap)) {
+    const p=products[id];
+    if (p) {
+      const qs=p.quick_status;
+      const ip=qs.buyPrice, op=p.sell_summary?.[0]?.pricePerUnit??qs.buyPrice;
+      r[id]={qty, ip, op, iTotal:ip*qty, oTotal:op*qty};
+    } else {
+      r[id]={qty, ip:null, op:null, iTotal:null, oTotal:null};
+    }
+  }
+  return r;
+}
+
+/* ─── Slot Renderer ───────────────────────────────────────────── */
+function slotHTML(s, size=60) {
+  if (!s) {
+    return `<div class="g-slot mc-slot" style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:22px">·</div>`;
+  }
+  const col=itemColor(s.id), abbr=getAbbr(s.id), name=toName(s.id);
+  const inner=Math.round(size*0.6);
+  return `<div class="g-slot mc-slot clickable" data-id="${s.id}" data-name="${name}"
+    style="width:${size}px;height:${size}px;background:${col}18;border-color:${col}66 ${col}22 ${col}22 ${col}66;">
+    <span class="slot-tip">${name}</span>
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;">
+      <div class="slot-abbr" style="width:${inner}px;height:${inner}px;background:${col}38;border:2px solid ${col}66;display:flex;align-items:center;justify-content:center;color:${col};">${abbr}</div>
+      ${s.qty>1?`<span class="slot-qty">${s.qty}</span>`:''}
+    </div>
+  </div>`;
+}
+
+/* ─── Render Card ─────────────────────────────────────────────── */
+function renderCard(id) {
+  const p=products[id]; if (!p) return;
+  const qs=p.quick_status;
+  const iSell=qs.sellPrice, iBuy=qs.buyPrice;
+  const sellOrd=p.buy_summary?.[0]?.pricePerUnit, buyOrd=p.sell_summary?.[0]?.pricePerUnit;
+  const spread=iBuy-(buyOrd||iBuy);
+
+  document.getElementById('result').innerHTML=`
+  <div class="card mc-panel" id="the-card">
+    <div class="card-head">
+      <div>
+        <div class="item-name">${toName(id)}</div>
+        <div class="item-id">${id}</div>
+      </div>
+      <div class="live-tag">LIVE</div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-prices" onclick="switchTab('prices')">📊 Prices</button>
+      <button class="tab-btn" id="tab-crafting" onclick="switchTab('crafting')">⚒ Crafting</button>
+    </div>
+
+    <!-- PRICES TAB -->
+    <div class="tab-content active" id="tc-prices">
+      <div class="price-grid">
+        <div class="price-col sell">
+          <div class="col-label"><span class="col-dot"></span>SELLING</div>
+          <div class="price-row">
+            <div class="plabel">Insta-Sell</div>
+            <div class="pvalue">${full(iSell)}<span class="coin">g</span></div>
+            <span class="ptag ptag-i">INSTANT</span>
+          </div>
+          <div class="price-row">
+            <div class="plabel">Sell Order</div>
+            <div class="pvalue">${full(sellOrd)}<span class="coin">g</span></div>
+            <span class="ptag ptag-o">ORDER</span>
+          </div>
+        </div>
+        <div class="price-col buy">
+          <div class="col-label"><span class="col-dot"></span>BUYING</div>
+          <div class="price-row">
+            <div class="plabel">Insta-Buy</div>
+            <div class="pvalue">${full(iBuy)}<span class="coin">g</span></div>
+            <span class="ptag ptag-i">INSTANT</span>
+          </div>
+          <div class="price-row">
+            <div class="plabel">Buy Order</div>
+            <div class="pvalue">${full(buyOrd)}<span class="coin">g</span></div>
+            <span class="ptag ptag-o">ORDER</span>
+          </div>
+        </div>
+      </div>
+      <div class="fill-strip">
+        <span class="fill-label">⏱ Buy order fill time:</span>
+        <span class="fill-val">${estimateFill(id,1)}</span>
+        <span class="fill-label" style="margin-left:8px">↔ Buy/Sell spread:</span>
+        <span class="fill-val gold">${full(spread)}g</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-cell"><div class="slabel">BUY VOL</div><div class="svalue">${short(qs.buyVolume)}</div></div>
+        <div class="stat-cell"><div class="slabel">SELL VOL</div><div class="svalue">${short(qs.sellVolume)}</div></div>
+        <div class="stat-cell"><div class="slabel">ORDERS</div><div class="svalue">${short(qs.buyOrders+qs.sellOrders)}</div></div>
+        <div class="stat-cell"><div class="slabel">7D VOL</div><div class="svalue">${short(qs.movingWeek)}</div></div>
+      </div>
+      <div class="chart-section">
+        <div class="section-title">ORDER BOOK DEPTH</div>
+        <div class="chart-wrap"><canvas id="depth-chart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- CRAFTING TAB -->
+    <div class="tab-content" id="tc-crafting">
+      <div class="craft-section">
+        <div id="craft-body" class="craft-loading">Loading recipe data...</div>
+      </div>
+    </div>
+
+    <div class="card-foot">
+      <span class="updated">Updated ${updated?.toLocaleTimeString()??'—'}</span>
+      <button class="refresh-btn" onclick="doRefresh()">↻ REFRESH</button>
+    </div>
+  </div>`;
+
+  renderDepth(p);
+  // Pre-warm NEU cache
+  fetchNEU(id);
+}
+
+/* ─── Tab Switch ──────────────────────────────────────────────── */
+function switchTab(t) {
+  currentTab=t;
+  ['prices','crafting'].forEach(n=>{
+    document.getElementById('tab-'+n)?.classList.toggle('active',n===t);
+    document.getElementById('tc-'+n)?.classList.toggle('active',n===t);
+  });
+  if (t==='crafting'&&currentId) renderCrafting(currentId);
+}
+
+/* ─── Render Crafting Tab ─────────────────────────────────────── */
+async function renderCrafting(id) {
+  const el=document.getElementById('craft-body');
+  if (!el) return;
+  el.className='craft-loading'; el.textContent='Loading recipe data...';
+
+  const neu=await fetchNEU(id);
+  if (!neu) { el.className='no-recipe'; el.innerHTML='⛏ No item data found in NEU repo.'; return; }
+
+  const recipe=parseRecipe(neu);
+  if (!recipe) { el.className='no-recipe'; el.innerHTML='⛏ This item has no crafting recipe in the NEU repo.'; return; }
+
+  const {slots, ingMap, outQty}=recipe;
+  const costs=craftCost(ingMap);
+  const dispName=stripMC(neu.displayname)||toName(id);
+
+  // Totals
+  let iTotal=0, oTotal=0, allKnown=true;
+  for (const c of Object.values(costs)) {
+    if (c.iTotal!==null) iTotal+=c.iTotal; else allKnown=false;
+    if (c.oTotal!==null) oTotal+=c.oTotal;
+  }
+
+  const p=products[id];
+  const sellI = p ? p.quick_status.sellPrice*outQty : null;
+  const sellO = p ? (p.buy_summary?.[0]?.pricePerUnit??p.quick_status.sellPrice)*outQty : null;
+
+  // Output slot
+  const oc=itemColor(id), oa=getAbbr(id);
+  const outSlotHTML=`
+    <div class="out-slot mc-slot" onclick="pick('${id}')" style="position:relative;background:${oc}18;border-color:${oc}66 ${oc}22 ${oc}22 ${oc}66;" title="${toName(id)}">
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+        <div class="slot-abbr" style="width:46px;height:46px;background:${oc}44;border:2px solid ${oc}88;display:flex;align-items:center;justify-content:center;color:${oc};font-size:13px;">${oa}</div>
+        ${outQty>1?`<span class="slot-qty" style="font-size:13px">${outQty}</span>`:''}
+      </div>
+    </div>`;
+
+  // Ingredient rows
+  const ingRows=Object.entries(costs).map(([iid,c])=>{
+    const ft=estimateFill(iid,c.qty);
+    const col=itemColor(iid);
+    const iC=c.iTotal!==null?`<span class="price-i">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
+    const oC=c.oTotal!==null?`<span class="price-o">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
+    return `<tr class="ing-row" onclick="pick('${iid}')">
+      <td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span></td>
+      <td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td>
+      <td class="cell-r">${iC}</td>
+      <td class="cell-r">${oC}</td>
+      <td class="cell-r"><span class="fill-t">${ft}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Profit scenarios
+  function pCard(label, cost, sell, best=false) {
+    if (cost===null||sell===null) return `<div class="ps"><div class="ps-lbl">${label}</div><div class="ps-val" style="color:var(--muted2)">N/A</div></div>`;
+    const profit=sell-cost, pct=cost>0?((profit/cost)*100).toFixed(1):'—';
+    const cls=profit>=0?'pos':'neg', sign=profit>=0?'+':'';
+    return `<div class="ps">${best&&profit>0?'<span class="ps-best">BEST</span>':''}
+      <div class="ps-lbl">${label}</div>
+      <div class="ps-val ${cls}">${sign}${short(profit)}</div>
+      <div class="ps-pct" style="color:${profit>=0?'var(--green)':'var(--red)'}">${sign}${pct}%</div>
+    </div>`;
+  }
+
+  // Find best profit for BEST badge
+  const scenarios = [
+    {label:'Order mats → Insta-sell', cost:allKnown?oTotal:null, sell:sellI},
+    {label:'Order mats → Sell order', cost:allKnown?oTotal:null, sell:sellO},
+    {label:'Insta-buy mats → Insta-sell', cost:allKnown?iTotal:null, sell:sellI},
+    {label:'Insta-buy mats → Sell order', cost:allKnown?iTotal:null, sell:sellO},
+  ];
+  let bestIdx=-1, bestProfit=-Infinity;
+  scenarios.forEach((s,i)=>{ if(s.cost!==null&&s.sell!==null){const p=s.sell-s.cost;if(p>bestProfit){bestProfit=p;bestIdx=i;}} });
+
+  el.className='';
+  el.innerHTML=`
+    <div class="section-title" style="margin-bottom:16px">
+      CRAFTING RECIPE — ${dispName.toUpperCase()} ${outQty>1?`× ${outQty}`:''}
+    </div>
+
+    <div class="craft-grid-area">
+      <div class="craft-grid">${slots.map(s=>slotHTML(s)).join('')}</div>
+      <div class="craft-arrow">
+        <svg width="26" height="18" viewBox="0 0 26 18"><polygon points="0,4 15,4 15,0 26,9 15,18 15,14 0,14" fill="currentColor"/></svg>
+        ${outQty>1?`<span>×${outQty}</span>`:''}
+      </div>
+      ${outSlotHTML}
+    </div>
+
+    <div class="section-title">INGREDIENT COSTS <small>(CLICK ANY ROW OR SLOT TO VIEW ITEM)</small></div>
+    <table class="ing-table">
+      <thead><tr>
+        <th>ITEM</th>
+        <th class="r">QTY</th>
+        <th class="r">INSTA-BUY</th>
+        <th class="r">BUY ORDER</th>
+        <th class="r">EST. FILL</th>
+      </tr></thead>
+      <tbody>${ingRows}</tbody>
+      <tfoot><tr>
+        <td colspan="2"><span class="total-lbl">TOTAL CRAFT COST</span></td>
+        <td class="cell-r"><span class="price-i" style="font-size:18px">${allKnown?short(iTotal):'~'+short(iTotal)}</span></td>
+        <td class="cell-r"><span class="price-o" style="font-size:18px">${allKnown?short(oTotal):'~'+short(oTotal)}</span></td>
+        <td></td>
+      </tr></tfoot>
+    </table>
+
+    <div class="profit-box">
+      <div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div>
+      <div class="profit-grid">
+        ${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}
+      </div>
+    </div>
+  `;
+
+  // Slot click handlers
+  el.querySelectorAll('.g-slot.clickable').forEach(sl=>
+    sl.addEventListener('click',()=>{ const tid=sl.dataset.id; if(products[tid]) pick(tid); })
+  );
+}
+
+/* ─── Depth Chart ─────────────────────────────────────────────── */
+function renderDepth(p) {
+  const buys  =(p.buy_summary||[]).slice(0,20).reverse();
+  const sells =(p.sell_summary||[]).slice(0,20);
+  let cB=0,cS=0, bL=[],bV=[],sL=[],sV=[];
+  for (const o of buys)  { cB+=o.amount; bL.push(Math.round(o.pricePerUnit).toLocaleString()); bV.push(cB); }
+  for (const o of sells) { cS+=o.amount; sL.push(Math.round(o.pricePerUnit).toLocaleString()); sV.push(cS); }
+  const labels=[...bL,...sL];
+  const buyD=[...bV,...new Array(sL.length).fill(null)];
+  const sellD=[...new Array(bL.length).fill(null),...sV];
+  if (chartInst){chartInst.destroy();chartInst=null;}
+  const ctx=document.getElementById('depth-chart');
+  if (!ctx) return;
+  chartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Buy',data:buyD,borderColor:'#55ff55',backgroundColor:'rgba(85,255,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false},
+      {label:'Sell',data:sellD,borderColor:'#ff5555',backgroundColor:'rgba(255,85,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
+          callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toLocaleString()??''}`}}
+      },
+      scales:{
+        x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:7,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
+        y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}
+      }
+    }
+  });
+}
+
+/* ─── Refresh ─────────────────────────────────────────────────── */
+async function doRefresh() {
+  await loadBazaar();
+  if (currentId) { renderCard(currentId); if (currentTab==='crafting') setTimeout(()=>switchTab('crafting'),60); }
+}
+
+/* ─── Search ──────────────────────────────────────────────────── */
+function scoreItem(item,q) {
+  const n=item.name.toLowerCase(), id=item.id.toLowerCase().replace(/_/g,' ');
+  const ql=q.toLowerCase().trim();
+  if (n.startsWith(ql)) return 100;
+  if (n.includes(ql))   return 80;
+  if (id.includes(ql))  return 70;
+  const words=ql.split(/\s+/).filter(w=>w.length>=2);
+  let hits=0; for (const w of words) if(n.includes(w)||id.includes(w)) hits++;
+  return words.length?(hits/words.length)*50:0;
+}
+function filterItems(q) {
+  if (!q.trim()) return [];
+  return items.map(i=>({i,s:scoreItem(i,q)})).filter(r=>r.s>0)
+    .sort((a,b)=>b.s-a.s).slice(0,14).map(r=>r.i);
+}
+function renderDD(list,q) {
+  const dd=document.getElementById('dd'); activeIdx=-1;
+  if (!list.length){dd.innerHTML=`<div class="dd-empty">No results for "${q}"</div>`;dd.style.display='block';return;}
+  dd.innerHTML=list.map((item,i)=>{
+    const qs=products[item.id]?.quick_status;
+    const price=qs?short(qs.sellPrice)+'g':'';
+    const col=itemColor(item.id);
+    return `<div class="dd-item" data-id="${item.id}" data-i="${i}">
+      <span class="dname"><span class="dd-px" style="background:${col};"></span>${item.name}</span>
+      <span class="dprice">${price}</span>
+    </div>`;
+  }).join('');
+  dd.style.display='block';
+  dd.querySelectorAll('.dd-item').forEach(el=>
+    el.addEventListener('mousedown',e=>{e.preventDefault();pick(el.dataset.id);})
+  );
+}
+function hideDD(){document.getElementById('dd').style.display='none';activeIdx=-1;}
+
+/* ─── Pick Item ───────────────────────────────────────────────── */
+function pick(id) {
+  const item=items.find(i=>i.id===id); if (!item) return;
+  document.getElementById('search').value=item.name;
+  currentId=id; currentTab='prices';
+  hideDD(); renderCard(id);
+}
+
+/* ─── Input Events ────────────────────────────────────────────── */
+const searchEl=document.getElementById('search');
+searchEl.addEventListener('input',()=>{
+  const q=searchEl.value;
+  if (!q.trim()){hideDD();return;}
+  renderDD(filterItems(q),q);
+});
+searchEl.addEventListener('keydown',e=>{
+  const dd=document.getElementById('dd');
+  const els=dd.querySelectorAll('.dd-item');
+  if (!els.length) return;
+  if (e.key==='ArrowDown'){e.preventDefault();activeIdx=Math.min(activeIdx+1,els.length-1);els.forEach((el,i)=>el.classList.toggle('active',i===activeIdx));els[activeIdx]?.scrollIntoView({block:'nearest'});}
+  else if (e.key==='ArrowUp'){e.preventDefault();activeIdx=Math.max(activeIdx-1,-1);els.forEach((el,i)=>el.classList.toggle('active',i===activeIdx));}
+  else if (e.key==='Enter'){const t=activeIdx>=0?els[activeIdx]:els[0];if(t)pick(t.dataset.id);}
+  else if (e.key==='Escape') hideDD();
+});
+document.addEventListener('click',e=>{if (!e.target.closest('.search-wrap')) hideDD();});
+
+/* ─── Init ────────────────────────────────────────────────────── */
+loadBazaar();
+</script>
+</body>
+</html>
