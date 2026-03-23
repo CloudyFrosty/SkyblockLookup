@@ -505,11 +505,19 @@ async function loadSBItems() {
 /* ─── NEU Repo Fetch ──────────────────────────────────────────── */
 async function fetchNEU(id) {
   if(id in neuCache) return neuCache[id];
-  try {
-    const res=await fetch(NEU_BASE+id+'.json',{signal:AbortSignal.timeout(5000)});
-    const d=res.ok?await res.json():null;
-    neuCache[id]=d; return d;
-  } catch { neuCache[id]=null; return null; }
+  // NEU filenames strip the :0 / :1 damage value suffix
+  const baseId = id.includes(':') ? id.split(':')[0] : id;
+  const variants = [baseId, id];
+  for(const v of variants){
+    try {
+      const res=await fetch(NEU_BASE+v+'.json',{signal:AbortSignal.timeout(5000)});
+      if(res.ok){
+        const d=await res.json();
+        neuCache[id]=d; return d;
+      }
+    } catch {}
+  }
+  neuCache[id]=null; return null;
 }
 
 /* ─── AH Price Fetch (Coflnet) ────────────────────────────────── */
@@ -535,14 +543,20 @@ async function fetchAHHistory(id,period) {
 const SLOT_KEYS=['A1','A2','A3','B1','B2','B3','C1','C2','C3'];
 
 function parseRecipe(neu) {
-  if(!neu?.recipe) return null;
+  // NEU uses either a `recipe` object (A1-C3 keys) or a `recipes` array of the same
+  const raw = neu?.recipe ?? neu?.recipes?.[0] ?? null;
+  if(!raw) return null;
+  // Some entries in recipes[] wrap slots under a `recipe` sub-key
+  const recipeObj = (raw.A1 !== undefined) ? raw : (raw.recipe ?? null);
+  if(!recipeObj) return null;
   const slots=SLOT_KEYS.map(k=>{
-    const v=(neu.recipe[k]||'').trim();
+    const v=(recipeObj[k]||'').trim();
     if(!v||v==='null') return null;
-    const parts=v.split(':'),id=parts[0];
+    // Format is "ITEM_ID:qty" — strip damage values that are just :0
+    const parts=v.split(':'), rawId=parts[0];
     const n=parseInt(parts[1])||0;
-    if(!id) return null;
-    return {id,qty:n>1?n:1};
+    if(!rawId) return null;
+    return {id:rawId, qty:n>1?n:1};
   });
   const ingMap={};
   for(const s of slots){ if(!s) continue; ingMap[s.id]=(ingMap[s.id]||0)+s.qty; }
@@ -551,15 +565,22 @@ function parseRecipe(neu) {
   return {slots,ingMap,outQty:m?parseInt(m[1]):1};
 }
 
-function craftCost(ingMap) {
+function craftCost(ingMap, ahPrices={}) {
   const r={};
   for(const [id,qty] of Object.entries(ingMap)){
     const p=products[id];
     if(p){
       const qs=p.quick_status;
       const ip=qs.buyPrice,op=p.sell_summary?.[0]?.pricePerUnit??qs.buyPrice;
-      r[id]={qty,ip,op,iTotal:ip*qty,oTotal:op*qty};
-    } else r[id]={qty,ip:null,op:null,iTotal:null,oTotal:null};
+      r[id]={qty,ip,op,iTotal:ip*qty,oTotal:op*qty,source:'bz'};
+    } else if(ahPrices[id]){
+      const ah=ahPrices[id];
+      // ip = lowest BIN (cheapest to acquire instantly), op = avg price (order-like)
+      const ip=ah.min??ah.avg??null, op=ah.avg??ah.min??null;
+      r[id]={qty,ip,op,iTotal:ip!=null?ip*qty:null,oTotal:op!=null?op*qty:null,source:'ah'};
+    } else {
+      r[id]={qty,ip:null,op:null,iTotal:null,oTotal:null,source:'unknown'};
+    }
   }
   return r;
 }
@@ -936,7 +957,19 @@ async function renderCrafting(id) {
   if(!recipe){el.className='no-recipe';el.innerHTML='⛏ This item has no crafting recipe in the NEU repo.';return;}
 
   const {slots,ingMap,outQty}=recipe;
-  const costs=craftCost(ingMap);
+
+  // Batch-fetch AH prices for any ingredient NOT on bazaar
+  const ahIngIds=Object.keys(ingMap).filter(iid=>!products[iid]);
+  const ahPrices={};
+  if(ahIngIds.length){
+    el.textContent=`Loading recipe data... (fetching ${ahIngIds.length} AH prices)`;
+    await Promise.all(ahIngIds.map(async iid=>{
+      const p=await fetchAHPrice(iid);
+      if(p) ahPrices[iid]=p;
+    }));
+  }
+
+  const costs=craftCost(ingMap, ahPrices);
   const dispName=stripMC(neu.displayname)||toName(id);
 
   let iTotal=0,oTotal=0,allKnown=true;
@@ -952,9 +985,9 @@ async function renderCrafting(id) {
     sellI=p.quick_status.sellPrice*outQty;
     sellO=(p.buy_summary?.[0]?.pricePerUnit??p.quick_status.sellPrice)*outQty;
   } else {
-    // Try AH price for output item
     const ahp=await fetchAHPrice(id);
-    if(ahp?.avg){ sellI=ahp.min*outQty; sellO=ahp.avg*outQty; }
+    if(ahp?.min!=null){ sellI=ahp.min*outQty; }
+    if(ahp?.avg!=null){ sellO=ahp.avg*outQty; }
   }
 
   const oc=itemColor(id),oa=getAbbr(id);
@@ -969,13 +1002,21 @@ async function renderCrafting(id) {
   const ingRows=Object.entries(costs).map(([iid,c])=>{
     const ft=estimateFill(iid,c.qty);
     const col=itemColor(iid);
-    const iC=c.iTotal!==null?`<span class="price-i">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
-    const oC=c.oTotal!==null?`<span class="price-o">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
+    const isAH=c.source==='ah';
+    const badge=isAH?`<span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--blue);border:1px solid #334488;padding:1px 4px;margin-left:6px;background:rgba(85,153,255,.08)">AH</span>`:'';
+    const iC=c.iTotal!==null
+      ?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`
+      :`<span class="price-na">N/A</span>`;
+    const oC=c.oTotal!==null
+      ?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`
+      :`<span class="price-na">N/A</span>`;
+    const iLabel=isAH?'LOWEST BIN':'INSTA-BUY';
+    const oLabel=isAH?'AH AVG':'BUY ORDER';
     return `<tr class="ing-row" onclick="pick('${iid}')">
-      <td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span></td>
+      <td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span>${badge}</td>
       <td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td>
-      <td class="cell-r">${iC}</td>
-      <td class="cell-r">${oC}</td>
+      <td class="cell-r" title="${iLabel}">${iC}</td>
+      <td class="cell-r" title="${oLabel}">${oC}</td>
       <td class="cell-r"><span class="fill-t">${ft}</span></td>
     </tr>`;
   }).join('');
@@ -991,12 +1032,11 @@ async function renderCrafting(id) {
     </div>`;
   }
 
-  // Label changes based on output item type
   const isBZ=!!products[id];
-  const sellLabel1=isBZ?'Order mats → Insta-sell':'Order mats → Min AH';
-  const sellLabel2=isBZ?'Order mats → Sell order':'Order mats → Avg AH';
-  const sellLabel3=isBZ?'Insta-buy mats → Insta-sell':'Insta-buy mats → Min AH';
-  const sellLabel4=isBZ?'Insta-buy mats → Sell order':'Insta-buy mats → Avg AH';
+  const sellLabel1=isBZ?'Order mats → Insta-sell':'Order/AH mats → Min AH';
+  const sellLabel2=isBZ?'Order mats → Sell order':'Order/AH mats → Avg AH';
+  const sellLabel3=isBZ?'Insta-buy mats → Insta-sell':'Min BIN mats → Min AH';
+  const sellLabel4=isBZ?'Insta-buy mats → Sell order':'Min BIN mats → Avg AH';
 
   const scenarios=[
     {label:sellLabel1,cost:allKnown?oTotal:null,sell:sellI},
@@ -1006,6 +1046,14 @@ async function renderCrafting(id) {
   ];
   let bestIdx=-1,bestProfit=-Infinity;
   scenarios.forEach((s,i)=>{if(s.cost!==null&&s.sell!==null){const p=s.sell-s.cost;if(p>bestProfit){bestProfit=p;bestIdx=i;}}});
+
+  // Detect if any ingredient uses AH prices to show a note
+  const hasAHIngs=Object.values(costs).some(c=>c.source==='ah');
+  const ahNote=hasAHIngs
+    ?`<div style="padding:8px 20px 0;font-size:14px;color:var(--muted2)">
+        <span style="color:var(--blue)">■</span> Blue costs = AH prices (Coflnet avg). 
+        <span style="color:var(--aqua)">■</span> Cyan = AH avg sell price.
+      </div>`:'';
 
   el.className='';
   el.innerHTML=`
@@ -1033,6 +1081,7 @@ async function renderCrafting(id) {
         <td></td>
       </tr></tfoot>
     </table>
+    ${ahNote}
     <div class="profit-box">
       <div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div>
       <div class="profit-grid">
