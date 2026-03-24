@@ -21,43 +21,42 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .mc-panel::after{content:'';position:absolute;inset:0;border:1px solid;border-color:rgba(255,255,255,.06) rgba(0,0,0,.25) rgba(0,0,0,.25) rgba(255,255,255,.06);pointer-events:none;}
 .mc-slot{background:var(--slot);border:3px solid;border-color:var(--dk) var(--lt) var(--lt) var(--dk);}
 .mc-slot::after{content:'';position:absolute;inset:0;border:1px solid;border-color:rgba(0,0,0,.3) rgba(255,255,255,.05) rgba(255,255,255,.05) rgba(0,0,0,.3);pointer-events:none;}
-.header{margin-bottom:24px;text-align:center}
+.header{margin-bottom:20px;text-align:center}
 .header h1{font-family:'Press Start 2P',monospace;font-size:20px;line-height:1.5;color:var(--gold);text-shadow:3px 3px 0 var(--gold-dk),0 0 40px rgba(255,170,0,.25);letter-spacing:.02em;}
 .header h1 em{color:#fff;font-style:normal}
 .header p{font-size:18px;color:var(--muted2);margin-top:8px;letter-spacing:.08em}
 #status{font-size:17px;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:8px;min-height:22px;}
-.dot{width:8px;height:8px;flex-shrink:0;image-rendering:pixelated;background:var(--gold);animation:blink 1s steps(1) infinite}
+.dot{width:8px;height:8px;flex-shrink:0;background:var(--gold);animation:blink 1s steps(1) infinite}
 .dot.ok{background:var(--green);animation:none}
 .dot.err{background:var(--red);animation:none}
 @keyframes blink{50%{opacity:0}}
-
-.flip-panel{margin-bottom:20px;overflow:hidden;}
-.flip-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.2);border-bottom:2px solid var(--dk);cursor:pointer;user-select:none;}
-.flip-header:hover{background:rgba(255,170,0,.04)}
-.flip-title{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--gold);letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
-.flip-controls{display:flex;align-items:center;gap:10px}
-.flip-sort{font-family:'Press Start 2P',monospace;font-size:6px;padding:4px 8px;background:none;border:2px solid var(--lt);color:var(--muted2);cursor:pointer;letter-spacing:.04em;transition:all .1s;}
-.flip-sort.active{border-color:var(--gold-dk);color:var(--gold);background:rgba(255,170,0,.06)}
-.flip-sort:hover:not(.active){color:var(--text)}
-.flip-toggle{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);transition:color .1s;}
-.flip-body{padding:0;}
-.flip-table{width:100%;border-collapse:collapse;font-size:17px}
-.flip-table thead th{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.08em;text-align:left;padding:8px 12px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
-.flip-table thead th.r{text-align:right}
-.flip-table tbody td{padding:8px 12px;border-bottom:1px solid rgba(0,0,0,.3);vertical-align:middle;}
-.flip-table tbody tr{cursor:pointer;transition:background .05s;}
-.flip-table tbody tr:hover td{background:rgba(255,170,0,.06)}
-.flip-table tbody tr:last-child td{border-bottom:none}
-.flip-swatch{display:inline-block;width:10px;height:10px;image-rendering:pixelated;vertical-align:middle;margin-right:8px;flex-shrink:0;}
-.flip-name{color:var(--text)}
-.flip-spread{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
-.flip-pct{color:var(--aqua);font-family:'JetBrains Mono',monospace;font-size:13px;}
-.flip-vol{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px;}
-.flip-rank{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted2);width:24px;}
-.flip-sell{color:var(--red);font-family:'JetBrains Mono',monospace;font-size:13px;}
-.flip-buy{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:13px;}
-.flip-empty{padding:24px;text-align:center;color:var(--muted2);font-size:18px;}
-
+.market-panel{margin-bottom:16px;overflow:hidden;}
+.market-header{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.2);border-bottom:2px solid var(--dk);cursor:pointer;user-select:none;}
+.market-header:hover{background:rgba(255,170,0,.03)}
+.market-title{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--gold);letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.market-toggle{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);}
+.market-body{display:grid;grid-template-columns:1fr 1fr;}
+.market-col{padding:10px 14px;border-right:1px solid var(--dk);}
+.market-col:last-child{border-right:none}
+.market-col-title{font-family:'Press Start 2P',monospace;font-size:6px;letter-spacing:.09em;margin-bottom:8px;}
+.market-col-title.up{color:var(--green)}.market-col-title.down{color:var(--red)}.market-col-title.vol{color:var(--aqua)}
+.market-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.2);cursor:pointer;font-size:16px;}
+.market-row:last-child{border-bottom:none}
+.market-row:hover .mrow-name{color:var(--gold)}
+.mrow-name{color:var(--text);display:flex;align-items:center;gap:6px}
+.mrow-dot{width:8px;height:8px;flex-shrink:0}
+.mrow-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+.mrow-val.up{color:var(--green)}.mrow-val.down{color:var(--red)}.mrow-val.vol{color:var(--aqua)}
+.market-loading{padding:18px;text-align:center;color:var(--muted2);font-size:17px;animation:blink 1s steps(1) infinite;}
+.compare-bar{margin-bottom:16px;overflow:hidden;}
+.compare-bar-inner{padding:10px 16px;display:flex;align-items:center;gap:10px;background:rgba(85,153,255,.07);border-bottom:2px solid #334488;}
+.compare-label{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);letter-spacing:.08em;flex-shrink:0;}
+.compare-slots{display:flex;gap:8px;flex:1;flex-wrap:wrap;}
+.compare-chip{display:flex;align-items:center;gap:6px;padding:3px 8px;background:rgba(85,153,255,.12);border:1px solid #334488;font-size:15px;cursor:pointer;}
+.compare-chip:hover{background:rgba(255,85,85,.12);border-color:#770000}
+.compare-go{font-family:'Press Start 2P',monospace;font-size:6px;padding:5px 10px;background:rgba(85,153,255,.15);border:2px solid #334488;color:var(--blue);cursor:pointer;white-space:nowrap;}
+.compare-go:hover{background:rgba(85,153,255,.3);color:#fff}
+.compare-go:disabled{opacity:.4;cursor:not-allowed}
 .search-wrap{position:relative;margin-bottom:20px}
 .search-input{width:100%;background:var(--slot);border:3px solid;border-color:var(--dk) var(--lt) var(--lt) var(--dk);color:var(--text);font-family:'VT323',monospace;font-size:22px;padding:10px 16px;outline:none;letter-spacing:.04em;transition:border-color .1s;}
 .search-input:focus{border-color:var(--gold-dk) var(--gold) var(--gold) var(--gold-dk)}
@@ -70,21 +69,24 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .dd-item:hover,.dd-item.active{background:rgba(255,170,0,.09)}
 .dd-item .dname{color:var(--text);display:flex;align-items:center;gap:8px}
 .dd-item .dprice{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:12px}
-.dd-px{width:10px;height:10px;flex-shrink:0;image-rendering:pixelated}
+.dd-px{width:10px;height:10px;flex-shrink:0}
 .dd-empty{padding:14px;text-align:center;color:var(--muted2);font-size:18px}
 .dd-right{display:flex;align-items:center;gap:6px}
 .dd-type{font-family:'Press Start 2P',monospace;font-size:6px;padding:2px 6px;letter-spacing:.06em;flex-shrink:0;}
 .dd-bz{background:rgba(85,255,85,.1);color:var(--green);border:1px solid var(--green-dk)}
 .dd-ah{background:rgba(85,153,255,.1);color:var(--blue);border:1px solid #334488}
-
 .card{overflow:hidden;animation:rise .12s steps(3) forwards}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .card-head{padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
+.card-head-left{flex:1;min-width:0}
 .item-name{font-size:28px;line-height:1.1;color:var(--gold);text-shadow:2px 2px 0 var(--gold-dk);letter-spacing:.03em;}
 .item-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:4px}
-.live-tag{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--green);border:2px solid var(--green-dk);padding:5px 8px;background:rgba(85,255,85,.06);letter-spacing:.12em;flex-shrink:0;animation:blink 2s steps(1) infinite;}
-.ah-tag{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);border:2px solid #334488;padding:5px 8px;background:rgba(85,153,255,.06);letter-spacing:.12em;flex-shrink:0;}
-
+.card-head-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.live-tag{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--green);border:2px solid var(--green-dk);padding:5px 8px;background:rgba(85,255,85,.06);letter-spacing:.12em;animation:blink 2s steps(1) infinite;}
+.ah-tag{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);border:2px solid #334488;padding:5px 8px;background:rgba(85,153,255,.06);letter-spacing:.12em;}
+.add-compare-btn{font-family:'Press Start 2P',monospace;font-size:5px;padding:4px 8px;background:none;border:1px solid #334488;color:var(--blue);cursor:pointer;white-space:nowrap;}
+.add-compare-btn:hover{background:rgba(85,153,255,.12)}
+.add-compare-btn.added{border-color:var(--green-dk);color:var(--green);background:rgba(85,255,85,.06)}
 .tabs{display:flex;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.15);overflow-x:auto;}
 .tabs::-webkit-scrollbar{height:0}
 .tab-btn{font-family:'Press Start 2P',monospace;font-size:7px;padding:10px 14px;background:none;border:none;color:var(--muted2);cursor:pointer;letter-spacing:.05em;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .1s;white-space:nowrap;}
@@ -92,14 +94,13 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .tab-btn:hover:not(.active){color:var(--text)}
 .tab-content{display:none}
 .tab-content.active{display:block}
-
 .price-grid{display:grid;grid-template-columns:1fr 1fr}
 .price-col{padding:18px 20px}
 .price-col.sell{border-right:1px solid var(--dk)}
 .col-label{font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:7px;}
 .price-col.sell .col-label{color:var(--red)}
 .price-col.buy  .col-label{color:var(--green)}
-.col-dot{width:8px;height:8px;flex-shrink:0;image-rendering:pixelated}
+.col-dot{width:8px;height:8px;flex-shrink:0}
 .price-col.sell .col-dot{background:var(--red)}
 .price-col.buy  .col-dot{background:var(--green)}
 .price-row{margin-bottom:14px}
@@ -126,13 +127,11 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .ah-cell .pvalue{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--text);}
 .chart-section{padding:16px 20px 22px;border-top:1px solid rgba(255,255,255,.03)}
 .section-title{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--muted2);letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.section-title small{font-size:6px;color:var(--muted2);opacity:.7;letter-spacing:.07em}
 .chart-wrap{position:relative;height:160px}
 .period-toggle{display:flex;gap:4px}
 .period-btn{font-family:'Press Start 2P',monospace;font-size:6px;padding:5px 10px;background:none;border:2px solid var(--lt);color:var(--muted2);cursor:pointer;letter-spacing:.04em;transition:all .1s;}
 .period-btn.active{border-color:var(--gold-dk);color:var(--gold);background:rgba(255,170,0,.06)}
 .period-btn:hover:not(.active){color:var(--text)}
-
 .craft-section{padding:20px}
 .craft-grid-area{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px;}
 .craft-grid{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:3px;padding:8px;background:rgba(0,0,0,.25);border:2px solid var(--dk);}
@@ -156,7 +155,7 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .ing-table tfoot td{padding:8px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);}
 .ing-table tbody tr.ing-row{cursor:pointer}
 .ing-table tbody tr.ing-row:hover td{background:rgba(255,170,0,.06)}
-.ing-swatch{display:inline-block;width:12px;height:12px;image-rendering:pixelated;vertical-align:middle;margin-right:8px;flex-shrink:0;}
+.ing-swatch{display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:8px;flex-shrink:0;}
 .ing-name{color:var(--text)}
 .ing-qty{color:var(--muted);font-size:15px}
 .cell-r{text-align:right}
@@ -170,56 +169,56 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .ps{padding:12px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.04);position:relative}
 .ps-lbl{font-size:13px;color:var(--muted);line-height:1.3;margin-bottom:8px}
 .ps-val{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:600;line-height:1}
-.ps-val.pos{color:var(--green)}
-.ps-val.neg{color:var(--red)}
+.ps-val.pos{color:var(--green)}.ps-val.neg{color:var(--red)}
 .ps-pct{font-size:14px;color:var(--muted);margin-top:3px}
 .ps-best{position:absolute;top:6px;right:8px;font-family:'Press Start 2P',monospace;font-size:5px;color:var(--yellow);border:1px solid rgba(255,255,85,.3);padding:2px 5px;background:rgba(255,255,85,.05);letter-spacing:.08em;}
-
 .essence-section{padding:20px}
-.essence-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:14px 16px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.05);}
-.essence-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.essence-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:14px 16px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.05);}
+.essence-icon{font-size:24px;flex-shrink:0}
 .essence-meta{flex:1}
 .essence-type{font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:.08em;margin-bottom:4px;}
 .essence-sub{font-size:15px;color:var(--muted2)}
 .essence-bz-price{text-align:right}
 .essence-bz-label{font-size:12px;color:var(--muted2);margin-bottom:2px}
 .essence-bz-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--gold)}
-.essence-table{width:100%;border-collapse:collapse;font-size:17px}
+.essence-table{width:100%;border-collapse:collapse;font-size:16px}
 .essence-table thead th{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.08em;text-align:left;padding:7px 10px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
 .essence-table thead th.r{text-align:right}
 .essence-table tbody td{padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.3);vertical-align:middle;}
 .essence-table tbody tr:last-child td{border-bottom:none}
 .essence-table tfoot td{padding:8px 10px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);}
-.essence-table tbody tr.master-star td{background:rgba(255,170,0,.04)}
-.star-cell{font-size:18px;letter-spacing:-1px}
-.star-plain{color:var(--muted2)}
+.essence-table tbody tr.master-star-row td{background:rgba(187,85,255,.04)}
+.essence-table tbody tr.conv-row td{background:rgba(85,153,255,.05)}
+.star-cell{font-size:17px;letter-spacing:-1px;white-space:nowrap}
+.star-plain{color:var(--muted2);opacity:.35}
 .star-gold{color:var(--gold)}
 .star-master{color:var(--purple)}
 .ess-amt{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--aqua)}
 .ess-cost-i{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red)}
 .ess-cost-o{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green)}
-.ess-cum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted2)}
-.ess-req{font-size:14px;color:var(--muted2)}
+.ess-cum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+.ess-req{font-size:13px;color:var(--muted2)}
 .ess-note{padding:10px 16px;font-size:14px;color:var(--muted2);border-top:1px solid var(--dk);background:rgba(0,0,0,.15);line-height:1.5}
-
+.floor-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;margin-bottom:14px;background:rgba(85,85,255,.08);border:1px solid rgba(85,85,255,.3);font-size:16px;color:var(--blue);}
+.floor-badge span{font-family:'Press Start 2P',monospace;font-size:7px;}
 .item-data-section{padding:20px}
-.item-lore-box{background:rgba(0,0,0,.25);border:2px solid #550077;padding:14px 16px;margin-bottom:20px;font-size:18px;line-height:1.6;}
+.item-lore-box{background:rgba(0,0,0,.25);border:2px solid #550077;padding:14px 16px;margin-bottom:20px;font-size:18px;line-height:1.7;}
 .lore-line{display:block}
 .item-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--dk);border:1px solid var(--dk);margin-bottom:20px;}
 .stat-box{background:var(--panel);padding:12px 14px;}
 .stat-box-label{font-size:13px;color:var(--muted2);margin-bottom:4px}
-.stat-box-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--text)}
-.stat-box-val.pos{color:var(--green)}
-.stat-box-val.neg{color:var(--red)}
+.stat-box-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;}
+.stat-box-val.pos{color:var(--green)}.stat-box-val.neg{color:var(--red)}
 .req-list{margin-bottom:20px;}
 .req-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(0,0,0,.3);font-size:17px;}
 .req-item:last-child{border-bottom:none}
 .req-icon{font-size:16px;width:20px;text-align:center}
 .req-label{color:var(--muted);font-size:15px;margin-right:auto}
 .req-val{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
-.gem-slots{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:14px;}
-.gem-slot{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid;position:relative;}
-.gem-slot-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
+.gem-slots-wrap{display:flex;flex-wrap:wrap;gap:18px;padding:14px 0;margin-bottom:16px;}
+.gem-slot-item{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.gem-slot{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid;}
+.gem-slot-lbl{font-size:10px;white-space:nowrap;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
 .gem-ruby{border-color:#ff3333;background:rgba(255,51,51,.1)}
 .gem-sapphire{border-color:#3355ff;background:rgba(51,85,255,.1)}
 .gem-amber{border-color:#ffaa00;background:rgba(255,170,0,.1)}
@@ -236,7 +235,23 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .gem-mining{border-color:#ffcc33;background:rgba(255,204,51,.1)}
 .gem-speed{border-color:#55ffff;background:rgba(85,255,255,.1)}
 .gem-unknown{border-color:#444;background:rgba(68,68,68,.1)}
-
+.compare-view{animation:rise .12s steps(3) forwards;overflow:hidden;}
+.compare-view-header{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.2);border-bottom:2px solid var(--dk);}
+.compare-view-title{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--blue);letter-spacing:.1em;}
+.compare-back{font-family:'Press Start 2P',monospace;font-size:6px;padding:5px 10px;background:none;border:2px solid var(--lt);color:var(--muted2);cursor:pointer;}
+.compare-back:hover{border-color:var(--gold-dk);color:var(--gold)}
+.compare-grid{display:grid;}
+.compare-col{border-right:1px solid var(--dk);}
+.compare-col:last-child{border-right:none}
+.compare-col-head{padding:14px 16px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.15);}
+.compare-col-name{font-size:20px;line-height:1.1;}
+.compare-col-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted2);margin-top:3px;}
+.compare-section-lbl{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.1em;padding:7px 14px;background:rgba(0,0,0,.2);border-top:1px solid var(--dk);border-bottom:1px solid var(--dk);}
+.compare-stat{padding:6px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.2);font-size:15px;}
+.compare-stat-lbl{color:var(--muted);font-size:13px;}
+.compare-stat-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
+.compare-stat-val.better{color:var(--green)}.compare-stat-val.worse{color:var(--red)}.compare-stat-val.same{color:var(--muted2)}
+.compare-loading{padding:40px;text-align:center;color:var(--muted2);font-size:18px;animation:blink 1s steps(1) infinite;}
 .craft-loading{padding:40px;text-align:center;color:var(--muted2);font-size:20px;animation:blink 1s steps(1) infinite;}
 .no-recipe{padding:36px;text-align:center;color:var(--muted2);font-size:20px}
 .card-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);}
@@ -262,22 +277,19 @@ footer strong{color:var(--muted)}
   </div>
   <div id="status"><span class="dot"></span><span id="status-text">Loading...</span></div>
 
-  <div class="mc-panel flip-panel" id="flip-panel">
-    <div class="flip-header" onclick="toggleFlip()">
-      <div class="flip-title">
-        <span>⚡</span>
-        <span>TOP BAZAAR FLIPS</span>
-        <span style="font-family:'VT323',monospace;font-size:14px;color:var(--muted2);font-weight:normal;letter-spacing:0" id="flip-count"></span>
-      </div>
-      <div class="flip-controls" onclick="e=>e.stopPropagation()">
-        <button class="flip-sort active" id="fsort-spread" onclick="event.stopPropagation();setFlipSort('spread')">SPREAD</button>
-        <button class="flip-sort" id="fsort-pct" onclick="event.stopPropagation();setFlipSort('pct')">% MARGIN</button>
-        <button class="flip-sort" id="fsort-vol" onclick="event.stopPropagation();setFlipSort('vol')">VOLUME</button>
-        <span class="flip-toggle" id="flip-toggle">▲</span>
-      </div>
+  <div class="mc-panel market-panel" id="market-panel">
+    <div class="market-header" onclick="toggleMarket()">
+      <div class="market-title"><span>📊</span><span>MARKET SUMMARY</span></div>
+      <span class="market-toggle" id="market-toggle">▲</span>
     </div>
-    <div class="flip-body" id="flip-body">
-      <div class="flip-empty">Loading flip data...</div>
+    <div id="market-body"><div class="market-loading">Loading market data...</div></div>
+  </div>
+
+  <div class="mc-panel compare-bar" id="compare-bar" style="display:none">
+    <div class="compare-bar-inner">
+      <span class="compare-label">⚖ COMPARE</span>
+      <div class="compare-slots" id="compare-slots"></div>
+      <button class="compare-go" id="compare-go-btn" onclick="openCompare()" disabled>VIEW →</button>
     </div>
   </div>
 
@@ -293,289 +305,267 @@ footer strong{color:var(--muted)}
     </div>
   </div>
 </div>
-<footer>made by <strong>XxSweat</strong></footer>
-
+<footer>made by <strong>XxSweat v.0.0.1</strong></footer>
 <script>
 const WORKER   = 'https://solitary-lake-43dd.xxsweatapi.workers.dev';
 const NEU_BASE = 'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/';
 
-let products   = {};
-let items      = [];
-let sbAllItems = [];
-let updated    = null;
-let currentId  = null;
-let currentTab = 'prices';
-let chartInst  = null;
-let neuCache   = {};
-let ahPriceCache = {};
-let activeIdx  = -1;
-let flipOpen   = true;
-let flipSort   = 'spread';
+let products={}, items=[], sbAllItems=[], updated=null;
+let currentId=null, currentTab='prices', chartInst=null;
+let neuCache={}, ahPriceCache={}, activeIdx=-1;
+let marketOpen=true, compareList=[];
 
-function isBazaar(id){ return !!products[id]; }
-
-function tierColor(tier){
-  return ({COMMON:'#ffffff',UNCOMMON:'#55ff55',RARE:'#5599ff',EPIC:'#bb55ff',
-    LEGENDARY:'#ffaa00',MYTHIC:'#ff55ff',DIVINE:'#55ffff',SPECIAL:'#ff5555',VERY_SPECIAL:'#ff5555'})[tier]||'#aaaaaa';
-}
-
+function isBazaar(id){return !!products[id];}
+function tierColor(t){return({COMMON:'#ffffff',UNCOMMON:'#55ff55',RARE:'#5599ff',EPIC:'#bb55ff',LEGENDARY:'#ffaa00',MYTHIC:'#ff55ff',DIVINE:'#55ffff',SPECIAL:'#ff5555',VERY_SPECIAL:'#ff5555'})[t]||'#aaaaaa';}
 function itemColor(id){
-  if(!id) return '#333';
-  const s=id.toUpperCase();
-  if(s.includes('ENCHANTED'))    return '#bb55ff';
-  if(s.includes('DIAMOND'))      return '#55ffff';
-  if(s.includes('EMERALD'))      return '#55ff55';
-  if(s.includes('GOLD')||s.includes('GOLDEN')) return '#ffaa00';
-  if(s.includes('IRON'))         return '#aaaaaa';
-  if(s.includes('NETHERITE'))    return '#666';
-  if(s.includes('REDSTONE'))     return '#ff5555';
-  if(s.includes('LAPIS'))        return '#5599ff';
-  if(s.includes('COAL'))         return '#555';
-  if(s.includes('NETHER_WART'))  return '#dd3333';
-  if(s.includes('NETHER_BRICK')) return '#993333';
-  if(s.includes('QUARTZ'))       return '#ffeeee';
-  if(s.includes('SUGAR'))        return '#ff88ee';
-  if(s.includes('CANE'))         return '#88ff44';
-  if(s.includes('WHEAT')||s.includes('SEED')) return '#ffff55';
-  if(s.includes('CARROT'))       return '#ff8822';
-  if(s.includes('POTATO'))       return '#ddcc88';
-  if(s.includes('MELON'))        return '#ff5544';
-  if(s.includes('PUMPKIN'))      return '#ff7722';
-  if(s.includes('MUSHROOM'))     return '#cc8855';
-  if(s.includes('CACTUS'))       return '#55aa33';
-  if(s.includes('SLIME'))        return '#88ff55';
-  if(s.includes('BONE'))         return '#ddddaa';
-  if(s.includes('ROTTEN')||s.includes('ZOMBIE')) return '#66aa33';
-  if(s.includes('BLAZE'))        return '#ffaa22';
-  if(s.includes('SPIDER'))       return '#886644';
-  if(s.includes('ENDER'))        return '#7744aa';
-  if(s.includes('OBSIDIAN'))     return '#330044';
-  if(s.includes('ICE')||s.includes('SNOW')) return '#aaddff';
-  if(s.includes('GRAVEL')||s.includes('FLINT')) return '#999';
-  if(s.includes('SAND'))         return '#ddcc99';
-  if(s.includes('LOG')||s.includes('WOOD')) return '#8B6431';
-  if(s.includes('LEATHER'))      return '#aa7744';
-  if(s.includes('FEATHER'))      return '#eeeedd';
-  if(s.includes('ESSENCE'))      return '#aa44ff';
-  let h=5381;
-  for(let i=0;i<s.length;i++) h=(((h<<5)+h)^s.charCodeAt(i))>>>0;
-  return ['#5588ff','#55ffaa','#ffaa55','#ff55aa','#aaff55','#55aaff','#dd99ff'][h%7];
+  if(!id)return'#333';const s=id.toUpperCase();
+  if(s.includes('ENCHANTED'))return'#bb55ff';if(s.includes('DIAMOND'))return'#55ffff';
+  if(s.includes('EMERALD'))return'#55ff55';if(s.includes('GOLD')||s.includes('GOLDEN'))return'#ffaa00';
+  if(s.includes('IRON'))return'#aaaaaa';if(s.includes('NETHERITE'))return'#666';
+  if(s.includes('REDSTONE'))return'#ff5555';if(s.includes('LAPIS'))return'#5599ff';
+  if(s.includes('COAL'))return'#555';if(s.includes('NETHER_WART'))return'#dd3333';
+  if(s.includes('NETHER_BRICK'))return'#993333';if(s.includes('QUARTZ'))return'#ffeeee';
+  if(s.includes('SUGAR'))return'#ff88ee';if(s.includes('CANE'))return'#88ff44';
+  if(s.includes('WHEAT')||s.includes('SEED'))return'#ffff55';if(s.includes('CARROT'))return'#ff8822';
+  if(s.includes('POTATO'))return'#ddcc88';if(s.includes('MELON'))return'#ff5544';
+  if(s.includes('PUMPKIN'))return'#ff7722';if(s.includes('MUSHROOM'))return'#cc8855';
+  if(s.includes('CACTUS'))return'#55aa33';if(s.includes('SLIME'))return'#88ff55';
+  if(s.includes('BONE'))return'#ddddaa';if(s.includes('ROTTEN')||s.includes('ZOMBIE'))return'#66aa33';
+  if(s.includes('BLAZE'))return'#ffaa22';if(s.includes('SPIDER'))return'#886644';
+  if(s.includes('ENDER'))return'#7744aa';if(s.includes('OBSIDIAN'))return'#330044';
+  if(s.includes('ICE')||s.includes('SNOW'))return'#aaddff';if(s.includes('GRAVEL')||s.includes('FLINT'))return'#999';
+  if(s.includes('SAND'))return'#ddcc99';if(s.includes('LOG')||s.includes('WOOD'))return'#8B6431';
+  if(s.includes('LEATHER'))return'#aa7744';if(s.includes('FEATHER'))return'#eeeedd';
+  if(s.includes('ESSENCE'))return'#aa44ff';
+  let h=5381;for(let i=0;i<s.length;i++)h=(((h<<5)+h)^s.charCodeAt(i))>>>0;
+  return['#5588ff','#55ffaa','#ffaa55','#ff55aa','#aaff55','#55aaff','#dd99ff'][h%7];
 }
-
-function getAbbr(id){
-  const words=id.replace(/:/g,'_').split('_').filter(w=>w&&w!=='0'&&isNaN(w));
-  if(!words.length) return '??';
-  if(words.length===1) return words[0].slice(0,3).toUpperCase();
-  if(words.length===2) return (words[0][0]+words[1].slice(0,2)).toUpperCase();
-  return words.slice(0,3).map(w=>w[0]).join('').toUpperCase();
-}
-
-function toName(id){
-  return (id||'').replace(/:/g,'_').split('_').filter(w=>w)
-    .map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
-}
-
-function short(n){
-  if(typeof n!=='number'||isNaN(n)) return 'N/A';
-  if(n>=1e9) return (n/1e9).toFixed(2)+'B';
-  if(n>=1e6) return (n/1e6).toFixed(2)+'M';
-  if(n>=1e3) return (n/1e3).toFixed(1)+'K';
-  return Math.round(n).toLocaleString();
-}
-
-function full(n){
-  return typeof n==='number'&&!isNaN(n)?Math.round(n).toLocaleString():'N/A';
-}
-
-function stripMC(s){ return (s||'').replace(/§./g,'').trim(); }
-
-function mcColorToHex(code){
-  return ({0:'#000000',1:'#0000AA',2:'#00AA00',3:'#00AAAA',4:'#AA0000',
-    5:'#AA00AA',6:'#FFAA00',7:'#AAAAAA',8:'#555555',9:'#5555FF',
-    a:'#55FF55',b:'#55FFFF',c:'#FF5555',d:'#FF55FF',e:'#FFFF55',f:'#FFFFFF'})[code]||null;
-}
-
+function getAbbr(id){const w=id.replace(/:/g,'_').split('_').filter(w=>w&&w!=='0'&&isNaN(w));if(!w.length)return'??';if(w.length===1)return w[0].slice(0,3).toUpperCase();if(w.length===2)return(w[0][0]+w[1].slice(0,2)).toUpperCase();return w.slice(0,3).map(w=>w[0]).join('').toUpperCase();}
+function toName(id){return(id||'').replace(/:/g,'_').split('_').filter(w=>w).map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');}
+function short(n){if(typeof n!=='number'||isNaN(n))return'N/A';if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.round(n).toLocaleString();}
+function full(n){return typeof n==='number'&&!isNaN(n)?Math.round(n).toLocaleString():'N/A';}
+function stripMC(s){return(s||'').replace(/§./g,'').trim();}
+function mcColorToHex(c){return({0:'#000',1:'#00A',2:'#0A0',3:'#0AA',4:'#A00',5:'#A0A',6:'#FA0',7:'#AAA',8:'#555',9:'#55F',a:'#5F5',b:'#5FF',c:'#F55',d:'#F5F',e:'#FF5',f:'#FFF'})[c]||null;}
 function renderMCLore(raw){
-  if(!raw) return '';
-  const segments=[];
-  let cur='#AAAAAA',bold=false,italic=false,i=0;
+  if(!raw)return'';
+  const segs=[];let cur='#AAAAAA',bold=false,italic=false,i=0;
   while(i<raw.length){
     if(raw[i]==='§'&&i+1<raw.length){
       const code=raw[i+1].toLowerCase();
       const hex=mcColorToHex(code);
-      if(hex){ cur=hex; bold=false; italic=false; }
-      else if(code==='l') bold=true;
-      else if(code==='o') italic=true;
-      else if(code==='r'){ cur='#AAAAAA'; bold=false; italic=false; }
+      if(hex){cur=hex;bold=false;italic=false;}
+      else if(code==='l')bold=true;
+      else if(code==='o')italic=true;
+      else if(code==='r'){cur='#AAAAAA';bold=false;italic=false;}
       i+=2;
-    } else {
-      let j=i;
-      while(j<raw.length&&!(raw[j]==='§')) j++;
+    }else{
+      let j=i;while(j<raw.length&&raw[j]!=='§')j++;
       const txt=raw.slice(i,j);
-      if(txt) segments.push({txt,color:cur,bold,italic});
+      if(txt)segs.push({txt,color:cur,bold,italic});
       i=j;
     }
   }
-  return segments.map(s=>`<span style="color:${s.color};${s.bold?'font-family:\'JetBrains Mono\',monospace;font-weight:600;font-size:16px;':''}${s.italic?'font-style:italic;':''}">${s.txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>`).join('');
+  return segs.map(s=>`<span style="color:${s.color};${s.bold?'font-family:\'JetBrains Mono\',monospace;font-weight:600;font-size:16px;':''}${s.italic?'font-style:italic;':''}">${s.txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>`).join('');
 }
-
-function estimateFill(itemId,qty=1){
-  const p=products[itemId]; if(!p) return '?';
-  const daily=(p.quick_status.movingWeek||0)/7; if(!daily) return '?';
-  const h=(qty/daily)*24;
-  if(h<0.017) return '<1m';
-  if(h<1)     return `~${Math.round(h*60)}m`;
-  if(h<24)    return `~${h.toFixed(1)}h`;
-  return `~${(h/24).toFixed(1)}d`;
-}
-
-function setStatus(msg,type='loading'){
-  document.querySelector('#status .dot').className='dot'+(type==='ok'?' ok':type==='err'?' err':'');
-  document.getElementById('status-text').textContent=msg;
-}
+function estimateFill(id,qty=1){const p=products[id];if(!p)return'?';const d=(p.quick_status.movingWeek||0)/7;if(!d)return'?';const h=(qty/d)*24;if(h<0.017)return'<1m';if(h<1)return`~${Math.round(h*60)}m`;if(h<24)return`~${h.toFixed(1)}h`;return`~${(h/24).toFixed(1)}d`;}
+function setStatus(msg,type='loading'){document.querySelector('#status .dot').className='dot'+(type==='ok'?' ok':type==='err'?' err':'');document.getElementById('status-text').textContent=msg;}
 
 async function loadBazaar(){
   setStatus('Connecting to Hypixel...');
-  try {
+  try{
     const res=await fetch(WORKER+'/',{signal:AbortSignal.timeout(9000)});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
-    if(!data.success) throw new Error('API failure');
+    if(!data.success)throw new Error('API failure');
     products=data.products;
     updated=new Date(data.lastUpdated);
     items=Object.keys(products).map(id=>({id,name:toName(id)})).sort((a,b)=>a.name.localeCompare(b.name));
     const el=document.getElementById('search');
-    el.disabled=false;
-    el.placeholder=`Search items...`;
+    el.disabled=false;el.placeholder='Search items...';
     setStatus(`${items.length.toLocaleString()} bazaar items loaded · ${updated.toLocaleTimeString()}`,'ok');
-    renderFlips();
+    renderMarket();
     loadSBItems();
-  } catch(err){
+  }catch(err){
     setStatus(`Failed: ${err.message}`,'err');
     document.getElementById('result').innerHTML=`<div class="empty-state"><span class="empty-icon">⚠</span>Couldn't reach the API.<br><button class="retry-btn" onclick="loadBazaar()">↻ Retry</button></div>`;
   }
 }
 
 async function loadSBItems(){
-  try {
+  try{
     const res=await fetch(WORKER+'/sb-items',{signal:AbortSignal.timeout(10000)});
-    if(!res.ok) return;
+    if(!res.ok)return;
     const data=await res.json();
-    if(!data.success||!data.items) return;
+    if(!data.success||!data.items)return;
     sbAllItems=data.items.map(i=>({id:i.id,name:stripMC(i.name)||toName(i.id),tier:i.tier||''}));
     const el=document.getElementById('search');
     el.placeholder=`Search ${items.length+sbAllItems.filter(i=>!products[i.id]).length} items...`;
-  } catch(e){}
+  }catch(e){}
 }
 
 async function fetchNEU(id){
-  if(id in neuCache) return neuCache[id];
+  if(id in neuCache)return neuCache[id];
   const baseId=id.includes(':')?id.split(':')[0]:id;
   for(const v of [baseId,id]){
-    try {
-      const res=await fetch(NEU_BASE+v+'.json',{signal:AbortSignal.timeout(5000)});
-      if(res.ok){ const d=await res.json(); neuCache[id]=d; return d; }
-    } catch {}
+    try{const res=await fetch(NEU_BASE+v+'.json',{signal:AbortSignal.timeout(5000)});if(res.ok){const d=await res.json();neuCache[id]=d;return d;}}catch{}
   }
-  neuCache[id]=null; return null;
+  neuCache[id]=null;return null;
 }
 
 function cleanAHStats(history){
-  if(!Array.isArray(history)||!history.length) return null;
-  let pts=history.filter(d=>d.avg>0);
-  if(!pts.length) return null;
+  if(!Array.isArray(history)||!history.length)return null;
+  let pts=history.filter(d=>d.avg>0);if(!pts.length)return null;
   const sorted=[...pts].sort((a,b)=>a.avg-b.avg);
-  const q1=sorted[Math.floor(sorted.length*0.25)].avg;
-  const q3=sorted[Math.floor(sorted.length*0.75)].avg;
-  const iqr=q3-q1;
-  const lo=q1-2*iqr,hi=q3+2*iqr;
-  let clean=pts.filter(d=>d.avg>=lo&&d.avg<=hi);
-  if(clean.length<2) clean=pts;
-  const totalVol=clean.reduce((s,d)=>s+(d.volume||1),0);
-  const wAvg=clean.reduce((s,d)=>s+d.avg*(d.volume||1),0)/totalVol;
-  const cleanAvgs=clean.map(d=>d.avg).sort((a,b)=>a-b);
-  const mid=Math.floor(cleanAvgs.length/2);
-  const median=cleanAvgs.length%2===0?(cleanAvgs[mid-1]+cleanAvgs[mid])/2:cleanAvgs[mid];
-  const p10=cleanAvgs[Math.max(0,Math.floor(cleanAvgs.length*0.10))];
-  const cleanMin=Math.max(p10,wAvg*0.20);
-  const p90=cleanAvgs[Math.min(cleanAvgs.length-1,Math.floor(cleanAvgs.length*0.90))];
-  return {avg:Math.round(wAvg),min:Math.round(cleanMin),median:Math.round(median),max:Math.round(p90),
-    volume:totalVol,buckets:clean.length,rawBuckets:pts.length,filtered:pts.length-clean.length,cleanPts:clean};
+  const q1=sorted[Math.floor(sorted.length*.25)].avg,q3=sorted[Math.floor(sorted.length*.75)].avg,iqr=q3-q1;
+  let clean=pts.filter(d=>d.avg>=q1-2*iqr&&d.avg<=q3+2*iqr);
+  if(clean.length<2)clean=pts;
+  const tv=clean.reduce((s,d)=>s+(d.volume||1),0);
+  const wAvg=clean.reduce((s,d)=>s+d.avg*(d.volume||1),0)/tv;
+  const ca=clean.map(d=>d.avg).sort((a,b)=>a-b);
+  const mid=Math.floor(ca.length/2);
+  const median=ca.length%2===0?(ca[mid-1]+ca[mid])/2:ca[mid];
+  const p10=ca[Math.max(0,Math.floor(ca.length*.1))];
+  const p90=ca[Math.min(ca.length-1,Math.floor(ca.length*.9))];
+  return{avg:Math.round(wAvg),min:Math.round(Math.max(p10,wAvg*.2)),median:Math.round(median),max:Math.round(p90),
+    volume:tv,buckets:clean.length,rawBuckets:pts.length,filtered:pts.length-clean.length,cleanPts:clean};
 }
 
 async function fetchAHPrice(id){
-  if(ahPriceCache[id]) return ahPriceCache[id];
-  try {
-    const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=day`,{signal:AbortSignal.timeout(7000)});
-    if(res.ok){
-      const hist=await res.json();
-      const stats=cleanAHStats(hist);
-      if(stats){ ahPriceCache[id]=stats; return stats; }
-    }
-    const res2=await fetch(`${WORKER}/ah-price/${encodeURIComponent(id)}`,{signal:AbortSignal.timeout(5000)});
-    if(res2.ok){
-      const d=await res2.json();
-      if(d.min===0||d.min==null) d.min=d.avg;
-      ahPriceCache[id]=d; return d;
-    }
-  } catch {}
+  if(ahPriceCache[id])return ahPriceCache[id];
+  try{
+    const r=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=day`,{signal:AbortSignal.timeout(7000)});
+    if(r.ok){const h=await r.json();const s=cleanAHStats(h);if(s){ahPriceCache[id]=s;return s;}}
+    const r2=await fetch(`${WORKER}/ah-price/${encodeURIComponent(id)}`,{signal:AbortSignal.timeout(5000)});
+    if(r2.ok){const d=await r2.json();if(!d.min)d.min=d.avg;ahPriceCache[id]=d;return d;}
+  }catch{}
   return null;
 }
 
 async function fetchAHHistory(id,period){
-  try {
-    const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=${period}`,{signal:AbortSignal.timeout(7000)});
-    if(!res.ok) return null;
-    return await res.json();
-  } catch { return null; }
+  try{const r=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=${period}`,{signal:AbortSignal.timeout(7000)});if(!r.ok)return null;return await r.json();}catch{return null;}
+}
+
+/* ── Essence Parser ── */
+/* NEU has multiple formats depending on item:
+   1. upgrade_costs: [ {type:"ESSENCE_WITHER",amount:150}, ... ] — one object per star, flat
+   2. upgrade_costs: [ [{type:"ESSENCE_WITHER",amount:150},{type:"COINS",amount:50000}], ... ] — array of arrays
+   3. dungeon_item_conversion_cost: {essence_type:"WITHER",amount:100,coins:50000} — the initial conversion step
+   We handle all three and also scan every top-level key for anything that looks like star data.
+*/
+function parseEssenceData(neu){
+  if(!neu)return null;
+  let conversionStep=null;
+  let starSteps=[];
+  let essenceType=null;
+
+  // Step 1: check dungeon_item_conversion_cost (the "add first star" conversion)
+  const conv=neu.dungeon_item_conversion_cost;
+  if(conv&&typeof conv==='object'&&!Array.isArray(conv)){
+    const etype=(conv.essence_type||'').replace('ESSENCE_','');
+    if(etype){
+      essenceType=etype;
+      conversionStep={essAmt:conv.amount||0,coins:conv.coins||0,label:'Convert to Dungeon Item'};
+    }
+  }
+
+  // Step 2: parse upgrade_costs
+  const raw=neu.upgrade_costs;
+  if(Array.isArray(raw)&&raw.length){
+    for(const entry of raw){
+      let essAmt=0,coins=0,foundType=null;
+      // Format A: entry is a plain object {type,amount}
+      if(entry&&typeof entry==='object'&&!Array.isArray(entry)&&entry.type){
+        if(entry.type==='COINS')coins=entry.amount||0;
+        else{foundType=entry.type.replace('ESSENCE_','');essAmt=entry.amount||0;}
+      }
+      // Format B: entry is an array of cost objects
+      else if(Array.isArray(entry)){
+        for(const c of entry){
+          if(!c||!c.type)continue;
+          if(c.type==='COINS')coins=c.amount||0;
+          else{foundType=c.type.replace('ESSENCE_','');essAmt=c.amount||0;}
+        }
+      }
+      if(!essenceType&&foundType)essenceType=foundType;
+      starSteps.push({essAmt,coins});
+    }
+  }
+
+  // Step 3: if still nothing found, scan ALL keys for arrays that look like star cost lists
+  if(!essenceType&&!starSteps.length){
+    for(const key of Object.keys(neu)){
+      const val=neu[key];
+      if(!Array.isArray(val)||!val.length)continue;
+      // Check if it smells like essence cost data: array of objects with type+amount or array of arrays with same
+      const first=val[0];
+      let looksLikeEssence=false;
+      if(first&&typeof first==='object'&&!Array.isArray(first)&&first.type&&typeof first.amount==='number'){
+        if(String(first.type).includes('ESSENCE'))looksLikeEssence=true;
+      }else if(Array.isArray(first)&&first.length){
+        const fc=first[0];
+        if(fc&&fc.type&&String(fc.type).includes('ESSENCE'))looksLikeEssence=true;
+      }
+      if(!looksLikeEssence)continue;
+      for(const entry of val){
+        let essAmt=0,coins=0,foundType=null;
+        if(entry&&typeof entry==='object'&&!Array.isArray(entry)&&entry.type){
+          if(entry.type==='COINS')coins=entry.amount||0;
+          else{foundType=entry.type.replace('ESSENCE_','');essAmt=entry.amount||0;}
+        }else if(Array.isArray(entry)){
+          for(const c of entry){if(!c||!c.type)continue;if(c.type==='COINS')coins=c.amount||0;else{foundType=c.type.replace('ESSENCE_','');essAmt=c.amount||0;}}
+        }
+        if(!essenceType&&foundType)essenceType=foundType;
+        starSteps.push({essAmt,coins});
+      }
+      if(starSteps.length)break;
+    }
+  }
+
+  if(!essenceType&&!conversionStep&&!starSteps.length)return null;
+
+  return{essenceType:essenceType||'UNKNOWN',conversionStep,starSteps};
+}
+
+/* ── Floor drop detection from lore ── */
+function detectFloorDrop(neu){
+  if(!neu)return null;
+  const lore=Array.isArray(neu.lore)?neu.lore:[];
+  for(const line of lore){
+    const s=stripMC(line);
+    const m=s.match(/(?:Floor\s*(\d+)|F(\d+))/i);
+    if(m)return parseInt(m[1]||m[2]);
+    if(/Master\s*Mode/i.test(s))return'M';
+    if(/boss\s*drop/i.test(s))return'boss';
+  }
+  return null;
 }
 
 const SLOT_KEYS=['A1','A2','A3','B1','B2','B3','C1','C2','C3'];
 
 function parseRecipe(neu){
-  const raw=neu?.recipe??neu?.recipes?.[0]??null;
-  if(!raw) return null;
-  const recipeObj=(raw.A1!==undefined)?raw:(raw.recipe??null);
-  if(!recipeObj) return null;
-  const slots=SLOT_KEYS.map(k=>{
-    const v=(recipeObj[k]||'').trim();
-    if(!v||v==='null') return null;
-    const parts=v.split(':'),rawId=parts[0];
-    const n=parseInt(parts[1])||0;
-    if(!rawId) return null;
-    return {id:rawId,qty:n>1?n:1};
-  });
-  const ingMap={};
-  for(const s of slots){ if(!s) continue; ingMap[s.id]=(ingMap[s.id]||0)+s.qty; }
-  const text=stripMC(neu.crafttext||'');
-  const m=text.match(/(\d+)x/);
-  return {slots,ingMap,outQty:m?parseInt(m[1]):1};
+  const raw=neu?.recipe??neu?.recipes?.[0]??null;if(!raw)return null;
+  const ro=(raw.A1!==undefined)?raw:(raw.recipe??null);if(!ro)return null;
+  const slots=SLOT_KEYS.map(k=>{const v=(ro[k]||'').trim();if(!v||v==='null')return null;const p=v.split(':');const rawId=p[0];const n=parseInt(p[1])||0;if(!rawId)return null;return{id:rawId,qty:n>1?n:1};});
+  const ingMap={};for(const s of slots){if(!s)continue;ingMap[s.id]=(ingMap[s.id]||0)+s.qty;}
+  const text=stripMC(neu.crafttext||'');const m=text.match(/(\d+)x/);
+  return{slots,ingMap,outQty:m?parseInt(m[1]):1};
 }
 
 function craftCost(ingMap,ahPrices={}){
   const r={};
-  for(const [id,qty] of Object.entries(ingMap)){
+  for(const[id,qty]of Object.entries(ingMap)){
     const p=products[id];
-    if(p){
-      const qs=p.quick_status;
-      const ip=qs.buyPrice,op=p.sell_summary?.[0]?.pricePerUnit??qs.buyPrice;
-      r[id]={qty,ip,op,iTotal:ip*qty,oTotal:op*qty,source:'bz'};
-    } else if(ahPrices[id]){
-      const ah=ahPrices[id];
-      const ip=ah.min??ah.avg??null,op=ah.avg??ah.min??null;
-      r[id]={qty,ip,op,iTotal:ip!=null?ip*qty:null,oTotal:op!=null?op*qty:null,source:'ah'};
-    } else {
-      r[id]={qty,ip:null,op:null,iTotal:null,oTotal:null,source:'unknown'};
-    }
+    if(p){const qs=p.quick_status;const ip=qs.buyPrice,op=p.sell_summary?.[0]?.pricePerUnit??qs.buyPrice;r[id]={qty,ip,op,iTotal:ip*qty,oTotal:op*qty,source:'bz'};}
+    else if(ahPrices[id]){const ah=ahPrices[id];const ip=ah.min??ah.avg??null,op=ah.avg??ah.min??null;r[id]={qty,ip,op,iTotal:ip!=null?ip*qty:null,oTotal:op!=null?op*qty:null,source:'ah'};}
+    else r[id]={qty,ip:null,op:null,iTotal:null,oTotal:null,source:'unknown'};
   }
   return r;
 }
 
 function slotHTML(s,size=60){
-  if(!s) return `<div class="g-slot mc-slot" style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:22px">·</div>`;
-  const col=itemColor(s.id),abbr=getAbbr(s.id),name=toName(s.id);
-  const inner=Math.round(size*0.6);
-  return `<div class="g-slot mc-slot clickable" data-id="${s.id}" data-name="${name}" style="width:${size}px;height:${size}px;background:${col}18;border-color:${col}66 ${col}22 ${col}22 ${col}66;">
+  if(!s)return`<div class="g-slot mc-slot" style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:22px">·</div>`;
+  const col=itemColor(s.id),abbr=getAbbr(s.id),name=toName(s.id),inner=Math.round(size*.6);
+  return`<div class="g-slot mc-slot clickable" data-id="${s.id}" data-name="${name}" style="width:${size}px;height:${size}px;background:${col}18;border-color:${col}66 ${col}22 ${col}22 ${col}66;">
     <span class="slot-tip">${name}</span>
     <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;">
       <div class="slot-abbr" style="width:${inner}px;height:${inner}px;background:${col}38;border:2px solid ${col}66;display:flex;align-items:center;justify-content:center;color:${col};">${abbr}</div>
@@ -584,79 +574,187 @@ function slotHTML(s,size=60){
   </div>`;
 }
 
-function toggleFlip(){
-  flipOpen=!flipOpen;
-  document.getElementById('flip-body').style.display=flipOpen?'':'none';
-  document.getElementById('flip-toggle').textContent=flipOpen?'▲':'▼';
+/* ── Market Summary ── */
+function toggleMarket(){
+  marketOpen=!marketOpen;
+  document.getElementById('market-body').style.display=marketOpen?'':'none';
+  document.getElementById('market-toggle').textContent=marketOpen?'▲':'▼';
 }
 
-function setFlipSort(s){
-  flipSort=s;
-  ['spread','pct','vol'].forEach(k=>{
-    document.getElementById('fsort-'+k)?.classList.toggle('active',k===s);
-  });
-  renderFlips();
-}
-
-function renderFlips(){
-  const body=document.getElementById('flip-body');
-  if(!body) return;
-  if(!Object.keys(products).length){ body.innerHTML='<div class="flip-empty">Loading...</div>'; return; }
+function renderMarket(){
+  const body=document.getElementById('market-body');
+  if(!body||!Object.keys(products).length){body.innerHTML='<div class="market-loading">Loading...</div>';return;}
 
   const rows=Object.entries(products).map(([id,p])=>{
     const qs=p.quick_status;
-    const sellOrd=p.buy_summary?.[0]?.pricePerUnit??qs.sellPrice;
-    const buyOrd=p.sell_summary?.[0]?.pricePerUnit??qs.buyPrice;
-    const instaSell=qs.sellPrice;
-    const spread=instaSell-buyOrd;
-    const pct=buyOrd>0?(spread/buyOrd)*100:0;
-    const vol=qs.movingWeek||0;
-    return {id,name:toName(id),spread,pct,vol,instaSell,buyOrd};
-  }).filter(r=>r.spread>0&&r.vol>5000);
+    const sell=qs.sellPrice,buy=qs.buyPrice,vol=qs.movingWeek||0;
+    const spread=sell-(p.sell_summary?.[0]?.pricePerUnit??buy);
+    const pct=buy>0?(spread/buy)*100:0;
+    return{id,name:toName(id),sell,buy,vol,spread,pct};
+  });
 
-  rows.sort((a,b)=>flipSort==='pct'?b.pct-a.pct:flipSort==='vol'?b.vol-a.vol:b.spread-a.spread);
-  const top=rows.slice(0,20);
-  document.getElementById('flip-count').textContent=`(${top.length} items)`;
+  const byVol=[...rows].sort((a,b)=>b.vol-a.vol).slice(0,5);
+  const bySpread=[...rows].filter(r=>r.vol>10000).sort((a,b)=>b.pct-a.pct).slice(0,5);
 
-  if(!top.length){ body.innerHTML='<div class="flip-empty">No flippable items found.</div>'; return; }
+  function mrow(r,valKey,cls){
+    const col=itemColor(r.id);
+    const val=valKey==='vol'?short(r.vol):r.pct.toFixed(1)+'%';
+    return`<div class="market-row" onclick="pick('${r.id}')">
+      <span class="mrow-name"><span class="mrow-dot" style="background:${col}"></span>${r.name}</span>
+      <span class="mrow-val ${cls}">${val}</span>
+    </div>`;
+  }
 
-  body.innerHTML=`<table class="flip-table">
-    <thead><tr>
-      <th style="width:28px">#</th>
-      <th>ITEM</th>
-      <th class="r">BUY ORDER</th>
-      <th class="r">INSTA-SELL</th>
-      <th class="r">SPREAD</th>
-      <th class="r">MARGIN</th>
-      <th class="r">7D VOL</th>
-    </tr></thead>
-    <tbody>${top.map((r,i)=>{
-      const col=itemColor(r.id);
-      return `<tr onclick="pick('${r.id}')">
-        <td class="flip-rank">${i+1}</td>
-        <td><span class="flip-swatch" style="background:${col}"></span><span class="flip-name">${r.name}</span></td>
-        <td class="cell-r"><span class="flip-buy">${short(r.buyOrd)}</span></td>
-        <td class="cell-r"><span class="flip-sell">${short(r.instaSell)}</span></td>
-        <td class="cell-r"><span class="flip-spread">${short(r.spread)}</span></td>
-        <td class="cell-r"><span class="flip-pct">${r.pct.toFixed(1)}%</span></td>
-        <td class="cell-r"><span class="flip-vol">${short(r.vol)}</span></td>
-      </tr>`;
-    }).join('')}</tbody>
-  </table>`;
+  body.innerHTML=`<div class="market-body">
+    <div class="market-col">
+      <div class="market-col-title vol">⚡ MOST TRADED (7D)</div>
+      ${byVol.map(r=>mrow(r,'vol','vol')).join('')}
+    </div>
+    <div class="market-col">
+      <div class="market-col-title up">💰 BEST MARGINS</div>
+      ${bySpread.map(r=>mrow(r,'pct','up')).join('')}
+    </div>
+  </div>`;
 }
 
+/* ── Compare ── */
+function updateCompareBar(){
+  const bar=document.getElementById('compare-bar');
+  const slots=document.getElementById('compare-slots');
+  const btn=document.getElementById('compare-go-btn');
+  if(!compareList.length){bar.style.display='none';return;}
+  bar.style.display='block';
+  slots.innerHTML=compareList.map(id=>{
+    const name=(sbAllItems.find(i=>i.id===id)||items.find(i=>i.id===id))?.name||toName(id);
+    return`<span class="compare-chip" onclick="removeCompare('${id}')"><span>${name}</span><span class="compare-chip-x">✕</span></span>`;
+  }).join('');
+  btn.disabled=compareList.length<2;
+}
+
+function addCompare(id){
+  if(compareList.includes(id))return;
+  if(compareList.length>=4)compareList.shift();
+  compareList.push(id);
+  updateCompareBar();
+  const btn=document.querySelector('.add-compare-btn');
+  if(btn&&btn.dataset.id===id){btn.textContent='✓ ADDED';btn.classList.add('added');}
+}
+
+function removeCompare(id){
+  compareList=compareList.filter(x=>x!==id);
+  updateCompareBar();
+}
+
+async function openCompare(){
+  if(compareList.length<2)return;
+  const result=document.getElementById('result');
+  result.innerHTML=`<div class="mc-panel compare-view"><div class="compare-view-header"><div class="compare-view-title">⚖ COMPARING ${compareList.length} ITEMS</div><button class="compare-back" onclick="closeCompare()">← BACK</button></div><div class="compare-loading">Loading item data...</div></div>`;
+
+  const neuData=await Promise.all(compareList.map(id=>fetchNEU(id)));
+  const ahData=await Promise.all(compareList.map(id=>isBazaar(id)?null:fetchAHPrice(id)));
+
+  const cols=compareList.map((id,i)=>{
+    const neu=neuData[i];
+    const sbItem=sbAllItems.find(x=>x.id===id);
+    const tier=sbItem?.tier||neu?.tier||'';
+    const col=tierColor(tier);
+    const name=sbItem?.name||toName(id);
+    const p=products[id];
+    const ah=ahData[i];
+
+    const priceInstaBuy=p?p.quick_status.buyPrice:(ah?.min??ah?.avg??null);
+    const priceBuyOrder=p?(p.sell_summary?.[0]?.pricePerUnit??p.quick_status.buyPrice):(ah?.avg??null);
+    const priceInstaSell=p?p.quick_status.sellPrice:null;
+    const vol=p?p.quick_status.movingWeek:null;
+    const stats=neu?.stats||{};
+
+    return{id,name,col,tier,priceInstaBuy,priceBuyOrder,priceInstaSell,vol,stats,neu,isBZ:!!p};
+  });
+
+  const allStatKeys=[...new Set(cols.flatMap(c=>Object.keys(c.stats)))];
+  const STAT_LABELS={DAMAGE:'⚔ Damage',STRENGTH:'💪 Strength',CRIT_CHANCE:'🎯 Crit Chance',CRIT_DAMAGE:'💥 Crit Damage',ATTACK_SPEED:'⚡ Atk Speed',HEALTH:'❤ Health',DEFENSE:'🛡 Defense',SPEED:'👟 Speed',INTELLIGENCE:'🔮 Intelligence',FEROCITY:'🗡 Ferocity',TRUE_DEFENSE:'🛡 True Def',ABILITY_DAMAGE:'🌀 Ability Dmg'};
+
+  const colCount=cols.length;
+  const gridStyle=`grid-template-columns:repeat(${colCount},1fr)`;
+
+  function compRow(label,vals,format=(v=>v!=null?short(v):'—')){
+    const numVals=vals.filter(v=>v!=null&&typeof v==='number');
+    const maxVal=numVals.length?Math.max(...numVals):null;
+    const minVal=numVals.length?Math.min(...numVals):null;
+    return`<div class="compare-grid" style="${gridStyle}">
+      ${vals.map(v=>{
+        const disp=format(v);
+        let cls='same';
+        if(v!=null&&typeof v==='number'&&numVals.length>1){
+          if(v===maxVal&&maxVal!==minVal)cls='better';
+          else if(v===minVal&&maxVal!==minVal)cls='worse';
+        }
+        return`<div class="compare-stat"><span class="compare-stat-lbl">${label}</span><span class="compare-stat-val ${cls}">${disp}</span></div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  const colHeaders=`<div class="compare-grid" style="${gridStyle}">
+    ${cols.map(c=>`<div class="compare-col-head">
+      <div class="compare-col-name" style="color:${c.col}">${c.name}</div>
+      <div class="compare-col-id">${c.id}${c.tier?` · ${c.tier}`:''}</div>
+    </div>`).join('')}
+  </div>`;
+
+  const priceSection=`<div class="compare-grid" style="${gridStyle}"><div class="compare-section-lbl" style="grid-column:1/-1">💰 PRICES</div></div>`+
+    compRow('Insta-Buy',cols.map(c=>c.priceInstaBuy),v=>v!=null?full(v)+'g':'—')+
+    compRow('Buy Order / AH Avg',cols.map(c=>c.priceBuyOrder),v=>v!=null?full(v)+'g':'—')+
+    compRow('Insta-Sell',cols.map(c=>c.priceInstaSell),v=>v!=null?full(v)+'g':'N/A (AH)')+
+    compRow('7D Volume',cols.map(c=>c.vol),v=>v!=null?short(v):'N/A (AH)');
+
+  const statsSection=allStatKeys.length?`<div class="compare-grid" style="${gridStyle}"><div class="compare-section-lbl" style="grid-column:1/-1">⚔ STATS</div></div>`+
+    allStatKeys.map(k=>compRow(STAT_LABELS[k]||k.replace(/_/g,' '),cols.map(c=>c.stats[k]??null),v=>v!=null?(v>0?'+':'')+v:'—')).join(''):'';
+
+  const essenceSection=await(async()=>{
+    const parsed=cols.map(c=>c.neu?parseEssenceData(c.neu):null);
+    const anyEssence=parsed.some(x=>x);if(!anyEssence)return'';
+    const totals=parsed.map(p=>{if(!p)return null;let t=0;if(p.conversionStep)t+=p.conversionStep.essAmt;for(const s of p.starSteps)t+=s.essAmt;return t||null;});
+    return`<div class="compare-grid" style="${gridStyle}"><div class="compare-section-lbl" style="grid-column:1/-1">✦ ESSENCE</div></div>`+
+      compRow('Essence Type',parsed.map(p=>p?.essenceType??null),v=>v||'—')+
+      compRow('Total Stars',parsed.map(p=>p?p.starSteps.length:null))+
+      compRow('Total Essence to Max',totals);
+  })();
+
+  result.innerHTML=`<div class="mc-panel compare-view">
+    <div class="compare-view-header">
+      <div class="compare-view-title">⚖ COMPARING ${compareList.length} ITEMS</div>
+      <button class="compare-back" onclick="closeCompare()">← BACK</button>
+    </div>
+    ${colHeaders}${priceSection}${statsSection}${await essenceSection}
+    <div style="padding:10px 16px;font-size:14px;color:var(--muted2);border-top:1px solid var(--dk);background:rgba(0,0,0,.15)">
+      <span style="color:var(--green)">■</span> Best value &nbsp;
+      <span style="color:var(--red)">■</span> Worst value &nbsp;
+      For prices: lower insta-buy = better buy, higher insta-sell = better sell.
+    </div>
+  </div>`;
+}
+
+function closeCompare(){
+  if(currentId){if(isBazaar(currentId))renderCard(currentId);else renderAHCard(currentId);}
+  else document.getElementById('result').innerHTML='<div class="empty-state"><span class="empty-icon">⛏</span>Search for an item above to get started.</div>';
+}
+
+/* ── Render Bazaar Card ── */
 function renderCard(id){
-  const p=products[id]; if(!p) return;
-  const qs=p.quick_status;
-  const iSell=qs.sellPrice,iBuy=qs.buyPrice;
+  const p=products[id];if(!p)return;
+  const qs=p.quick_status,iSell=qs.sellPrice,iBuy=qs.buyPrice;
   const sellOrd=p.buy_summary?.[0]?.pricePerUnit,buyOrd=p.sell_summary?.[0]?.pricePerUnit;
   const spread=iBuy-(buyOrd||iBuy);
+  const isInCompare=compareList.includes(id);
 
   document.getElementById('result').innerHTML=`
   <div class="card mc-panel" id="the-card">
     <div class="card-head">
-      <div><div class="item-name">${toName(id)}</div><div class="item-id">${id}</div></div>
-      <div class="live-tag">LIVE</div>
+      <div class="card-head-left"><div class="item-name">${toName(id)}</div><div class="item-id">${id}</div></div>
+      <div class="card-head-right">
+        <div class="live-tag">LIVE</div>
+        <button class="add-compare-btn${isInCompare?' added':''}" data-id="${id}" onclick="addCompare('${id}');this.textContent='✓ ADDED';this.classList.add('added')">${isInCompare?'✓ ADDED':'+ COMPARE'}</button>
+      </div>
     </div>
     <div class="tabs">
       <button class="tab-btn active" id="tab-prices" onclick="switchTab('prices')">📊 Prices</button>
@@ -680,7 +778,7 @@ function renderCard(id){
       </div>
       <div class="fill-strip">
         <span class="fill-label">⏱ Buy order fill time:</span><span class="fill-val">${estimateFill(id,1)}</span>
-        <span class="fill-label" style="margin-left:8px">↔ Buy/Sell spread:</span><span class="fill-val gold">${full(spread)}g</span>
+        <span class="fill-label" style="margin-left:8px">↔ Spread:</span><span class="fill-val gold">${full(spread)}g</span>
       </div>
       <div class="stats-row">
         <div class="stat-cell"><div class="slabel">BUY VOL</div><div class="svalue">${short(qs.buyVolume)}</div></div>
@@ -696,7 +794,7 @@ function renderCard(id){
     <div class="tab-content" id="tc-history">
       <div class="chart-section" style="padding-top:20px">
         <div class="section-title">
-          <span>PRICE HISTORY <small style="margin-left:8px">(AH avg via Coflnet)</small></span>
+          <span>PRICE HISTORY</span>
           <div class="period-toggle">
             <button class="period-btn active" id="hbtn-day" onclick="loadBZHistory('${id}','day')">1D</button>
             <button class="period-btn" id="hbtn-week" onclick="loadBZHistory('${id}','week')">1W</button>
@@ -705,35 +803,25 @@ function renderCard(id){
         <div class="chart-wrap" id="history-wrap"><div class="craft-loading">Loading history...</div></div>
       </div>
     </div>
-    <div class="tab-content" id="tc-crafting">
-      <div class="craft-section"><div id="craft-body" class="craft-loading">Loading recipe data...</div></div>
-    </div>
-    <div class="tab-content" id="tc-essence">
-      <div class="essence-section"><div id="essence-body" class="craft-loading">Loading essence data...</div></div>
-    </div>
-    <div class="tab-content" id="tc-itemdata">
-      <div class="item-data-section"><div id="itemdata-body" class="craft-loading">Loading item data...</div></div>
-    </div>
+    <div class="tab-content" id="tc-crafting"><div class="craft-section"><div id="craft-body" class="craft-loading">Loading recipe data...</div></div></div>
+    <div class="tab-content" id="tc-essence"><div class="essence-section"><div id="essence-body" class="craft-loading">Loading essence data...</div></div></div>
+    <div class="tab-content" id="tc-itemdata"><div class="item-data-section"><div id="itemdata-body" class="craft-loading">Loading item data...</div></div></div>
     <div class="card-foot">
       <span class="updated">Updated ${updated?.toLocaleTimeString()??'—'}</span>
       <button class="refresh-btn" onclick="doRefresh()">↻ REFRESH</button>
     </div>
   </div>`;
-
-  renderDepth(p);
-  fetchNEU(id);
+  renderDepth(p);fetchNEU(id);
 }
 
 async function loadBZHistory(id,period){
-  ['day','week'].forEach(p=>{ document.getElementById('hbtn-'+p)?.classList.toggle('active',p===period); });
-  const wrap=document.getElementById('history-wrap');
-  if(!wrap) return;
+  ['day','week'].forEach(p=>{document.getElementById('hbtn-'+p)?.classList.toggle('active',p===period);});
+  const wrap=document.getElementById('history-wrap');if(!wrap)return;
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
   const data=await fetchAHHistory(id,period);
-  if(!data||!Array.isArray(data)||!data.length){ wrap.innerHTML='<div class="no-recipe" style="padding:30px">No AH history data for this item.</div>'; return; }
+  if(!data||!Array.isArray(data)||!data.length){wrap.innerHTML='<div class="no-recipe" style="padding:30px">No AH history data for this item.</div>';return;}
   wrap.innerHTML='<canvas id="history-chart"></canvas>';
-  const stats=period==='day'?cleanAHStats(data):null;
-  renderHistoryChart('history-chart',data,period,stats);
+  renderHistoryChart('history-chart',data,period,period==='day'?cleanAHStats(data):null);
 }
 
 function switchTab(t){
@@ -742,96 +830,82 @@ function switchTab(t){
     document.getElementById('tab-'+n)?.classList.toggle('active',n===t);
     document.getElementById('tc-'+n)?.classList.toggle('active',n===t);
   });
-  if(t==='crafting'&&currentId) renderCrafting(currentId);
-  if(t==='history'&&currentId)  loadBZHistory(currentId,'day');
-  if(t==='essence'&&currentId)  renderEssence(currentId);
-  if(t==='itemdata'&&currentId) renderItemData(currentId);
+  if(t==='crafting'&&currentId)renderCrafting(currentId);
+  if(t==='history'&&currentId)loadBZHistory(currentId,'day');
+  if(t==='essence'&&currentId)renderEssence(currentId);
+  if(t==='itemdata'&&currentId)renderItemData(currentId);
 }
 
+/* ── AH Card ── */
 function renderAHCard(id){
   const sbItem=sbAllItems.find(i=>i.id===id);
   const displayName=sbItem?sbItem.name:toName(id);
-  const tier=sbItem?.tier||'';
-  const col=tierColor(tier);
+  const tier=sbItem?.tier||'',col=tierColor(tier);
+  const isInCompare=compareList.includes(id);
 
   document.getElementById('result').innerHTML=`
   <div class="card mc-panel" id="the-card">
     <div class="card-head">
-      <div>
+      <div class="card-head-left">
         <div class="item-name" style="color:${col};text-shadow:2px 2px 0 ${col}44">${displayName}</div>
         <div class="item-id">${id}${tier?` · <span style="color:${col};opacity:.8">${tier}</span>`:''}</div>
       </div>
-      <div class="ah-tag">AUCTION</div>
+      <div class="card-head-right">
+        <div class="ah-tag">AUCTION</div>
+        <button class="add-compare-btn${isInCompare?' added':''}" data-id="${id}" onclick="addCompare('${id}');this.textContent='✓ ADDED';this.classList.add('added')">${isInCompare?'✓ ADDED':'+ COMPARE'}</button>
+      </div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" id="ahtab-prices"   onclick="switchAHTab('prices','${id}')">📊 Prices</button>
-      <button class="tab-btn"        id="ahtab-history"  onclick="switchAHTab('history','${id}')">📈 History</button>
-      <button class="tab-btn"        id="ahtab-crafting" onclick="switchAHTab('crafting','${id}')">⚒ Crafting</button>
-      <button class="tab-btn"        id="ahtab-essence"  onclick="switchAHTab('essence','${id}')">✦ Essence</button>
-      <button class="tab-btn"        id="ahtab-itemdata" onclick="switchAHTab('itemdata','${id}')">📜 Item Data</button>
+      <button class="tab-btn active" id="ahtab-prices" onclick="switchAHTab('prices','${id}')">📊 Prices</button>
+      <button class="tab-btn" id="ahtab-history" onclick="switchAHTab('history','${id}')">📈 History</button>
+      <button class="tab-btn" id="ahtab-crafting" onclick="switchAHTab('crafting','${id}')">⚒ Crafting</button>
+      <button class="tab-btn" id="ahtab-essence" onclick="switchAHTab('essence','${id}')">✦ Essence</button>
+      <button class="tab-btn" id="ahtab-itemdata" onclick="switchAHTab('itemdata','${id}')">📜 Item Data</button>
     </div>
-    <div class="tab-content active" id="ahtc-prices">
-      <div class="craft-loading" id="ah-price-body">Loading price data...</div>
-    </div>
+    <div class="tab-content active" id="ahtc-prices"><div class="craft-loading" id="ah-price-body">Loading price data...</div></div>
     <div class="tab-content" id="ahtc-history">
       <div class="chart-section" style="padding-top:20px">
-        <div class="section-title">
-          <span>PRICE HISTORY</span>
+        <div class="section-title"><span>PRICE HISTORY</span>
           <div class="period-toggle">
-            <button class="period-btn active" id="ahbtn-day"  onclick="loadAHHistory('${id}','day')">1D</button>
-            <button class="period-btn"        id="ahbtn-week" onclick="loadAHHistory('${id}','week')">1W</button>
+            <button class="period-btn active" id="ahbtn-day" onclick="loadAHHistory('${id}','day')">1D</button>
+            <button class="period-btn" id="ahbtn-week" onclick="loadAHHistory('${id}','week')">1W</button>
           </div>
         </div>
         <div class="chart-wrap" id="ah-history-wrap"><div class="craft-loading">Loading history...</div></div>
       </div>
     </div>
-    <div class="tab-content" id="ahtc-crafting">
-      <div class="craft-section"><div id="craft-body" class="craft-loading">Loading recipe data...</div></div>
-    </div>
-    <div class="tab-content" id="ahtc-essence">
-      <div class="essence-section"><div id="essence-body" class="craft-loading">Loading essence data...</div></div>
-    </div>
-    <div class="tab-content" id="ahtc-itemdata">
-      <div class="item-data-section"><div id="itemdata-body" class="craft-loading">Loading item data...</div></div>
-    </div>
+    <div class="tab-content" id="ahtc-crafting"><div class="craft-section"><div id="craft-body" class="craft-loading">Loading recipe data...</div></div></div>
+    <div class="tab-content" id="ahtc-essence"><div class="essence-section"><div id="essence-body" class="craft-loading">Loading essence data...</div></div></div>
+    <div class="tab-content" id="ahtc-itemdata"><div class="item-data-section"><div id="itemdata-body" class="craft-loading">Loading item data...</div></div></div>
     <div class="card-foot">
       <span class="updated">AH data via Coflnet · ${new Date().toLocaleTimeString()}</span>
       <button class="refresh-btn" onclick="pick('${id}')">↻ REFRESH</button>
     </div>
   </div>`;
-
-  loadAHPrices(id);
-  fetchNEU(id);
+  loadAHPrices(id);fetchNEU(id);
 }
 
 async function loadAHPrices(id){
-  const el=document.getElementById('ah-price-body');
-  if(!el) return;
+  const el=document.getElementById('ah-price-body');if(!el)return;
   const stats=await fetchAHPrice(id);
-  const container=el.parentElement;
-  if(!container) return;
-  if(!stats||(stats.avg==null&&stats.min==null)){
-    container.innerHTML='<div class="no-recipe">⛏ No recent AH price data found.<br><small style="font-size:14px;color:var(--muted2)">This item may not have been sold recently.</small></div>';
-    return;
-  }
+  const container=el.parentElement;if(!container)return;
+  if(!stats||(stats.avg==null&&stats.min==null)){container.innerHTML='<div class="no-recipe">⛏ No recent AH price data found.</div>';return;}
   const buckets=stats.buckets??0,rawBuckets=stats.rawBuckets??buckets,filtered=stats.filtered??0;
   const confColor=buckets>=12?'var(--green)':buckets>=4?'var(--gold)':'var(--red)';
-  const confLabel=buckets>=12?'HIGH':buckets>=4?'MEDIUM':'LOW';
   container.innerHTML=`
     <div class="ah-price-grid">
       <div class="ah-cell"><div class="plabel">Clean Min</div><div class="pvalue" style="color:var(--aqua)">${full(stats.min)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">10th pct of clean data</div></div>
-      <div class="ah-cell"><div class="plabel">Weighted Avg</div><div class="pvalue" style="color:var(--gold)">${full(stats.avg)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">volume-weighted, ${buckets}h of data</div></div>
+      <div class="ah-cell"><div class="plabel">Weighted Avg</div><div class="pvalue" style="color:var(--gold)">${full(stats.avg)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">vol-weighted, ${buckets}h data</div></div>
       <div class="ah-cell"><div class="plabel">Median</div><div class="pvalue">${full(stats.median)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">midpoint of clean hours</div></div>
     </div>
     <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="stat-cell"><div class="slabel">90TH PCT</div><div class="svalue">${short(stats.max)}</div></div>
       <div class="stat-cell"><div class="slabel">VOLUME</div><div class="svalue">${short(stats.volume)}</div></div>
       <div class="stat-cell"><div class="slabel">OUTLIERS CUT</div><div class="svalue" style="color:${filtered>0?'var(--red)':'var(--muted2)'}">${filtered}</div></div>
-      <div class="stat-cell"><div class="slabel">CONFIDENCE</div><div class="svalue" style="color:${confColor};font-size:13px">${confLabel}</div></div>
+      <div class="stat-cell"><div class="slabel">CONFIDENCE</div><div class="svalue" style="color:${confColor};font-size:13px">${buckets>=12?'HIGH':buckets>=4?'MED':'LOW'}</div></div>
     </div>
     <div style="padding:10px 20px;border-top:1px solid var(--dk);background:rgba(0,0,0,.15);font-size:14px;color:var(--muted2);line-height:1.6">
-      Prices cleaned via IQR filter across ${rawBuckets} hourly buckets${filtered>0?` · <span style="color:var(--red)">${filtered} outlier hour${filtered!==1?'s':''} removed</span>`:''}.
-      Raw min/max ignored — use <strong style="color:var(--muted)">📈 History</strong> to see full trend.
+      IQR-cleaned across ${rawBuckets} hourly buckets${filtered>0?` · <span style="color:var(--red)">${filtered} outlier${filtered!==1?'s':''} removed</span>`:''}.
     </div>`;
 }
 
@@ -840,169 +914,122 @@ function switchAHTab(t,id){
     document.getElementById('ahtab-'+n)?.classList.toggle('active',n===t);
     document.getElementById('ahtc-'+n)?.classList.toggle('active',n===t);
   });
-  if(t==='history')  loadAHHistory(id,'day');
-  if(t==='crafting') renderCrafting(id);
-  if(t==='essence')  renderEssence(id);
-  if(t==='itemdata') renderItemData(id);
+  if(t==='history')loadAHHistory(id,'day');
+  if(t==='crafting')renderCrafting(id);
+  if(t==='essence')renderEssence(id);
+  if(t==='itemdata')renderItemData(id);
 }
 
 async function loadAHHistory(id,period){
-  ['day','week'].forEach(p=>{ document.getElementById('ahbtn-'+p)?.classList.toggle('active',p===period); });
-  const wrap=document.getElementById('ah-history-wrap');
-  if(!wrap) return;
+  ['day','week'].forEach(p=>{document.getElementById('ahbtn-'+p)?.classList.toggle('active',p===period);});
+  const wrap=document.getElementById('ah-history-wrap');if(!wrap)return;
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
   const raw=await fetchAHHistory(id,period);
-  if(!raw||!Array.isArray(raw)||!raw.length){ wrap.innerHTML='<div class="no-recipe" style="padding:30px">No history data available.</div>'; return; }
+  if(!raw||!Array.isArray(raw)||!raw.length){wrap.innerHTML='<div class="no-recipe" style="padding:30px">No history data available.</div>';return;}
   wrap.innerHTML='<canvas id="ah-history-chart"></canvas>';
-  if(period==='day'){ const stats=cleanAHStats(raw); renderHistoryChart('ah-history-chart',raw,period,stats); }
-  else { renderHistoryChart('ah-history-chart',raw,period,null); }
+  renderHistoryChart('ah-history-chart',raw,period,period==='day'?cleanAHStats(raw):null);
 }
 
 function renderHistoryChart(canvasId,rawData,period,stats=null){
   if(chartInst){chartInst.destroy();chartInst=null;}
-  const ctx=document.getElementById(canvasId);
-  if(!ctx) return;
+  const ctx=document.getElementById(canvasId);if(!ctx)return;
   let cleanSet=null;
-  if(stats?.cleanPts){ const ct=new Set(stats.cleanPts.map(d=>d.time)); cleanSet=ct; }
-  const labels=rawData.map(d=>{
-    const dt=new Date(d.time);
-    return period==='day'?dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):dt.toLocaleDateString([],{month:'short',day:'numeric'});
-  });
+  if(stats?.cleanPts){cleanSet=new Set(stats.cleanPts.map(d=>d.time));}
+  const labels=rawData.map(d=>{const dt=new Date(d.time);return period==='day'?dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):dt.toLocaleDateString([],{month:'short',day:'numeric'});});
   const avgClean=rawData.map(d=>(!cleanSet||cleanSet.has(d.time))?d.avg:null);
   const avgDirty=rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?d.avg:null);
   const minData=rawData.map(d=>(!cleanSet||cleanSet.has(d.time))?(d.min>0?d.min:null):null);
   const maxData=rawData.map(d=>(!cleanSet||cleanSet.has(d.time))?d.max:null);
-  const datasets=[
-    {label:'Max',data:maxData,borderColor:'rgba(255,85,85,0)',backgroundColor:'rgba(255,85,85,.06)',fill:'+1',tension:.3,pointRadius:0,borderWidth:0,spanGaps:true},
-    {label:'Min',data:minData,borderColor:'rgba(85,255,85,0)',backgroundColor:'rgba(85,255,85,.06)',fill:false,tension:.3,pointRadius:0,borderWidth:0,spanGaps:true},
-    {label:'Avg',data:avgClean,borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.08)',fill:false,tension:.3,pointRadius:0,borderWidth:2.5,spanGaps:false},
-    {label:'Outlier',data:avgDirty,borderColor:'rgba(255,85,85,.0)',backgroundColor:'rgba(255,85,85,.5)',pointRadius:rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?4:0),pointStyle:'crossRot',showLine:false,tension:0},
-  ];
-  if(!cleanSet){
-    datasets.length=0;
-    datasets.push(
+  let datasets;
+  if(cleanSet){
+    datasets=[
+      {label:'Max',data:maxData,borderColor:'rgba(255,85,85,0)',backgroundColor:'rgba(255,85,85,.06)',fill:'+1',tension:.3,pointRadius:0,borderWidth:0,spanGaps:true},
+      {label:'Min',data:minData,borderColor:'rgba(85,255,85,0)',backgroundColor:'rgba(85,255,85,.06)',fill:false,tension:.3,pointRadius:0,borderWidth:0,spanGaps:true},
+      {label:'Avg',data:avgClean,borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.08)',fill:false,tension:.3,pointRadius:0,borderWidth:2.5,spanGaps:false},
+      {label:'Outlier',data:avgDirty,borderColor:'transparent',backgroundColor:'rgba(255,85,85,.5)',pointRadius:rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?4:0),pointStyle:'crossRot',showLine:false},
+    ];
+  }else{
+    datasets=[
       {label:'Avg',data:rawData.map(d=>d.avg),borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
       {label:'Min',data:rawData.map(d=>d.min>0?d.min:null),borderColor:'#55ff5566',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4],spanGaps:true},
-      {label:'Max',data:rawData.map(d=>d.max),borderColor:'#ff555566',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4]}
-    );
+      {label:'Max',data:rawData.map(d=>d.max),borderColor:'#ff555566',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4]},
+    ];
   }
-  chartInst=new Chart(ctx,{
-    type:'line',data:{labels,datasets},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
-        filter:item=>item.dataset.label!=='Outlier'||item.parsed.y!=null,
-        callbacks:{label:c=>{if(c.parsed.y==null)return null;if(c.dataset.label==='Outlier')return `⚠ Outlier: ${short(c.parsed.y)}`;return `${c.dataset.label}: ${short(c.parsed.y)}`;}}
-      }},
-      scales:{x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
-        y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}
-      }
-    }
-  });
+  chartInst=new Chart(ctx,{type:'line',data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
+      filter:item=>item.dataset.label!=='Outlier'||item.parsed.y!=null,
+      callbacks:{label:c=>{if(c.parsed.y==null)return null;if(c.dataset.label==='Outlier')return`⚠ Outlier: ${short(c.parsed.y)}`;return`${c.dataset.label}: ${short(c.parsed.y)}`;}}
+    }},
+    scales:{x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
+      y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}}
+  }});
 }
 
 function renderDepth(p){
-  const buys=(p.buy_summary||[]).slice(0,20).reverse();
-  const sells=(p.sell_summary||[]).slice(0,20);
+  const buys=(p.buy_summary||[]).slice(0,20).reverse(),sells=(p.sell_summary||[]).slice(0,20);
   let cB=0,cS=0,bL=[],bV=[],sL=[],sV=[];
   for(const o of buys){cB+=o.amount;bL.push(Math.round(o.pricePerUnit).toLocaleString());bV.push(cB);}
   for(const o of sells){cS+=o.amount;sL.push(Math.round(o.pricePerUnit).toLocaleString());sV.push(cS);}
-  const labels=[...bL,...sL];
-  const buyD=[...bV,...new Array(sL.length).fill(null)];
-  const sellD=[...new Array(bL.length).fill(null),...sV];
   if(chartInst){chartInst.destroy();chartInst=null;}
-  const ctx=document.getElementById('depth-chart');
-  if(!ctx) return;
-  chartInst=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets:[
-      {label:'Buy',data:buyD,borderColor:'#55ff55',backgroundColor:'rgba(85,255,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false},
-      {label:'Sell',data:sellD,borderColor:'#ff5555',backgroundColor:'rgba(255,85,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
-        callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toLocaleString()??''}`}
-      }},
-      scales:{x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:7,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
-        y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}
-      }
-    }
-  });
+  const ctx=document.getElementById('depth-chart');if(!ctx)return;
+  chartInst=new Chart(ctx,{type:'line',data:{labels:[...bL,...sL],datasets:[
+    {label:'Buy',data:[...bV,...new Array(sL.length).fill(null)],borderColor:'#55ff55',backgroundColor:'rgba(85,255,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false},
+    {label:'Sell',data:[...new Array(bL.length).fill(null),...sV],borderColor:'#ff5555',backgroundColor:'rgba(255,85,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toLocaleString()??''}`}}},
+    scales:{x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:7,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
+      y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}}
+  }});
 }
 
+/* ── Crafting ── */
 async function renderCrafting(id){
-  const el=document.getElementById('craft-body');
-  if(!el) return;
-  el.className='craft-loading'; el.textContent='Loading recipe data...';
+  const el=document.getElementById('craft-body');if(!el)return;
+  el.className='craft-loading';el.textContent='Loading recipe data...';
   const neu=await fetchNEU(id);
   if(!neu){el.className='no-recipe';el.innerHTML='⛏ No item data found in NEU repo.';return;}
   const recipe=parseRecipe(neu);
-  if(!recipe){el.className='no-recipe';el.innerHTML='⛏ This item has no crafting recipe in the NEU repo.';return;}
-  const {slots,ingMap,outQty}=recipe;
+  if(!recipe){el.className='no-recipe';el.innerHTML='⛏ This item has no crafting recipe.';return;}
+  const{slots,ingMap,outQty}=recipe;
   const ahIngIds=Object.keys(ingMap).filter(iid=>!products[iid]);
   const ahPrices={};
-  if(ahIngIds.length){
-    el.textContent=`Loading recipe data... (fetching ${ahIngIds.length} AH prices)`;
-    await Promise.all(ahIngIds.map(async iid=>{ const p=await fetchAHPrice(iid); if(p) ahPrices[iid]=p; }));
-  }
+  if(ahIngIds.length){el.textContent=`Loading recipe... (fetching ${ahIngIds.length} AH prices)`;await Promise.all(ahIngIds.map(async iid=>{const p=await fetchAHPrice(iid);if(p)ahPrices[iid]=p;}));}
   const costs=craftCost(ingMap,ahPrices);
   const dispName=stripMC(neu.displayname)||toName(id);
   let iTotal=0,oTotal=0,allKnown=true;
-  for(const c of Object.values(costs)){
-    if(c.iTotal!==null) iTotal+=c.iTotal; else allKnown=false;
-    if(c.oTotal!==null) oTotal+=c.oTotal;
-  }
+  for(const c of Object.values(costs)){if(c.iTotal!==null)iTotal+=c.iTotal;else allKnown=false;if(c.oTotal!==null)oTotal+=c.oTotal;}
   let sellI=null,sellO=null;
-  if(products[id]){
-    const p=products[id];
-    sellI=p.quick_status.sellPrice*outQty;
-    sellO=(p.buy_summary?.[0]?.pricePerUnit??p.quick_status.sellPrice)*outQty;
-  } else {
-    const ahp=await fetchAHPrice(id);
-    if(ahp?.min!=null) sellI=ahp.min*outQty;
-    if(ahp?.avg!=null) sellO=ahp.avg*outQty;
-  }
+  if(products[id]){const p=products[id];sellI=p.quick_status.sellPrice*outQty;sellO=(p.buy_summary?.[0]?.pricePerUnit??p.quick_status.sellPrice)*outQty;}
+  else{const ahp=await fetchAHPrice(id);if(ahp?.min!=null)sellI=ahp.min*outQty;if(ahp?.avg!=null)sellO=ahp.avg*outQty;}
   const oc=itemColor(id),oa=getAbbr(id);
-  const outSlotHTML=`<div class="out-slot mc-slot" onclick="pick('${id}')" style="position:relative;background:${oc}18;border-color:${oc}66 ${oc}22 ${oc}22 ${oc}66;" title="${toName(id)}">
+  const outSlotHTML=`<div class="out-slot mc-slot" onclick="pick('${id}')" style="position:relative;background:${oc}18;border-color:${oc}66 ${oc}22 ${oc}22 ${oc}66;">
     <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
       <div class="slot-abbr" style="width:46px;height:46px;background:${oc}44;border:2px solid ${oc}88;display:flex;align-items:center;justify-content:center;color:${oc};font-size:13px;">${oa}</div>
       ${outQty>1?`<span class="slot-qty" style="font-size:13px">${outQty}</span>`:''}
     </div>
   </div>`;
   const ingRows=Object.entries(costs).map(([iid,c])=>{
-    const ft=estimateFill(iid,c.qty);
-    const col=itemColor(iid);
-    const isAH=c.source==='ah';
-    const badge=isAH?`<span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--blue);border:1px solid #334488;padding:1px 4px;margin-left:6px;background:rgba(85,153,255,.08)">AH</span>`:'';
-    const iC=c.iTotal!==null?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
-    const oC=c.oTotal!==null?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
-    return `<tr class="ing-row" onclick="pick('${iid}')">
-      <td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span>${badge}</td>
-      <td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td>
-      <td class="cell-r">${iC}</td><td class="cell-r">${oC}</td>
-      <td class="cell-r"><span class="fill-t">${ft}</span></td>
-    </tr>`;
+    const ft=estimateFill(iid,c.qty),col=itemColor(iid),isAH=c.source==='ah';
+    const badge=isAH?`<span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--blue);border:1px solid #334488;padding:1px 4px;margin-left:6px">AH</span>`:'';
+    const iC=c.iTotal!=null?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
+    const oC=c.oTotal!=null?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
+    return`<tr class="ing-row" onclick="pick('${iid}')"><td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span>${badge}</td><td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td><td class="cell-r">${iC}</td><td class="cell-r">${oC}</td><td class="cell-r"><span class="fill-t">${ft}</span></td></tr>`;
   }).join('');
   function pCard(label,cost,sell,best=false){
-    if(cost===null||sell===null) return `<div class="ps"><div class="ps-lbl">${label}</div><div class="ps-val" style="color:var(--muted2)">N/A</div></div>`;
-    const profit=sell-cost,pct=cost>0?((profit/cost)*100).toFixed(1):'—';
-    const cls=profit>=0?'pos':'neg',sign=profit>=0?'+':'';
-    return `<div class="ps">${best&&profit>0?'<span class="ps-best">BEST</span>':''}
-      <div class="ps-lbl">${label}</div>
-      <div class="ps-val ${cls}">${sign}${short(profit)}</div>
-      <div class="ps-pct" style="color:${profit>=0?'var(--green)':'var(--red)'}">${sign}${pct}%</div>
-    </div>`;
+    if(cost===null||sell===null)return`<div class="ps"><div class="ps-lbl">${label}</div><div class="ps-val" style="color:var(--muted2)">N/A</div></div>`;
+    const profit=sell-cost,pct=cost>0?((profit/cost)*100).toFixed(1):'—',cls=profit>=0?'pos':'neg',sign=profit>=0?'+':'';
+    return`<div class="ps">${best&&profit>0?'<span class="ps-best">BEST</span>':''}<div class="ps-lbl">${label}</div><div class="ps-val ${cls}">${sign}${short(profit)}</div><div class="ps-pct" style="color:${profit>=0?'var(--green)':'var(--red)'}">${sign}${pct}%</div></div>`;
   }
   const isBZ=!!products[id];
   const scenarios=[
-    {label:isBZ?'Order mats → Insta-sell':'Order/AH mats → Min AH',cost:allKnown?oTotal:null,sell:sellI},
-    {label:isBZ?'Order mats → Sell order':'Order/AH mats → Avg AH',cost:allKnown?oTotal:null,sell:sellO},
-    {label:isBZ?'Insta-buy mats → Insta-sell':'Min BIN mats → Min AH',cost:allKnown?iTotal:null,sell:sellI},
-    {label:isBZ?'Insta-buy mats → Sell order':'Min BIN mats → Avg AH',cost:allKnown?iTotal:null,sell:sellO},
+    {label:isBZ?'Order mats → Insta-sell':'Order/AH → Min AH',cost:allKnown?oTotal:null,sell:sellI},
+    {label:isBZ?'Order mats → Sell order':'Order/AH → Avg AH',cost:allKnown?oTotal:null,sell:sellO},
+    {label:isBZ?'Insta-buy → Insta-sell':'Min BIN → Min AH',cost:allKnown?iTotal:null,sell:sellI},
+    {label:isBZ?'Insta-buy → Sell order':'Min BIN → Avg AH',cost:allKnown?iTotal:null,sell:sellO},
   ];
   let bestIdx=-1,bestProfit=-Infinity;
   scenarios.forEach((s,i)=>{if(s.cost!==null&&s.sell!==null){const p=s.sell-s.cost;if(p>bestProfit){bestProfit=p;bestIdx=i;}}});
-  const hasAHIngs=Object.values(costs).some(c=>c.source==='ah');
-  const ahNote=hasAHIngs?`<div style="padding:8px 20px 0;font-size:14px;color:var(--muted2)"><span style="color:var(--blue)">■</span> Blue costs = AH prices (Coflnet avg). <span style="color:var(--aqua)">■</span> Cyan = AH avg sell price.</div>`:'';
   el.className='';
   el.innerHTML=`
     <div class="section-title" style="margin-bottom:16px">CRAFTING RECIPE — ${dispName.toUpperCase()} ${outQty>1?`× ${outQty}`:''}</div>
@@ -1011,322 +1038,244 @@ async function renderCrafting(id){
       <div class="craft-arrow"><svg width="26" height="18" viewBox="0 0 26 18"><polygon points="0,4 15,4 15,0 26,9 15,18 15,14 0,14" fill="currentColor"/></svg>${outQty>1?`<span>×${outQty}</span>`:''}</div>
       ${outSlotHTML}
     </div>
-    <div class="section-title">INGREDIENT COSTS <small>(CLICK ANY ROW OR SLOT TO VIEW ITEM)</small></div>
+    <div class="section-title">INGREDIENT COSTS <small style="font-size:6px;opacity:.7">(CLICK ROW OR SLOT TO VIEW)</small></div>
     <table class="ing-table">
-      <thead><tr><th>ITEM</th><th class="r">QTY</th><th class="r">INSTA-BUY</th><th class="r">BUY ORDER</th><th class="r">EST. FILL</th></tr></thead>
+      <thead><tr><th>ITEM</th><th class="r">QTY</th><th class="r">INSTA-BUY</th><th class="r">BUY ORDER</th><th class="r">FILL</th></tr></thead>
       <tbody>${ingRows}</tbody>
-      <tfoot><tr>
-        <td colspan="2"><span class="total-lbl">TOTAL CRAFT COST</span></td>
-        <td class="cell-r"><span class="price-i" style="font-size:18px">${allKnown?short(iTotal):'~'+short(iTotal)}</span></td>
-        <td class="cell-r"><span class="price-o" style="font-size:18px">${allKnown?short(oTotal):'~'+short(oTotal)}</span></td>
-        <td></td>
-      </tr></tfoot>
+      <tfoot><tr><td colspan="2"><span class="total-lbl">TOTAL</span></td><td class="cell-r"><span class="price-i" style="font-size:18px">${allKnown?short(iTotal):'~'+short(iTotal)}</span></td><td class="cell-r"><span class="price-o" style="font-size:18px">${allKnown?short(oTotal):'~'+short(oTotal)}</span></td><td></td></tr></tfoot>
     </table>
-    ${ahNote}
-    <div class="profit-box">
-      <div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div>
-      <div class="profit-grid">${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}</div>
-    </div>`;
-  el.querySelectorAll('.g-slot.clickable').forEach(sl=>sl.addEventListener('click',()=>{ const tid=sl.dataset.id; if(tid) pick(tid); }));
+    <div class="profit-box"><div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div><div class="profit-grid">${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}</div></div>`;
+  el.querySelectorAll('.g-slot.clickable').forEach(sl=>sl.addEventListener('click',()=>{const tid=sl.dataset.id;if(tid)pick(tid);}));
 }
 
-const ESSENCE_ICONS={
-  WITHER:'💀',SPIDER:'🕷',UNDEAD:'☠',DRAGON:'🐉',GOLD:'✨',
-  DIAMOND:'💎',ICE:'❄',CRIMSON:'🔥',DWARVEN:'⛏'
-};
-
-const MASTER_STAR_REQS=[
-  {label:'Floor 6 Cata',val:'Catacombs 24'},
-  {label:'Floor 7 Cata',val:'Catacombs 27'},
-  {label:'Floor 7 Cata',val:'Catacombs 30'},
-  {label:'Floor 7 Cata',val:'Catacombs 33'},
-  {label:'Floor 7 Cata',val:'Catacombs 36'},
-];
+/* ── Essence Tab ── */
+const ESSENCE_ICONS={WITHER:'💀',SPIDER:'🕷',UNDEAD:'☠',DRAGON:'🐉',GOLD:'✨',DIAMOND:'💎',ICE:'❄',CRIMSON:'🔥',DWARVEN:'⛏',JUNGLE:'🌿',WOODED:'🌲'};
+const ESSENCE_COLORS={WITHER:'#aa44ff',SPIDER:'#886644',UNDEAD:'#55ff55',DRAGON:'#ff5555',GOLD:'#ffaa00',DIAMOND:'#55ffff',ICE:'#aaddff',CRIMSON:'#ff6600',DWARVEN:'#ffcc33',JUNGLE:'#55ff55',WOODED:'#8B6431'};
+const MASTER_REQS=['Catacombs 24','Catacombs 27','Catacombs 30','Catacombs 33','Catacombs 36'];
 
 async function renderEssence(id){
-  const el=document.getElementById('essence-body');
-  if(!el) return;
-  el.className='craft-loading'; el.textContent='Loading essence data...';
-
+  const el=document.getElementById('essence-body');if(!el)return;
+  el.className='craft-loading';el.textContent='Loading essence data...';
   const neu=await fetchNEU(id);
-  if(!neu){ el.className='no-recipe'; el.innerHTML='⛏ No item data found in NEU repo.'; return; }
+  if(!neu){el.className='no-recipe';el.innerHTML='⛏ No item data found in NEU repo.';return;}
 
-  const upgradeCosts=neu.upgrade_costs??neu.dungeon_item_conversion_cost??null;
+  const parsed=parseEssenceData(neu);
 
-  if(!upgradeCosts||!Array.isArray(upgradeCosts)||!upgradeCosts.length){
+  if(!parsed){
     el.className='no-recipe';
     el.innerHTML=`⛏ This item cannot be upgraded with essence.<br><small style="font-size:14px;color:var(--muted2)">Only dungeon-eligible equipment can be starred up.</small>`;
     return;
   }
 
-  let essenceType=null;
-  let starsData=[];
-
-  for(const starEntry of upgradeCosts){
-    if(!Array.isArray(starEntry)){ continue; }
-    for(const cost of starEntry){
-      if(cost.type&&cost.type!=='COINS'){
-        essenceType=cost.type.replace('ESSENCE_','');
-        break;
-      }
-    }
-    if(essenceType) break;
-  }
-
-  if(!essenceType){
-    for(const starEntry of upgradeCosts){
-      if(typeof starEntry==='object'&&!Array.isArray(starEntry)&&starEntry.type){
-        essenceType=starEntry.type.replace('ESSENCE_','');
-        break;
-      }
-    }
-  }
-
-  for(let i=0;i<upgradeCosts.length;i++){
-    const starEntry=upgradeCosts[i];
-    let essAmt=0,coins=0;
-    const arr=Array.isArray(starEntry)?starEntry:[starEntry];
-    for(const c of arr){
-      if(!c||!c.type) continue;
-      if(c.type==='COINS') coins=c.amount||0;
-      else essAmt=c.amount||0;
-      if(!essenceType&&c.type!=='COINS') essenceType=c.type.replace('ESSENCE_','');
-    }
-    starsData.push({star:i+1,essAmt,coins});
-  }
-
-  const bzEssId=essenceType?`ESSENCE_${essenceType}`:null;
-  const essProduct=bzEssId?products[bzEssId]:null;
+  const{essenceType,conversionStep,starSteps}=parsed;
+  const bzEssId=`ESSENCE_${essenceType}`;
+  const essProduct=products[bzEssId]||null;
   const essInstaBuy=essProduct?.quick_status?.buyPrice??null;
   const essBuyOrder=essProduct?.sell_summary?.[0]?.pricePerUnit??essProduct?.quick_status?.buyPrice??null;
 
+  const essCol=ESSENCE_COLORS[essenceType]||'#aaaaaa';
+  const essIcon=ESSENCE_ICONS[essenceType]||'✨';
+
+  // detect floor drop from lore
+  const floorDrop=detectFloorDrop(neu);
+  let floorHTML='';
+  if(floorDrop!=null){
+    const floorLabel=floorDrop==='M'?'Master Mode':floorDrop==='boss'?'Boss Drop':`Floor ${floorDrop}`;
+    floorHTML=`<div class="floor-badge">🏰 <span>DROPS FROM: ${floorLabel.toUpperCase()}</span></div>`;
+  }
+
+  const isMaster=starSteps.length>5;
+  const baseStars=starSteps.slice(0,5);
+  const masterStars=starSteps.slice(5);
+
   let cumEss=0,cumCostI=0,cumCostO=0;
 
-  const isMaster=starsData.length>5;
-  const baseStars=starsData.slice(0,5);
-  const masterStars=starsData.slice(5);
+  function buildStarHTML(stars,base){
+    return stars.map((entry,idx)=>{
+      const globalStar=base?idx+1:5+idx+1;
+      const{essAmt,coins}=entry;
+      cumEss+=essAmt;
+      const rowCostI=essInstaBuy!=null?Math.round(essAmt*essInstaBuy+coins):null;
+      const rowCostO=essBuyOrder!=null?Math.round(essAmt*essBuyOrder+coins):null;
+      if(rowCostI!=null)cumCostI+=rowCostI;
+      if(rowCostO!=null)cumCostO+=rowCostO;
 
-  function starRow(entry,idx,isMasterStar){
-    const {star,essAmt,coins}=entry;
-    cumEss+=essAmt;
-    const rowCostI=essInstaBuy!=null?Math.round(essAmt*essInstaBuy+coins):null;
-    const rowCostO=essBuyOrder!=null?Math.round(essAmt*essBuyOrder+coins):null;
-    if(rowCostI!=null) cumCostI+=rowCostI;
-    if(rowCostO!=null) cumCostO+=rowCostO;
-    const starsBefore=Array.from({length:star-1},(_,i)=>i<5?`<span class="star-gold">★</span>`:`<span class="star-master">✦</span>`).join('');
-    const thisStar=isMasterStar?`<span class="star-master">✦</span>`:`<span class="star-gold">★</span>`;
-    const starsAfter=Array.from({length:(isMasterStar?10:5)-star},()=>`<span class="star-plain">☆</span>`).join('');
-    const starDisp=starsBefore+thisStar+starsAfter;
-    const reqLabel=isMasterStar&&idx<MASTER_STAR_REQS.length?`<span class="ess-req">${MASTER_STAR_REQS[idx].val}</span>`:'—';
-    return `<tr class="${isMasterStar?'master-star':''}">
-      <td><div class="star-cell">${starDisp}</div></td>
-      <td class="cell-r"><span class="ess-amt">${essAmt.toLocaleString()}</span>${coins>0?`<br><span style="font-size:12px;color:var(--gold)">${short(coins)}g</span>`:''}</td>
-      <td class="cell-r">${rowCostI!=null?`<span class="ess-cost-i">${short(rowCostI)}</span>`:'<span class="price-na">—</span>'}</td>
-      <td class="cell-r">${rowCostO!=null?`<span class="ess-cost-o">${short(rowCostO)}</span>`:'<span class="price-na">—</span>'}</td>
-      <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
-      <td class="cell-r">${reqLabel}</td>
+      // Build star display — filled up to current star
+      let starDisp='';
+      for(let s=1;s<=10;s++){
+        if(s>5){starDisp+=s<=globalStar?`<span class="star-master">✦</span>`:`<span class="star-plain">✦</span>`;}
+        else{starDisp+=s<=globalStar?`<span class="star-gold">★</span>`:`<span class="star-plain">★</span>`;}
+      }
+
+      const reqLabel=!base&&idx<MASTER_REQS.length?`<span class="ess-req">${MASTER_REQS[idx]}</span>`:'<span class="ess-req" style="color:var(--muted2)">—</span>';
+      const isMasterRow=!base;
+
+      return`<tr class="${isMasterRow?'master-star-row':''}">
+        <td><div class="star-cell">${starDisp}</div></td>
+        <td class="cell-r"><span class="ess-amt">${essAmt.toLocaleString()}</span>${coins>0?`<br><span style="font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace">${short(coins)}g</span>`:''}</td>
+        <td class="cell-r">${rowCostI!=null?`<span class="ess-cost-i">${short(rowCostI)}</span>`:'<span class="price-na">—</span>'}</td>
+        <td class="cell-r">${rowCostO!=null?`<span class="ess-cost-o">${short(rowCostO)}</span>`:'<span class="price-na">—</span>'}</td>
+        <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
+        <td class="cell-r">${reqLabel}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Build conversion step row if present
+  let convRow='';
+  if(conversionStep){
+    const ci=essInstaBuy!=null?Math.round(conversionStep.essAmt*essInstaBuy+conversionStep.coins):null;
+    const co=essBuyOrder!=null?Math.round(conversionStep.essAmt*essBuyOrder+conversionStep.coins):null;
+    cumEss+=conversionStep.essAmt;
+    if(ci!=null)cumCostI+=ci;
+    if(co!=null)cumCostO+=co;
+    let starDisp='<span class="star-gold" style="font-size:14px">★</span>'+'<span class="star-plain" style="font-size:14px">★★★★★★★★★</span>';
+    convRow=`<tr class="conv-row">
+      <td><div class="star-cell">${starDisp}</div><div style="font-size:11px;color:var(--blue);font-family:'Press Start 2P',monospace;margin-top:2px">CONVERT</div></td>
+      <td class="cell-r"><span class="ess-amt">${conversionStep.essAmt.toLocaleString()}</span>${conversionStep.coins>0?`<br><span style="font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace">${short(conversionStep.coins)}g</span>`:''}</td>
+      <td class="cell-r">${ci!=null?`<span class="ess-cost-i">${short(ci)}</span>`:'<span class="price-na">—</span>'}</td>
+      <td class="cell-r">${co!=null?`<span class="ess-cost-o">${short(co)}</span>`:'<span class="price-na">—</span>'}</td>
+      <td class="cell-r"><span class="ess-cum">${conversionStep.essAmt.toLocaleString()}</span></td>
+      <td class="cell-r"><span class="ess-req">—</span></td>
     </tr>`;
   }
 
-  const baseRows=baseStars.map((e,i)=>starRow(e,i,false)).join('');
-  const masterRows=masterStars.map((e,i)=>starRow(e,i,true)).join('');
+  const baseRows=buildStarHTML(baseStars,true);
+  const masterRows=buildStarHTML(masterStars,false);
 
-  const essColor=({WITHER:'#aa44ff',SPIDER:'#886644',UNDEAD:'#55ff55',DRAGON:'#ff5555',
-    GOLD:'#ffaa00',DIAMOND:'#55ffff',ICE:'#aaddff',CRIMSON:'#ff6600',DWARVEN:'#ffcc33'})[essenceType]||'#aaaaaa';
+  const totalStars=(conversionStep?1:0)+starSteps.length;
 
   el.className='';
   el.innerHTML=`
+    ${floorHTML}
     <div class="essence-header">
-      <div class="essence-icon">${ESSENCE_ICONS[essenceType]||'✨'}</div>
+      <div class="essence-icon">${essIcon}</div>
       <div class="essence-meta">
-        <div class="essence-type" style="color:${essColor}">${essenceType||'UNKNOWN'} ESSENCE</div>
-        <div class="essence-sub">${starsData.length} upgradeable star${starsData.length!==1?'s':''} · ${isMaster?'Base + Master stars':'Base stars only'}</div>
+        <div class="essence-type" style="color:${essCol}">${essenceType} ESSENCE</div>
+        <div class="essence-sub">${totalStars} upgrade step${totalStars!==1?'s':''} · ${isMaster?'Base + Master stars':'Base stars only'}${conversionStep?' · includes conversion':''}</div>
       </div>
       ${essProduct?`<div class="essence-bz-price">
         <div class="essence-bz-label">BZ INSTA-BUY</div>
-        <div class="essence-bz-val">${short(essInstaBuy)}<span class="coin" style="font-size:12px;color:var(--gold);margin-left:3px">g</span></div>
+        <div class="essence-bz-val">${short(essInstaBuy)}<span style="font-size:12px;color:var(--gold);margin-left:3px">g</span></div>
         <div style="font-size:12px;color:var(--muted2);margin-top:1px">order: ${short(essBuyOrder)}g</div>
-      </div>`:`<div class="essence-bz-price"><div class="essence-bz-label">BZ PRICE</div><div class="essence-bz-val" style="color:var(--muted2)">N/A</div></div>`}
+      </div>`:`<div class="essence-bz-price"><div class="essence-bz-label">BZ PRICE</div><div class="essence-bz-val" style="color:var(--gold)">AH ONLY</div></div>`}
     </div>
     <table class="essence-table">
       <thead><tr>
         <th>STARS</th>
-        <th class="r">ESSENCE / COINS</th>
+        <th class="r">ESSENCE + COINS</th>
         <th class="r">INSTA-BUY COST</th>
         <th class="r">BUY ORDER COST</th>
         <th class="r">CUM. ESSENCE</th>
         <th class="r">REQUIREMENT</th>
       </tr></thead>
       <tbody>
+        ${convRow}
         ${baseRows}
-        ${masterRows.length?`<tr><td colspan="6" style="padding:6px 10px;font-family:'Press Start 2P',monospace;font-size:6px;color:var(--purple);letter-spacing:.1em;background:rgba(187,85,255,.06);border-top:2px solid rgba(187,85,255,.2);border-bottom:2px solid rgba(187,85,255,.2)">✦ MASTER STARS</td></tr>${masterRows}`:''}
+        ${masterRows.length?`<tr><td colspan="6" style="padding:5px 10px;font-family:'Press Start 2P',monospace;font-size:6px;color:var(--purple);letter-spacing:.1em;background:rgba(187,85,255,.07);border-top:2px solid rgba(187,85,255,.2);border-bottom:1px solid rgba(187,85,255,.2)">✦ MASTER STARS</td></tr>${masterRows}`:''}
       </tbody>
-      <tfoot>
-        <tr>
-          <td><span class="total-lbl">TOTAL TO MAX</span></td>
-          <td class="cell-r"><span class="ess-amt">${cumEss.toLocaleString()}</span></td>
-          <td class="cell-r"><span class="ess-cost-i" style="font-size:18px">${cumCostI>0?short(cumCostI):'N/A'}</span></td>
-          <td class="cell-r"><span class="ess-cost-o" style="font-size:18px">${cumCostO>0?short(cumCostO):'N/A'}</span></td>
-          <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
-          <td></td>
-        </tr>
-      </tfoot>
+      <tfoot><tr>
+        <td><span class="total-lbl">TOTAL TO MAX</span></td>
+        <td class="cell-r"><span class="ess-amt">${cumEss.toLocaleString()}</span></td>
+        <td class="cell-r"><span class="ess-cost-i" style="font-size:17px">${cumCostI>0?short(cumCostI):'N/A'}</span></td>
+        <td class="cell-r"><span class="ess-cost-o" style="font-size:17px">${cumCostO>0?short(cumCostO):'N/A'}</span></td>
+        <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
+        <td></td>
+      </tr></tfoot>
     </table>
-    ${essProduct?`<div class="ess-note">Costs calculated from live bazaar prices. <span style="color:var(--red)">Insta-buy</span> = immediate purchase. <span style="color:var(--green)">Buy order</span> = waiting for sellers. Master star requirements are approximate — check your Catacombs level in-game.</div>`
-    :`<div class="ess-note" style="color:var(--gold)">⚠ ${essenceType||'This'} essence is not on the bazaar. Costs shown as N/A — price it manually on the AH.</div>`}`;
+    <div class="ess-note">${essProduct?`Costs from live bazaar prices. <span style="color:var(--red)">Insta-buy</span> = pay now. <span style="color:var(--green)">Buy order</span> = wait for sellers.`:`⚠ ${essenceType} essence is not on the bazaar — price it manually on the AH.`} Master star requirements are approximate.</div>`;
 }
 
-const STAT_LABELS={
-  DAMAGE:'⚔ Damage',STRENGTH:'💪 Strength',CRIT_CHANCE:'🎯 Crit Chance',CRIT_DAMAGE:'💥 Crit Damage',
-  ATTACK_SPEED:'⚡ Attack Speed',HEALTH:'❤ Health',DEFENSE:'🛡 Defense',SPEED:'👟 Speed',
-  INTELLIGENCE:'🔮 Intelligence',SEA_CREATURE_CHANCE:'🐟 Sea Creature Chance',MAGIC_FIND:'✨ Magic Find',
-  PET_LUCK:'🍀 Pet Luck',FEROCITY:'🗡 Ferocity',ABILITY_DAMAGE:'🌀 Ability Damage',
-  MINING_SPEED:'⛏ Mining Speed',MINING_FORTUNE:'🍀 Mining Fortune',FARMING_FORTUNE:'🌾 Farming Fortune',
-  FORAGING_FORTUNE:'🌲 Foraging Fortune',PRISTINE:'💎 Pristine',TRUE_DEFENSE:'🛡 True Defense',
-};
+/* ── Item Data ── */
+const STAT_LABELS_MAP={DAMAGE:'⚔ Damage',STRENGTH:'💪 Strength',CRIT_CHANCE:'🎯 Crit Chance',CRIT_DAMAGE:'💥 Crit Damage',ATTACK_SPEED:'⚡ Attack Speed',HEALTH:'❤ Health',DEFENSE:'🛡 Defense',SPEED:'👟 Speed',INTELLIGENCE:'🔮 Intelligence',SEA_CREATURE_CHANCE:'🐟 Sea Creature',MAGIC_FIND:'✨ Magic Find',PET_LUCK:'🍀 Pet Luck',FEROCITY:'🗡 Ferocity',ABILITY_DAMAGE:'🌀 Ability Dmg',MINING_SPEED:'⛏ Mining Speed',MINING_FORTUNE:'🍀 Mining Fortune',FARMING_FORTUNE:'🌾 Farming Fortune',FORAGING_FORTUNE:'🌲 Foraging Fortune',TRUE_DEFENSE:'🛡 True Defense',PRISTINE:'💎 Pristine'};
+const GEM_COLORS_MAP={RUBY:'gem-ruby',SAPPHIRE:'gem-sapphire',AMBER:'gem-amber',AMETHYST:'gem-amethyst',JADE:'gem-jade',TOPAZ:'gem-topaz',JASPER:'gem-jasper',OPAL:'gem-opal',PERIDOT:'gem-peridot',AQUAMARINE:'gem-aquamarine',UNIVERSAL:'gem-universal',COMBAT:'gem-combat',DEFENSIVE:'gem-defensive',MINING:'gem-mining',SPEED:'gem-speed'};
+const GEM_EMOJI_MAP={RUBY:'🔴',SAPPHIRE:'🔵',AMBER:'🟠',AMETHYST:'🟣',JADE:'🟢',TOPAZ:'🟡',JASPER:'🟤',OPAL:'⚪',PERIDOT:'🟩',AQUAMARINE:'🩵',UNIVERSAL:'⬜',COMBAT:'⚔',DEFENSIVE:'🛡',MINING:'⛏',SPEED:'💨'};
 
-const GEM_COLORS={
-  RUBY:'gem-ruby',SAPPHIRE:'gem-sapphire',AMBER:'gem-amber',AMETHYST:'gem-amethyst',
-  JADE:'gem-jade',TOPAZ:'gem-topaz',JASPER:'gem-jasper',OPAL:'gem-opal',
-  PERIDOT:'gem-peridot',AQUAMARINE:'gem-aquamarine',UNIVERSAL:'gem-universal',
-  COMBAT:'gem-combat',DEFENSIVE:'gem-defensive',MINING:'gem-mining',SPEED:'gem-speed',
-};
-
-const GEM_EMOJI={
-  RUBY:'🔴',SAPPHIRE:'🔵',AMBER:'🟠',AMETHYST:'🟣',JADE:'🟢',TOPAZ:'🟡',
-  JASPER:'🟤',OPAL:'⚪',PERIDOT:'🟩',AQUAMARINE:'🩵',UNIVERSAL:'⬜',
-  COMBAT:'⚔',DEFENSIVE:'🛡',MINING:'⛏',SPEED:'💨',
-};
+function detectFloorDrop(neu){
+  if(!neu)return null;
+  const lore=Array.isArray(neu.lore)?neu.lore:[];
+  for(const line of lore){
+    const s=stripMC(line);
+    const m=s.match(/Floor\s*(\d+)|F(\d+)/i);
+    if(m)return parseInt(m[1]||m[2]);
+    if(/Master\s*Mode/i.test(s))return'M';
+    if(/Boss\s*Drop/i.test(s))return'boss';
+  }
+  return null;
+}
 
 async function renderItemData(id){
-  const el=document.getElementById('itemdata-body');
-  if(!el) return;
-  el.className='craft-loading'; el.textContent='Loading item data...';
+  const el=document.getElementById('itemdata-body');if(!el)return;
+  el.className='craft-loading';el.textContent='Loading item data...';
   const neu=await fetchNEU(id);
-  if(!neu){ el.className='no-recipe'; el.innerHTML='⛏ No item data found in NEU repo.'; return; }
-
+  if(!neu){el.className='no-recipe';el.innerHTML='⛏ No item data found in NEU repo.';return;}
   const sbItem=sbAllItems.find(i=>i.id===id);
   const tier=sbItem?.tier||neu.tier||'';
   const tierCol=tierColor(tier);
-  const dispName=stripMC(neu.displayname)||toName(id);
-
   const lore=Array.isArray(neu.lore)?neu.lore:[];
   const loreHTML=lore.map(line=>`<span class="lore-line">${renderMCLore(line)||'&nbsp;'}</span>`).join('');
-
   const stats=neu.stats||{};
   const statKeys=Object.keys(stats).filter(k=>stats[k]!==0);
-
   let statsHTML='';
   if(statKeys.length){
     statsHTML=`<div class="section-title" style="margin-bottom:8px">COMBAT STATS</div>
-    <div class="item-stats-grid">
-      ${statKeys.map(k=>{
-        const v=stats[k];
-        const label=STAT_LABELS[k]||k.replace(/_/g,' ');
-        const isPos=v>0;
-        const suffix=k.includes('CHANCE')||k.includes('SPEED')||k.includes('FORTUNE')||k.includes('DAMAGE')&&k!=='DAMAGE'?'%':'';
-        return `<div class="stat-box"><div class="stat-box-label">${label}</div><div class="stat-box-val ${isPos?'pos':'neg'}">${isPos?'+':''}${v.toLocaleString()}${suffix}</div></div>`;
-      }).join('')}
+    <div class="item-stats-grid" style="margin-bottom:20px">
+      ${statKeys.map(k=>{const v=stats[k];const isPos=v>0;const suffix=k.includes('CHANCE')||k.includes('SPEED')||k.includes('FORTUNE')&&k!=='MINING_SPEED'||k==='ABILITY_DAMAGE'?'%':'';return`<div class="stat-box"><div class="stat-box-label">${STAT_LABELS_MAP[k]||k.replace(/_/g,' ')}</div><div class="stat-box-val ${isPos?'pos':'neg'}">${isPos?'+':''}${v.toLocaleString()}${suffix}</div></div>`;}).join('')}
     </div>`;
   }
-
   const gemSlots=neu.gemstone_slots||[];
   let gemsHTML='';
   if(gemSlots.length){
     gemsHTML=`<div class="section-title" style="margin-bottom:8px">GEMSTONE SLOTS (${gemSlots.length})</div>
-    <div style="padding:10px 0;margin-bottom:16px">
-    <div class="gem-slots">
-      ${gemSlots.map(slot=>{
-        const type=(slot.slot_type||slot.type||'UNIVERSAL').toUpperCase();
-        const cls=GEM_COLORS[type]||'gem-unknown';
-        const emoji=GEM_EMOJI[type]||'💠';
-        return `<div style="display:flex;flex-direction:column;align-items:center;gap:18px">
-          <div class="gem-slot ${cls}" title="${type} slot">${emoji}</div>
-          <span style="font-size:11px;color:var(--muted2);font-family:'JetBrains Mono',monospace">${type.slice(0,3)}</span>
-        </div>`;
-      }).join('')}
-    </div>
+    <div class="gem-slots-wrap" style="margin-bottom:20px">
+      ${gemSlots.map(slot=>{const type=(slot.slot_type||slot.type||'UNIVERSAL').toUpperCase();const cls=GEM_COLORS_MAP[type]||'gem-unknown';const emoji=GEM_EMOJI_MAP[type]||'💠';return`<div class="gem-slot-item"><div class="gem-slot ${cls}" title="${type}">${emoji}</div><span class="gem-slot-lbl">${type.slice(0,4)}</span></div>`;}).join('')}
     </div>`;
   }
-
   const reqs=[];
-  if(neu.dungeon_item_conversion_cost||neu.upgrade_costs) reqs.push({icon:'🏰',label:'Dungeon Item',val:'Eligible for starring'});
-  if(neu.requirements){
-    const r=neu.requirements;
-    if(r.level)      reqs.push({icon:'⚔',label:'Combat Level',val:`${r.level}`});
-    if(r.skill)      reqs.push({icon:'📊',label:'Skill',val:`${r.skill.type} ${r.skill.level}`});
-    if(r.dungeon)    reqs.push({icon:'🏰',label:'Dungeon',val:`${r.dungeon.type} Floor ${r.dungeon.level}`});
-    if(r.slayer)     reqs.push({icon:'☠',label:'Slayer',val:`${r.slayer.slayer_boss_type} ${r.slayer.level}`});
-  }
-  const catacombsReq=lore.find(l=>l.includes('Catacombs'));
-  if(catacombsReq&&!reqs.find(r=>r.label==='Dungeon')) reqs.push({icon:'🏰',label:'Requirement',val:stripMC(catacombsReq)});
-
+  if(parseEssenceData(neu))reqs.push({icon:'🏰',label:'Dungeon Item',val:'Eligible for starring'});
+  const floorDrop=detectFloorDrop(neu);
+  if(floorDrop!=null){const label=floorDrop==='M'?'Master Mode':floorDrop==='boss'?'Boss Drop':`Floor ${floorDrop}`;reqs.push({icon:'⚔',label:'Drops From',val:label});}
+  if(neu.requirements){const r=neu.requirements;if(r.level)reqs.push({icon:'⚔',label:'Combat Level',val:`${r.level}`});if(r.skill)reqs.push({icon:'📊',label:'Skill',val:`${r.skill.type} ${r.skill.level}`});if(r.dungeon)reqs.push({icon:'🏰',label:'Dungeon',val:`${r.dungeon.type} Floor ${r.dungeon.level}`});if(r.slayer)reqs.push({icon:'☠',label:'Slayer',val:`${r.slayer.slayer_boss_type} ${r.slayer.level}`});}
   let reqsHTML='';
-  if(reqs.length){
-    reqsHTML=`<div class="section-title" style="margin-bottom:8px">REQUIREMENTS</div>
-    <div class="req-list mc-slot" style="margin-bottom:16px">
-      ${reqs.map(r=>`<div class="req-item"><span class="req-icon">${r.icon}</span><span class="req-label">${r.label}</span><span class="req-val">${r.val}</span></div>`).join('')}
-    </div>`;
-  }
-
+  if(reqs.length){reqsHTML=`<div class="section-title" style="margin-bottom:8px">REQUIREMENTS & INFO</div><div class="req-list mc-slot" style="margin-bottom:20px">${reqs.map(r=>`<div class="req-item"><span class="req-icon">${r.icon}</span><span class="req-label">${r.label}</span><span class="req-val">${r.val}</span></div>`).join('')}</div>`;}
   const soulbound=lore.some(l=>l.includes('SOULBOUND'));
-  const unstackable=neu.stackable===false||neu.stackable===0;
-  const catSection=neu.category||neu.itemid||'';
-
   const badges=[];
-  if(soulbound) badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#ff5555;border:1px solid #770000;padding:2px 6px;background:rgba(255,85,85,.08)">SOULBOUND</span>`);
-  if(tier) badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:${tierCol};border:1px solid ${tierCol}44;padding:2px 6px;background:${tierCol}11">${tier}</span>`);
-  if(neu.museum) badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--aqua);border:1px solid #336666;padding:2px 6px;background:rgba(85,255,255,.06)">MUSEUM</span>`);
-
+  if(soulbound)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#ff5555;border:1px solid #770000;padding:2px 6px;background:rgba(255,85,85,.08)">SOULBOUND</span>`);
+  if(tier)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:${tierCol};border:1px solid ${tierCol}44;padding:2px 6px;background:${tierCol}11">${tier}</span>`);
+  if(neu.museum)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--aqua);border:1px solid #336666;padding:2px 6px;background:rgba(85,255,255,.06)">MUSEUM</span>`);
   el.className='';
   el.innerHTML=`
     ${badges.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px">${badges.join('')}</div>`:''}
     ${loreHTML?`<div class="section-title" style="margin-bottom:8px">LORE</div><div class="item-lore-box">${loreHTML}</div>`:''}
-    ${reqsHTML}
-    ${statsHTML}
-    ${gemsHTML}
-    ${!statKeys.length&&!loreHTML&&!reqsHTML&&!gemsHTML?'<div class="no-recipe">No detailed item data available for this item.</div>':''}`;
+    ${reqsHTML}${statsHTML}${gemsHTML}
+    ${!statKeys.length&&!loreHTML&&!reqsHTML&&!gemsHTML?'<div class="no-recipe">No detailed item data available.</div>':''}`;
 }
 
 async function doRefresh(){
   await loadBazaar();
-  if(currentId){
-    if(isBazaar(currentId)){renderCard(currentId);if(currentTab==='crafting')setTimeout(()=>switchTab('crafting'),60);}
-    else pick(currentId);
-  }
+  if(currentId){if(isBazaar(currentId))renderCard(currentId);else pick(currentId);}
 }
 
 function scoreItem(item,q){
-  const n=item.name.toLowerCase(),id=(item.id||'').toLowerCase().replace(/_/g,' ');
-  const ql=q.toLowerCase().trim();
-  if(n.startsWith(ql)) return 100;
-  if(n.includes(ql)) return 80;
-  if(id.includes(ql)) return 70;
-  const words=ql.split(/\s+/).filter(w=>w.length>=2);
-  let hits=0; for(const w of words) if(n.includes(w)||id.includes(w)) hits++;
+  const n=item.name.toLowerCase(),id=(item.id||'').toLowerCase().replace(/_/g,' '),ql=q.toLowerCase().trim();
+  if(n.startsWith(ql))return 100;if(n.includes(ql))return 80;if(id.includes(ql))return 70;
+  const words=ql.split(/\s+/).filter(w=>w.length>=2);let hits=0;for(const w of words)if(n.includes(w)||id.includes(w))hits++;
   return words.length?(hits/words.length)*50:0;
 }
 
 function filterItems(q){
-  if(!q.trim()) return [];
-  const bazaarIds=new Set(items.map(i=>i.id));
-  const ahOnly=sbAllItems.filter(i=>!bazaarIds.has(i.id));
-  const allSearchable=[...items,...ahOnly];
-  return allSearchable.map(i=>({i,s:scoreItem(i,q)})).filter(r=>r.s>0).sort((a,b)=>b.s-a.s).slice(0,14).map(r=>r.i);
+  if(!q.trim())return[];
+  const bzIds=new Set(items.map(i=>i.id));
+  const ahOnly=sbAllItems.filter(i=>!bzIds.has(i.id));
+  return[...items,...ahOnly].map(i=>({i,s:scoreItem(i,q)})).filter(r=>r.s>0).sort((a,b)=>b.s-a.s).slice(0,14).map(r=>r.i);
 }
 
 function renderDD(list,q){
-  const dd=document.getElementById('dd'); activeIdx=-1;
+  const dd=document.getElementById('dd');activeIdx=-1;
   if(!list.length){dd.innerHTML=`<div class="dd-empty">No results for "${q}"</div>`;dd.style.display='block';return;}
   dd.innerHTML=list.map((item,i)=>{
-    const bz=!!products[item.id];
-    const qs=products[item.id]?.quick_status;
-    const price=qs?short(qs.sellPrice)+'g':'';
-    const col=itemColor(item.id);
-    return `<div class="dd-item" data-id="${item.id}" data-i="${i}">
-      <span class="dname"><span class="dd-px" style="background:${col};"></span>${item.name}</span>
-      <span class="dd-right">${price?`<span class="dprice">${price}</span>`:''}<span class="dd-type ${bz?'dd-bz':'dd-ah'}">${bz?'BZ':'AH'}</span></span>
-    </div>`;
+    const bz=!!products[item.id],qs=products[item.id]?.quick_status,price=qs?short(qs.sellPrice)+'g':'',col=itemColor(item.id);
+    return`<div class="dd-item" data-id="${item.id}" data-i="${i}"><span class="dname"><span class="dd-px" style="background:${col};"></span>${item.name}</span><span class="dd-right">${price?`<span class="dprice">${price}</span>`:''}<span class="dd-type ${bz?'dd-bz':'dd-ah'}">${bz?'BZ':'AH'}</span></span></div>`;
   }).join('');
   dd.style.display='block';
   dd.querySelectorAll('.dd-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();pick(el.dataset.id);}));
@@ -1335,32 +1284,22 @@ function renderDD(list,q){
 function hideDD(){document.getElementById('dd').style.display='none';activeIdx=-1;}
 
 function pick(id){
-  const bazaarItem=items.find(i=>i.id===id);
-  const sbItem=sbAllItems.find(i=>i.id===id);
-  const displayName=sbItem?.name||bazaarItem?.name||toName(id);
-  document.getElementById('search').value=displayName;
-  currentId=id; currentTab='prices';
-  hideDD();
-  if(isBazaar(id)) renderCard(id);
-  else renderAHCard(id);
+  const bazaarItem=items.find(i=>i.id===id),sbItem=sbAllItems.find(i=>i.id===id);
+  document.getElementById('search').value=sbItem?.name||bazaarItem?.name||toName(id);
+  currentId=id;currentTab='prices';hideDD();
+  if(isBazaar(id))renderCard(id);else renderAHCard(id);
 }
 
 const searchEl=document.getElementById('search');
-searchEl.addEventListener('input',()=>{
-  const q=searchEl.value;
-  if(!q.trim()){hideDD();return;}
-  renderDD(filterItems(q),q);
-});
+searchEl.addEventListener('input',()=>{const q=searchEl.value;if(!q.trim()){hideDD();return;}renderDD(filterItems(q),q);});
 searchEl.addEventListener('keydown',e=>{
-  const dd=document.getElementById('dd');
-  const els=dd.querySelectorAll('.dd-item');
-  if(!els.length) return;
+  const dd=document.getElementById('dd'),els=dd.querySelectorAll('.dd-item');if(!els.length)return;
   if(e.key==='ArrowDown'){e.preventDefault();activeIdx=Math.min(activeIdx+1,els.length-1);els.forEach((el,i)=>el.classList.toggle('active',i===activeIdx));els[activeIdx]?.scrollIntoView({block:'nearest'});}
   else if(e.key==='ArrowUp'){e.preventDefault();activeIdx=Math.max(activeIdx-1,-1);els.forEach((el,i)=>el.classList.toggle('active',i===activeIdx));}
   else if(e.key==='Enter'){const t=activeIdx>=0?els[activeIdx]:els[0];if(t)pick(t.dataset.id);}
-  else if(e.key==='Escape') hideDD();
+  else if(e.key==='Escape')hideDD();
 });
-document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap')) hideDD();});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))hideDD();});
 
 loadBazaar();
 </script>
