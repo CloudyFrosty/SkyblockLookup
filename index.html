@@ -8,155 +8,91 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:       #16161a;
-  --panel:    #2b2b2f;
-  --panel2:   #363639;
-  --slot:     #101013;
-  --lt:       #545458;
-  --dk:       #09090b;
-  --text:     #ffffff;
-  --muted:    #aaaaaa;
-  --muted2:   #666669;
-  --gold:     #ffaa00;
-  --gold-dk:  #995f00;
-  --green:    #55ff55;
-  --green-dk: #007700;
-  --red:      #ff5555;
-  --red-dk:   #770000;
-  --aqua:     #55ffff;
-  --blue:     #5599ff;
-  --purple:   #bb55ff;
-  --yellow:   #ffff55;
+  --bg:#16161a;--panel:#2b2b2f;--panel2:#363639;--slot:#101013;
+  --lt:#545458;--dk:#09090b;--text:#ffffff;--muted:#aaaaaa;--muted2:#666669;
+  --gold:#ffaa00;--gold-dk:#995f00;--green:#55ff55;--green-dk:#007700;
+  --red:#ff5555;--red-dk:#770000;--aqua:#55ffff;--blue:#5599ff;
+  --purple:#bb55ff;--yellow:#ffff55;
 }
-
-body{
-  font-family:'VT323',monospace;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:44px 16px 64px;
-  background-image:
-    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
-  background-size:16px 16px;
-}
-
+body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:44px 16px 64px;background-image:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);background-size:16px 16px;}
 .wrap{width:100%;max-width:700px}
-
-.mc-panel{
-  background:var(--panel);
-  border:3px solid;
-  border-color:var(--lt) var(--dk) var(--dk) var(--lt);
-  position:relative;
-}
-.mc-panel::after{
-  content:'';position:absolute;inset:0;border:1px solid;
-  border-color:rgba(255,255,255,.06) rgba(0,0,0,.25) rgba(0,0,0,.25) rgba(255,255,255,.06);
-  pointer-events:none;
-}
-.mc-slot{
-  background:var(--slot);border:3px solid;
-  border-color:var(--dk) var(--lt) var(--lt) var(--dk);
-}
-.mc-slot::after{
-  content:'';position:absolute;inset:0;border:1px solid;
-  border-color:rgba(0,0,0,.3) rgba(255,255,255,.05) rgba(255,255,255,.05) rgba(0,0,0,.3);
-  pointer-events:none;
-}
-
-/* Header */
-.header{margin-bottom:32px;text-align:center}
-.header h1{
-  font-family:'Press Start 2P',monospace;font-size:20px;line-height:1.5;
-  color:var(--gold);text-shadow:3px 3px 0 var(--gold-dk),0 0 40px rgba(255,170,0,.25);
-  letter-spacing:.02em;
-}
+.mc-panel{background:var(--panel);border:3px solid;border-color:var(--lt) var(--dk) var(--dk) var(--lt);position:relative;}
+.mc-panel::after{content:'';position:absolute;inset:0;border:1px solid;border-color:rgba(255,255,255,.06) rgba(0,0,0,.25) rgba(0,0,0,.25) rgba(255,255,255,.06);pointer-events:none;}
+.mc-slot{background:var(--slot);border:3px solid;border-color:var(--dk) var(--lt) var(--lt) var(--dk);}
+.mc-slot::after{content:'';position:absolute;inset:0;border:1px solid;border-color:rgba(0,0,0,.3) rgba(255,255,255,.05) rgba(255,255,255,.05) rgba(0,0,0,.3);pointer-events:none;}
+.header{margin-bottom:24px;text-align:center}
+.header h1{font-family:'Press Start 2P',monospace;font-size:20px;line-height:1.5;color:var(--gold);text-shadow:3px 3px 0 var(--gold-dk),0 0 40px rgba(255,170,0,.25);letter-spacing:.02em;}
 .header h1 em{color:#fff;font-style:normal}
 .header p{font-size:18px;color:var(--muted2);margin-top:8px;letter-spacing:.08em}
-
-/* Status */
 #status{font-size:17px;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:8px;min-height:22px;}
 .dot{width:8px;height:8px;flex-shrink:0;image-rendering:pixelated;background:var(--gold);animation:blink 1s steps(1) infinite}
 .dot.ok{background:var(--green);animation:none}
 .dot.err{background:var(--red);animation:none}
 @keyframes blink{50%{opacity:0}}
 
-/* Search */
+.flip-panel{margin-bottom:20px;overflow:hidden;}
+.flip-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.2);border-bottom:2px solid var(--dk);cursor:pointer;user-select:none;}
+.flip-header:hover{background:rgba(255,170,0,.04)}
+.flip-title{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--gold);letter-spacing:.1em;display:flex;align-items:center;gap:8px;}
+.flip-controls{display:flex;align-items:center;gap:10px}
+.flip-sort{font-family:'Press Start 2P',monospace;font-size:6px;padding:4px 8px;background:none;border:2px solid var(--lt);color:var(--muted2);cursor:pointer;letter-spacing:.04em;transition:all .1s;}
+.flip-sort.active{border-color:var(--gold-dk);color:var(--gold);background:rgba(255,170,0,.06)}
+.flip-sort:hover:not(.active){color:var(--text)}
+.flip-toggle{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);transition:color .1s;}
+.flip-body{padding:0;}
+.flip-table{width:100%;border-collapse:collapse;font-size:17px}
+.flip-table thead th{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.08em;text-align:left;padding:8px 12px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
+.flip-table thead th.r{text-align:right}
+.flip-table tbody td{padding:8px 12px;border-bottom:1px solid rgba(0,0,0,.3);vertical-align:middle;}
+.flip-table tbody tr{cursor:pointer;transition:background .05s;}
+.flip-table tbody tr:hover td{background:rgba(255,170,0,.06)}
+.flip-table tbody tr:last-child td{border-bottom:none}
+.flip-swatch{display:inline-block;width:10px;height:10px;image-rendering:pixelated;vertical-align:middle;margin-right:8px;flex-shrink:0;}
+.flip-name{color:var(--text)}
+.flip-spread{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
+.flip-pct{color:var(--aqua);font-family:'JetBrains Mono',monospace;font-size:13px;}
+.flip-vol{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px;}
+.flip-rank{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted2);width:24px;}
+.flip-sell{color:var(--red);font-family:'JetBrains Mono',monospace;font-size:13px;}
+.flip-buy{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:13px;}
+.flip-empty{padding:24px;text-align:center;color:var(--muted2);font-size:18px;}
+
 .search-wrap{position:relative;margin-bottom:20px}
-.search-input{
-  width:100%;background:var(--slot);border:3px solid;
-  border-color:var(--dk) var(--lt) var(--lt) var(--dk);
-  color:var(--text);font-family:'VT323',monospace;font-size:22px;
-  padding:10px 16px;outline:none;letter-spacing:.04em;transition:border-color .1s;
-}
+.search-input{width:100%;background:var(--slot);border:3px solid;border-color:var(--dk) var(--lt) var(--lt) var(--dk);color:var(--text);font-family:'VT323',monospace;font-size:22px;padding:10px 16px;outline:none;letter-spacing:.04em;transition:border-color .1s;}
 .search-input:focus{border-color:var(--gold-dk) var(--gold) var(--gold) var(--gold-dk)}
 .search-input::placeholder{color:var(--muted2)}
 .search-input:disabled{opacity:.4;cursor:not-allowed}
-
-/* Dropdown */
-.dropdown{
-  position:absolute;top:calc(100% + 3px);left:0;right:0;
-  background:var(--panel2);border:3px solid;border-color:var(--lt) var(--dk) var(--dk) var(--lt);
-  z-index:200;max-height:300px;overflow-y:auto;
-}
+.dropdown{position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--panel2);border:3px solid;border-color:var(--lt) var(--dk) var(--dk) var(--lt);z-index:200;max-height:300px;overflow-y:auto;}
 .dropdown::-webkit-scrollbar{width:6px;background:var(--slot)}
 .dropdown::-webkit-scrollbar-thumb{background:var(--lt)}
-.dd-item{
-  padding:8px 14px;display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;border-bottom:1px solid rgba(0,0,0,.4);font-size:19px;transition:background .05s;
-}
+.dd-item{padding:8px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.4);font-size:19px;transition:background .05s;}
 .dd-item:hover,.dd-item.active{background:rgba(255,170,0,.09)}
 .dd-item .dname{color:var(--text);display:flex;align-items:center;gap:8px}
 .dd-item .dprice{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:12px}
 .dd-px{width:10px;height:10px;flex-shrink:0;image-rendering:pixelated}
 .dd-empty{padding:14px;text-align:center;color:var(--muted2);font-size:18px}
 .dd-right{display:flex;align-items:center;gap:6px}
-.dd-type{
-  font-family:'Press Start 2P',monospace;font-size:6px;
-  padding:2px 6px;letter-spacing:.06em;flex-shrink:0;
-}
+.dd-type{font-family:'Press Start 2P',monospace;font-size:6px;padding:2px 6px;letter-spacing:.06em;flex-shrink:0;}
 .dd-bz{background:rgba(85,255,85,.1);color:var(--green);border:1px solid var(--green-dk)}
 .dd-ah{background:rgba(85,153,255,.1);color:var(--blue);border:1px solid #334488}
 
-/* Card */
 .card{overflow:hidden;animation:rise .12s steps(3) forwards}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-.card-head{
-  padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
-  border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);
-}
+.card-head{padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
 .item-name{font-size:28px;line-height:1.1;color:var(--gold);text-shadow:2px 2px 0 var(--gold-dk);letter-spacing:.03em;}
 .item-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2);margin-top:4px}
-.live-tag{
-  font-family:'Press Start 2P',monospace;font-size:6px;color:var(--green);
-  border:2px solid var(--green-dk);padding:5px 8px;background:rgba(85,255,85,.06);
-  letter-spacing:.12em;flex-shrink:0;animation:blink 2s steps(1) infinite;
-}
-.ah-tag{
-  font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);
-  border:2px solid #334488;padding:5px 8px;background:rgba(85,153,255,.06);
-  letter-spacing:.12em;flex-shrink:0;
-}
+.live-tag{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--green);border:2px solid var(--green-dk);padding:5px 8px;background:rgba(85,255,85,.06);letter-spacing:.12em;flex-shrink:0;animation:blink 2s steps(1) infinite;}
+.ah-tag{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);border:2px solid #334488;padding:5px 8px;background:rgba(85,153,255,.06);letter-spacing:.12em;flex-shrink:0;}
 
-/* Tabs */
-.tabs{display:flex;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.15)}
-.tab-btn{
-  font-family:'Press Start 2P',monospace;font-size:7px;padding:10px 16px;
-  background:none;border:none;color:var(--muted2);cursor:pointer;letter-spacing:.05em;
-  border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .1s;
-}
+.tabs{display:flex;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.15);overflow-x:auto;}
+.tabs::-webkit-scrollbar{height:0}
+.tab-btn{font-family:'Press Start 2P',monospace;font-size:7px;padding:10px 14px;background:none;border:none;color:var(--muted2);cursor:pointer;letter-spacing:.05em;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .1s;white-space:nowrap;}
 .tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(255,170,0,.04)}
 .tab-btn:hover:not(.active){color:var(--text)}
 .tab-content{display:none}
 .tab-content.active{display:block}
 
-/* Prices Tab */
 .price-grid{display:grid;grid-template-columns:1fr 1fr}
 .price-col{padding:18px 20px}
 .price-col.sell{border-right:1px solid var(--dk)}
@@ -174,82 +110,46 @@ body{
 .ptag{display:inline-block;font-family:'VT323',monospace;font-size:13px;padding:1px 7px;margin-top:3px;letter-spacing:.04em;}
 .ptag-i{background:rgba(85,99,255,.18);color:#aaaaff;border:1px solid rgba(85,99,255,.3)}
 .ptag-o{background:rgba(187,85,255,.18);color:#dd99ff;border:1px solid rgba(187,85,255,.3)}
-
-.fill-strip{
-  display:flex;align-items:center;flex-wrap:wrap;gap:16px;
-  padding:10px 20px;border-top:1px solid var(--dk);background:rgba(0,0,0,.2);font-size:16px;
-}
+.fill-strip{display:flex;align-items:center;flex-wrap:wrap;gap:16px;padding:10px 20px;border-top:1px solid var(--dk);background:rgba(0,0,0,.2);font-size:16px;}
 .fill-label{color:var(--muted)}
 .fill-val{color:var(--aqua);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
 .fill-val.gold{color:var(--gold)}
-
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--dk);}
 .stat-cell{padding:12px 8px;text-align:center;border-right:1px solid var(--dk);}
 .stat-cell:last-child{border-right:none}
 .slabel{font-size:11px;color:var(--muted2);letter-spacing:.07em;margin-bottom:4px}
 .svalue{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600}
-
-/* AH Price Grid */
 .ah-price-grid{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:2px solid var(--dk);}
 .ah-cell{padding:18px 12px;text-align:center;border-right:1px solid var(--dk);}
 .ah-cell:last-child{border-right:none}
 .ah-cell .plabel{font-size:14px;color:var(--muted);margin-bottom:6px;}
 .ah-cell .pvalue{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--text);}
-.ah-stats-row{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--dk);}
-
-/* Chart & history */
 .chart-section{padding:16px 20px 22px;border-top:1px solid rgba(255,255,255,.03)}
-.section-title{
-  font-family:'Press Start 2P',monospace;font-size:7px;color:var(--muted2);
-  letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;
-}
+.section-title{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--muted2);letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
 .section-title small{font-size:6px;color:var(--muted2);opacity:.7;letter-spacing:.07em}
 .chart-wrap{position:relative;height:160px}
-
-/* Period toggle */
 .period-toggle{display:flex;gap:4px}
-.period-btn{
-  font-family:'Press Start 2P',monospace;font-size:6px;padding:5px 10px;
-  background:none;border:2px solid var(--lt);color:var(--muted2);cursor:pointer;
-  letter-spacing:.04em;transition:all .1s;
-}
+.period-btn{font-family:'Press Start 2P',monospace;font-size:6px;padding:5px 10px;background:none;border:2px solid var(--lt);color:var(--muted2);cursor:pointer;letter-spacing:.04em;transition:all .1s;}
 .period-btn.active{border-color:var(--gold-dk);color:var(--gold);background:rgba(255,170,0,.06)}
 .period-btn:hover:not(.active){color:var(--text)}
 
-/* Crafting Tab */
 .craft-section{padding:20px}
 .craft-grid-area{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px;}
-.craft-grid{
-  display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:3px;
-  padding:8px;background:rgba(0,0,0,.25);border:2px solid var(--dk);
-}
+.craft-grid{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:3px;padding:8px;background:rgba(0,0,0,.25);border:2px solid var(--dk);}
 .g-slot{width:60px;height:60px;position:relative;cursor:default;overflow:hidden;}
 .g-slot.clickable{cursor:pointer;transition:filter .1s}
 .g-slot.clickable:hover{filter:brightness(1.3)}
 .g-slot.clickable:hover .slot-tip{display:block}
-.slot-tip{
-  display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);
-  background:#1a1a1e;border:2px solid var(--lt);color:var(--gold);font-size:14px;
-  white-space:nowrap;padding:2px 8px;z-index:100;pointer-events:none;
-}
+.slot-tip{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#1a1a1e;border:2px solid var(--lt);color:var(--gold);font-size:14px;white-space:nowrap;padding:2px 8px;z-index:100;pointer-events:none;}
 .slot-abbr{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;line-height:1;text-align:center;}
-.slot-qty{
-  position:absolute;bottom:2px;right:3px;font-family:'JetBrains Mono',monospace;
-  font-size:11px;font-weight:600;color:#fff;text-shadow:1px 1px 0 #000,0 0 4px #000;
-  line-height:1;pointer-events:none;
-}
+.slot-qty{position:absolute;bottom:2px;right:3px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#fff;text-shadow:1px 1px 0 #000,0 0 4px #000;line-height:1;pointer-events:none;}
 .craft-arrow{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted2);}
 .craft-arrow svg{opacity:.7}
 .craft-arrow span{font-size:13px;color:var(--muted)}
 .out-slot{width:76px;height:76px;position:relative;cursor:pointer;transition:filter .1s;}
 .out-slot:hover{filter:brightness(1.3)}
-
-/* Ingredient Table */
 .ing-table{width:100%;border-collapse:collapse;font-size:17px}
-.ing-table thead th{
-  font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.09em;
-  text-align:left;padding:6px 8px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);
-}
+.ing-table thead th{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.09em;text-align:left;padding:6px 8px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
 .ing-table thead th.r{text-align:right}
 .ing-table tbody td{padding:7px 8px;border-bottom:1px solid rgba(0,0,0,.3);vertical-align:middle;}
 .ing-table tbody tr:last-child td{border-bottom:none}
@@ -265,8 +165,6 @@ body{
 .price-na{color:var(--muted2);font-size:14px}
 .fill-t{color:var(--aqua);font-family:'JetBrains Mono',monospace;font-size:13px}
 .total-lbl{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.09em;}
-
-/* Profit Box */
 .profit-box{margin-top:20px;background:rgba(0,0,0,.2);border:2px solid var(--dk);padding:16px}
 .profit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .ps{padding:12px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.04);position:relative}
@@ -275,61 +173,113 @@ body{
 .ps-val.pos{color:var(--green)}
 .ps-val.neg{color:var(--red)}
 .ps-pct{font-size:14px;color:var(--muted);margin-top:3px}
-.ps-best{
-  position:absolute;top:6px;right:8px;font-family:'Press Start 2P',monospace;font-size:5px;
-  color:var(--yellow);border:1px solid rgba(255,255,85,.3);padding:2px 5px;
-  background:rgba(255,255,85,.05);letter-spacing:.08em;
-}
+.ps-best{position:absolute;top:6px;right:8px;font-family:'Press Start 2P',monospace;font-size:5px;color:var(--yellow);border:1px solid rgba(255,255,85,.3);padding:2px 5px;background:rgba(255,255,85,.05);letter-spacing:.08em;}
 
-/* Loading/Empty */
+.essence-section{padding:20px}
+.essence-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:14px 16px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.05);}
+.essence-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.essence-meta{flex:1}
+.essence-type{font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:.08em;margin-bottom:4px;}
+.essence-sub{font-size:15px;color:var(--muted2)}
+.essence-bz-price{text-align:right}
+.essence-bz-label{font-size:12px;color:var(--muted2);margin-bottom:2px}
+.essence-bz-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--gold)}
+.essence-table{width:100%;border-collapse:collapse;font-size:17px}
+.essence-table thead th{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--muted2);letter-spacing:.08em;text-align:left;padding:7px 10px;border-bottom:2px solid var(--dk);background:rgba(0,0,0,.2);}
+.essence-table thead th.r{text-align:right}
+.essence-table tbody td{padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.3);vertical-align:middle;}
+.essence-table tbody tr:last-child td{border-bottom:none}
+.essence-table tfoot td{padding:8px 10px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);}
+.essence-table tbody tr.master-star td{background:rgba(255,170,0,.04)}
+.star-cell{font-size:18px;letter-spacing:-1px}
+.star-plain{color:var(--muted2)}
+.star-gold{color:var(--gold)}
+.star-master{color:var(--purple)}
+.ess-amt{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--aqua)}
+.ess-cost-i{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--red)}
+.ess-cost-o{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green)}
+.ess-cum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted2)}
+.ess-req{font-size:14px;color:var(--muted2)}
+.ess-note{padding:10px 16px;font-size:14px;color:var(--muted2);border-top:1px solid var(--dk);background:rgba(0,0,0,.15);line-height:1.5}
+
+.item-data-section{padding:20px}
+.item-lore-box{background:rgba(0,0,0,.25);border:2px solid #550077;padding:14px 16px;margin-bottom:20px;font-size:18px;line-height:1.6;}
+.lore-line{display:block}
+.item-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--dk);border:1px solid var(--dk);margin-bottom:20px;}
+.stat-box{background:var(--panel);padding:12px 14px;}
+.stat-box-label{font-size:13px;color:var(--muted2);margin-bottom:4px}
+.stat-box-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--text)}
+.stat-box-val.pos{color:var(--green)}
+.stat-box-val.neg{color:var(--red)}
+.req-list{margin-bottom:20px;}
+.req-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(0,0,0,.3);font-size:17px;}
+.req-item:last-child{border-bottom:none}
+.req-icon{font-size:16px;width:20px;text-align:center}
+.req-label{color:var(--muted);font-size:15px;margin-right:auto}
+.req-val{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
+.gem-slots{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:14px;}
+.gem-slot{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid;position:relative;}
+.gem-slot-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
+.gem-ruby{border-color:#ff3333;background:rgba(255,51,51,.1)}
+.gem-sapphire{border-color:#3355ff;background:rgba(51,85,255,.1)}
+.gem-amber{border-color:#ffaa00;background:rgba(255,170,0,.1)}
+.gem-amethyst{border-color:#aa55ff;background:rgba(170,85,255,.1)}
+.gem-jade{border-color:#55ff55;background:rgba(85,255,85,.1)}
+.gem-topaz{border-color:#ffff55;background:rgba(255,255,85,.1)}
+.gem-jasper{border-color:#ff5533;background:rgba(255,85,51,.1)}
+.gem-opal{border-color:#aaffff;background:rgba(170,255,255,.1)}
+.gem-peridot{border-color:#88ff44;background:rgba(136,255,68,.1)}
+.gem-aquamarine{border-color:#33ccff;background:rgba(51,204,255,.1)}
+.gem-universal{border-color:#aaaaaa;background:rgba(170,170,170,.1)}
+.gem-combat{border-color:#ff5555;background:rgba(255,85,85,.1)}
+.gem-defensive{border-color:#5599ff;background:rgba(85,153,255,.1)}
+.gem-mining{border-color:#ffcc33;background:rgba(255,204,51,.1)}
+.gem-speed{border-color:#55ffff;background:rgba(85,255,255,.1)}
+.gem-unknown{border-color:#444;background:rgba(68,68,68,.1)}
+
 .craft-loading{padding:40px;text-align:center;color:var(--muted2);font-size:20px;animation:blink 1s steps(1) infinite;}
 .no-recipe{padding:36px;text-align:center;color:var(--muted2);font-size:20px}
-
-/* Card Footer */
-.card-foot{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 20px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);
-}
+.card-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);}
 .updated{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted2)}
-.refresh-btn{
-  font-family:'Press Start 2P',monospace;font-size:7px;background:var(--panel2);
-  border:2px solid var(--lt);color:var(--muted);padding:6px 12px;cursor:pointer;
-  letter-spacing:.04em;transition:all .1s;
-}
+.refresh-btn{font-family:'Press Start 2P',monospace;font-size:7px;background:var(--panel2);border:2px solid var(--lt);color:var(--muted);padding:6px 12px;cursor:pointer;letter-spacing:.04em;transition:all .1s;}
 .refresh-btn:hover{border-color:var(--gold-dk);color:var(--gold);background:rgba(255,170,0,.06)}
-
-/* Tier colors */
-.tier-COMMON{color:#ffffff}
-.tier-UNCOMMON{color:#55ff55}
-.tier-RARE{color:#5599ff}
-.tier-EPIC{color:#bb55ff}
-.tier-LEGENDARY{color:#ffaa00}
-.tier-MYTHIC{color:#ff55ff}
-.tier-DIVINE{color:#55ffff}
-.tier-SPECIAL,.tier-VERY_SPECIAL{color:#ff5555}
-
-/* Empty / Error */
+.tier-COMMON{color:#ffffff}.tier-UNCOMMON{color:#55ff55}.tier-RARE{color:#5599ff}
+.tier-EPIC{color:#bb55ff}.tier-LEGENDARY{color:#ffaa00}.tier-MYTHIC{color:#ff55ff}
+.tier-DIVINE{color:#55ffff}.tier-SPECIAL,.tier-VERY_SPECIAL{color:#ff5555}
 .empty-state{padding:44px 0;color:var(--muted2);font-size:20px;text-align:center;}
 .empty-icon{display:block;font-size:48px;margin-bottom:12px;opacity:.4}
-.retry-btn{
-  display:inline-block;margin-top:14px;font-family:'Press Start 2P',monospace;font-size:8px;
-  background:var(--panel2);border:2px solid var(--lt);color:var(--text);padding:8px 16px;cursor:pointer;letter-spacing:.04em;
-}
+.retry-btn{display:inline-block;margin-top:14px;font-family:'Press Start 2P',monospace;font-size:8px;background:var(--panel2);border:2px solid var(--lt);color:var(--text);padding:8px 16px;cursor:pointer;letter-spacing:.04em;}
 .retry-btn:hover{border-color:var(--gold-dk);color:var(--gold)}
-
 footer{margin-top:36px;font-size:17px;color:var(--muted2);text-align:center}
 footer strong{color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <div class="header">
     <h1><em>Sky</em>Block Bazaar</h1>
     <p>Live Prices &amp; Craft Analysis</p>
   </div>
-
   <div id="status"><span class="dot"></span><span id="status-text">Loading...</span></div>
+
+  <div class="mc-panel flip-panel" id="flip-panel">
+    <div class="flip-header" onclick="toggleFlip()">
+      <div class="flip-title">
+        <span>⚡</span>
+        <span>TOP BAZAAR FLIPS</span>
+        <span style="font-family:'VT323',monospace;font-size:14px;color:var(--muted2);font-weight:normal;letter-spacing:0" id="flip-count"></span>
+      </div>
+      <div class="flip-controls" onclick="e=>e.stopPropagation()">
+        <button class="flip-sort active" id="fsort-spread" onclick="event.stopPropagation();setFlipSort('spread')">SPREAD</button>
+        <button class="flip-sort" id="fsort-pct" onclick="event.stopPropagation();setFlipSort('pct')">% MARGIN</button>
+        <button class="flip-sort" id="fsort-vol" onclick="event.stopPropagation();setFlipSort('vol')">VOLUME</button>
+        <span class="flip-toggle" id="flip-toggle">▲</span>
+      </div>
+    </div>
+    <div class="flip-body" id="flip-body">
+      <div class="flip-empty">Loading flip data...</div>
+    </div>
+  </div>
 
   <div class="search-wrap">
     <input type="text" id="search" class="search-input" placeholder="Search items..." autocomplete="off" disabled>
@@ -342,106 +292,134 @@ footer strong{color:var(--muted)}
       Search for an item above to get started.
     </div>
   </div>
-
 </div>
-
 <footer>made by <strong>XxSweat</strong></footer>
 
 <script>
-/* ─── Constants ───────────────────────────────────────────────── */
-const WORKER    = 'https://solitary-lake-43dd.xxsweatapi.workers.dev';
-const NEU_BASE  = 'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/';
+const WORKER   = 'https://solitary-lake-43dd.xxsweatapi.workers.dev';
+const NEU_BASE = 'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/';
 
-/* ─── State ───────────────────────────────────────────────────── */
-let products    = {};   // bazaar products
-let items       = [];   // bazaar item list (id + name)
-let sbAllItems  = [];   // all SkyBlock items (from Hypixel resources API)
-let updated     = null;
-let currentId   = null;
-let currentTab  = 'prices';
-let chartInst   = null;
-let neuCache    = {};
-let ahPriceCache= {};
-let activeIdx   = -1;
+let products   = {};
+let items      = [];
+let sbAllItems = [];
+let updated    = null;
+let currentId  = null;
+let currentTab = 'prices';
+let chartInst  = null;
+let neuCache   = {};
+let ahPriceCache = {};
+let activeIdx  = -1;
+let flipOpen   = true;
+let flipSort   = 'spread';
 
-/* ─── Helpers ─────────────────────────────────────────────────── */
-function isBazaar(id) { return !!products[id]; }
+function isBazaar(id){ return !!products[id]; }
 
-function tierColor(tier) {
-  return ({
-    COMMON:'#ffffff', UNCOMMON:'#55ff55', RARE:'#5599ff',
-    EPIC:'#bb55ff', LEGENDARY:'#ffaa00', MYTHIC:'#ff55ff',
-    DIVINE:'#55ffff', SPECIAL:'#ff5555', VERY_SPECIAL:'#ff5555'
-  })[tier] || '#aaaaaa';
+function tierColor(tier){
+  return ({COMMON:'#ffffff',UNCOMMON:'#55ff55',RARE:'#5599ff',EPIC:'#bb55ff',
+    LEGENDARY:'#ffaa00',MYTHIC:'#ff55ff',DIVINE:'#55ffff',SPECIAL:'#ff5555',VERY_SPECIAL:'#ff5555'})[tier]||'#aaaaaa';
 }
 
-function itemColor(id) {
-  if (!id) return '#333';
-  const s = id.toUpperCase();
-  if (s.includes('ENCHANTED'))    return '#bb55ff';
-  if (s.includes('DIAMOND'))      return '#55ffff';
-  if (s.includes('EMERALD'))      return '#55ff55';
-  if (s.includes('GOLD')||s.includes('GOLDEN')) return '#ffaa00';
-  if (s.includes('IRON'))         return '#aaaaaa';
-  if (s.includes('NETHERITE'))    return '#666';
-  if (s.includes('REDSTONE'))     return '#ff5555';
-  if (s.includes('LAPIS'))        return '#5599ff';
-  if (s.includes('COAL'))         return '#555';
-  if (s.includes('NETHER_WART'))  return '#dd3333';
-  if (s.includes('NETHER_BRICK')) return '#993333';
-  if (s.includes('QUARTZ'))       return '#ffeeee';
-  if (s.includes('SUGAR'))        return '#ff88ee';
-  if (s.includes('CANE'))         return '#88ff44';
-  if (s.includes('WHEAT')||s.includes('SEED')) return '#ffff55';
-  if (s.includes('CARROT'))       return '#ff8822';
-  if (s.includes('POTATO'))       return '#ddcc88';
-  if (s.includes('MELON'))        return '#ff5544';
-  if (s.includes('PUMPKIN'))      return '#ff7722';
-  if (s.includes('MUSHROOM'))     return '#cc8855';
-  if (s.includes('CACTUS'))       return '#55aa33';
-  if (s.includes('SLIME'))        return '#88ff55';
-  if (s.includes('BONE'))         return '#ddddaa';
-  if (s.includes('ROTTEN')||s.includes('ZOMBIE')) return '#66aa33';
-  if (s.includes('BLAZE'))        return '#ffaa22';
-  if (s.includes('SPIDER'))       return '#886644';
-  if (s.includes('ENDER'))        return '#7744aa';
-  if (s.includes('OBSIDIAN'))     return '#330044';
-  if (s.includes('ICE')||s.includes('SNOW'))   return '#aaddff';
-  if (s.includes('GRAVEL')||s.includes('FLINT')) return '#999';
-  if (s.includes('SAND'))         return '#ddcc99';
-  if (s.includes('LOG')||s.includes('WOOD'))   return '#8B6431';
-  if (s.includes('LEATHER'))      return '#aa7744';
-  if (s.includes('FEATHER'))      return '#eeeedd';
-  let h = 5381;
-  for (let i=0;i<s.length;i++) h=(((h<<5)+h)^s.charCodeAt(i))>>>0;
+function itemColor(id){
+  if(!id) return '#333';
+  const s=id.toUpperCase();
+  if(s.includes('ENCHANTED'))    return '#bb55ff';
+  if(s.includes('DIAMOND'))      return '#55ffff';
+  if(s.includes('EMERALD'))      return '#55ff55';
+  if(s.includes('GOLD')||s.includes('GOLDEN')) return '#ffaa00';
+  if(s.includes('IRON'))         return '#aaaaaa';
+  if(s.includes('NETHERITE'))    return '#666';
+  if(s.includes('REDSTONE'))     return '#ff5555';
+  if(s.includes('LAPIS'))        return '#5599ff';
+  if(s.includes('COAL'))         return '#555';
+  if(s.includes('NETHER_WART'))  return '#dd3333';
+  if(s.includes('NETHER_BRICK')) return '#993333';
+  if(s.includes('QUARTZ'))       return '#ffeeee';
+  if(s.includes('SUGAR'))        return '#ff88ee';
+  if(s.includes('CANE'))         return '#88ff44';
+  if(s.includes('WHEAT')||s.includes('SEED')) return '#ffff55';
+  if(s.includes('CARROT'))       return '#ff8822';
+  if(s.includes('POTATO'))       return '#ddcc88';
+  if(s.includes('MELON'))        return '#ff5544';
+  if(s.includes('PUMPKIN'))      return '#ff7722';
+  if(s.includes('MUSHROOM'))     return '#cc8855';
+  if(s.includes('CACTUS'))       return '#55aa33';
+  if(s.includes('SLIME'))        return '#88ff55';
+  if(s.includes('BONE'))         return '#ddddaa';
+  if(s.includes('ROTTEN')||s.includes('ZOMBIE')) return '#66aa33';
+  if(s.includes('BLAZE'))        return '#ffaa22';
+  if(s.includes('SPIDER'))       return '#886644';
+  if(s.includes('ENDER'))        return '#7744aa';
+  if(s.includes('OBSIDIAN'))     return '#330044';
+  if(s.includes('ICE')||s.includes('SNOW')) return '#aaddff';
+  if(s.includes('GRAVEL')||s.includes('FLINT')) return '#999';
+  if(s.includes('SAND'))         return '#ddcc99';
+  if(s.includes('LOG')||s.includes('WOOD')) return '#8B6431';
+  if(s.includes('LEATHER'))      return '#aa7744';
+  if(s.includes('FEATHER'))      return '#eeeedd';
+  if(s.includes('ESSENCE'))      return '#aa44ff';
+  let h=5381;
+  for(let i=0;i<s.length;i++) h=(((h<<5)+h)^s.charCodeAt(i))>>>0;
   return ['#5588ff','#55ffaa','#ffaa55','#ff55aa','#aaff55','#55aaff','#dd99ff'][h%7];
 }
 
-function getAbbr(id) {
-  const words = id.replace(/:/g,'_').split('_').filter(w=>w&&w!=='0'&&isNaN(w));
-  if (!words.length) return '??';
-  if (words.length===1) return words[0].slice(0,3).toUpperCase();
-  if (words.length===2) return (words[0][0]+words[1].slice(0,2)).toUpperCase();
+function getAbbr(id){
+  const words=id.replace(/:/g,'_').split('_').filter(w=>w&&w!=='0'&&isNaN(w));
+  if(!words.length) return '??';
+  if(words.length===1) return words[0].slice(0,3).toUpperCase();
+  if(words.length===2) return (words[0][0]+words[1].slice(0,2)).toUpperCase();
   return words.slice(0,3).map(w=>w[0]).join('').toUpperCase();
 }
 
-function toName(id) {
+function toName(id){
   return (id||'').replace(/:/g,'_').split('_').filter(w=>w)
     .map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
 }
-function short(n) {
-  if (typeof n!=='number'||isNaN(n)) return 'N/A';
-  if (n>=1e9) return (n/1e9).toFixed(2)+'B';
-  if (n>=1e6) return (n/1e6).toFixed(2)+'M';
-  if (n>=1e3) return (n/1e3).toFixed(1)+'K';
+
+function short(n){
+  if(typeof n!=='number'||isNaN(n)) return 'N/A';
+  if(n>=1e9) return (n/1e9).toFixed(2)+'B';
+  if(n>=1e6) return (n/1e6).toFixed(2)+'M';
+  if(n>=1e3) return (n/1e3).toFixed(1)+'K';
   return Math.round(n).toLocaleString();
 }
-function full(n) {
+
+function full(n){
   return typeof n==='number'&&!isNaN(n)?Math.round(n).toLocaleString():'N/A';
 }
-function stripMC(s) { return (s||'').replace(/§./g,'').trim(); }
 
-function estimateFill(itemId,qty=1) {
+function stripMC(s){ return (s||'').replace(/§./g,'').trim(); }
+
+function mcColorToHex(code){
+  return ({0:'#000000',1:'#0000AA',2:'#00AA00',3:'#00AAAA',4:'#AA0000',
+    5:'#AA00AA',6:'#FFAA00',7:'#AAAAAA',8:'#555555',9:'#5555FF',
+    a:'#55FF55',b:'#55FFFF',c:'#FF5555',d:'#FF55FF',e:'#FFFF55',f:'#FFFFFF'})[code]||null;
+}
+
+function renderMCLore(raw){
+  if(!raw) return '';
+  const segments=[];
+  let cur='#AAAAAA',bold=false,italic=false,i=0;
+  while(i<raw.length){
+    if(raw[i]==='§'&&i+1<raw.length){
+      const code=raw[i+1].toLowerCase();
+      const hex=mcColorToHex(code);
+      if(hex){ cur=hex; bold=false; italic=false; }
+      else if(code==='l') bold=true;
+      else if(code==='o') italic=true;
+      else if(code==='r'){ cur='#AAAAAA'; bold=false; italic=false; }
+      i+=2;
+    } else {
+      let j=i;
+      while(j<raw.length&&!(raw[j]==='§')) j++;
+      const txt=raw.slice(i,j);
+      if(txt) segments.push({txt,color:cur,bold,italic});
+      i=j;
+    }
+  }
+  return segments.map(s=>`<span style="color:${s.color};${s.bold?'font-family:\'JetBrains Mono\',monospace;font-weight:600;font-size:16px;':''}${s.italic?'font-style:italic;':''}">${s.txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>`).join('');
+}
+
+function estimateFill(itemId,qty=1){
   const p=products[itemId]; if(!p) return '?';
   const daily=(p.quick_status.movingWeek||0)/7; if(!daily) return '?';
   const h=(qty/daily)*24;
@@ -451,14 +429,12 @@ function estimateFill(itemId,qty=1) {
   return `~${(h/24).toFixed(1)}d`;
 }
 
-/* ─── Status ──────────────────────────────────────────────────── */
-function setStatus(msg,type='loading') {
+function setStatus(msg,type='loading'){
   document.querySelector('#status .dot').className='dot'+(type==='ok'?' ok':type==='err'?' err':'');
   document.getElementById('status-text').textContent=msg;
 }
 
-/* ─── Load Bazaar ─────────────────────────────────────────────── */
-async function loadBazaar() {
+async function loadBazaar(){
   setStatus('Connecting to Hypixel...');
   try {
     const res=await fetch(WORKER+'/',{signal:AbortSignal.timeout(9000)});
@@ -472,125 +448,73 @@ async function loadBazaar() {
     el.disabled=false;
     el.placeholder=`Search items...`;
     setStatus(`${items.length.toLocaleString()} bazaar items loaded · ${updated.toLocaleTimeString()}`,'ok');
-    // Load all SkyBlock items in background (for AH search)
+    renderFlips();
     loadSBItems();
-  } catch(err) {
+  } catch(err){
     setStatus(`Failed: ${err.message}`,'err');
-    document.getElementById('result').innerHTML=`
-      <div class="empty-state">
-        <span class="empty-icon">⚠</span>
-        Couldn't reach the API.<br>
-        <button class="retry-btn" onclick="loadBazaar()">↻ Retry</button>
-      </div>`;
+    document.getElementById('result').innerHTML=`<div class="empty-state"><span class="empty-icon">⚠</span>Couldn't reach the API.<br><button class="retry-btn" onclick="loadBazaar()">↻ Retry</button></div>`;
   }
 }
 
-/* ─── Load All SkyBlock Items (for AH search) ─────────────────── */
-async function loadSBItems() {
+async function loadSBItems(){
   try {
     const res=await fetch(WORKER+'/sb-items',{signal:AbortSignal.timeout(10000)});
     if(!res.ok) return;
     const data=await res.json();
     if(!data.success||!data.items) return;
-    sbAllItems=data.items.map(i=>({
-      id:i.id,
-      name:stripMC(i.name)||toName(i.id),
-      tier:i.tier||''
-    }));
+    sbAllItems=data.items.map(i=>({id:i.id,name:stripMC(i.name)||toName(i.id),tier:i.tier||''}));
     const el=document.getElementById('search');
     el.placeholder=`Search ${items.length+sbAllItems.filter(i=>!products[i.id]).length} items...`;
-  } catch(e){ /* silent fail — bazaar still works */ }
+  } catch(e){}
 }
 
-/* ─── NEU Repo Fetch ──────────────────────────────────────────── */
-async function fetchNEU(id) {
+async function fetchNEU(id){
   if(id in neuCache) return neuCache[id];
-  // NEU filenames strip the :0 / :1 damage value suffix
-  const baseId = id.includes(':') ? id.split(':')[0] : id;
-  const variants = [baseId, id];
-  for(const v of variants){
+  const baseId=id.includes(':')?id.split(':')[0]:id;
+  for(const v of [baseId,id]){
     try {
       const res=await fetch(NEU_BASE+v+'.json',{signal:AbortSignal.timeout(5000)});
-      if(res.ok){
-        const d=await res.json();
-        neuCache[id]=d; return d;
-      }
+      if(res.ok){ const d=await res.json(); neuCache[id]=d; return d; }
     } catch {}
   }
   neuCache[id]=null; return null;
 }
 
-/* ─── AH Stats — IQR outlier filter ──────────────────────────── */
-// Takes raw Coflnet history buckets [{time,avg,min,max,volume}]
-// Returns cleaned {avg, min, median, max, volume, buckets, filtered, cleanPts}
-function cleanAHStats(history) {
+function cleanAHStats(history){
   if(!Array.isArray(history)||!history.length) return null;
-
-  // 1. Drop buckets where avg is zero or missing
-  let pts = history.filter(d => d.avg > 0);
+  let pts=history.filter(d=>d.avg>0);
   if(!pts.length) return null;
-
-  // 2. IQR on avg prices to kill manipulated/anomalous hours
-  const sorted = [...pts].sort((a,b)=>a.avg-b.avg);
-  const q1 = sorted[Math.floor(sorted.length*0.25)].avg;
-  const q3 = sorted[Math.floor(sorted.length*0.75)].avg;
-  const iqr = q3 - q1;
-  // Use 2× IQR for a wider band — AH prices are naturally volatile
-  const lo = q1 - 2*iqr, hi = q3 + 2*iqr;
-  let clean = pts.filter(d => d.avg >= lo && d.avg <= hi);
-  if(clean.length < 2) clean = pts; // don't over-filter sparse items
-
-  // 3. Volume-weighted average from clean buckets
-  const totalVol = clean.reduce((s,d)=>s+(d.volume||1),0);
-  const wAvg = clean.reduce((s,d)=>s+d.avg*(d.volume||1),0) / totalVol;
-
-  // 4. Median of clean avg values
-  const cleanAvgs = clean.map(d=>d.avg).sort((a,b)=>a-b);
-  const mid = Math.floor(cleanAvgs.length/2);
-  const median = cleanAvgs.length%2===0
-    ? (cleanAvgs[mid-1]+cleanAvgs[mid])/2
-    : cleanAvgs[mid];
-
-  // 5. Clean min = 10th-percentile of clean avg buckets
-  //    Never trust the raw .min field — it captures joke listings / 0g BINs
-  const p10 = cleanAvgs[Math.max(0,Math.floor(cleanAvgs.length*0.10))];
-  // Also sanity-floor: min can't be less than 20% of weighted avg
-  const cleanMin = Math.max(p10, wAvg*0.20);
-
-  // 6. Clean max = 90th-percentile (not absolute max)
-  const p90 = cleanAvgs[Math.min(cleanAvgs.length-1,Math.floor(cleanAvgs.length*0.90))];
-
-  return {
-    avg:    Math.round(wAvg),
-    min:    Math.round(cleanMin),
-    median: Math.round(median),
-    max:    Math.round(p90),
-    volume: totalVol,
-    buckets: clean.length,
-    rawBuckets: pts.length,
-    filtered: pts.length - clean.length,
-    cleanPts: clean   // for chart rendering
-  };
+  const sorted=[...pts].sort((a,b)=>a.avg-b.avg);
+  const q1=sorted[Math.floor(sorted.length*0.25)].avg;
+  const q3=sorted[Math.floor(sorted.length*0.75)].avg;
+  const iqr=q3-q1;
+  const lo=q1-2*iqr,hi=q3+2*iqr;
+  let clean=pts.filter(d=>d.avg>=lo&&d.avg<=hi);
+  if(clean.length<2) clean=pts;
+  const totalVol=clean.reduce((s,d)=>s+(d.volume||1),0);
+  const wAvg=clean.reduce((s,d)=>s+d.avg*(d.volume||1),0)/totalVol;
+  const cleanAvgs=clean.map(d=>d.avg).sort((a,b)=>a-b);
+  const mid=Math.floor(cleanAvgs.length/2);
+  const median=cleanAvgs.length%2===0?(cleanAvgs[mid-1]+cleanAvgs[mid])/2:cleanAvgs[mid];
+  const p10=cleanAvgs[Math.max(0,Math.floor(cleanAvgs.length*0.10))];
+  const cleanMin=Math.max(p10,wAvg*0.20);
+  const p90=cleanAvgs[Math.min(cleanAvgs.length-1,Math.floor(cleanAvgs.length*0.90))];
+  return {avg:Math.round(wAvg),min:Math.round(cleanMin),median:Math.round(median),max:Math.round(p90),
+    volume:totalVol,buckets:clean.length,rawBuckets:pts.length,filtered:pts.length-clean.length,cleanPts:clean};
 }
 
-/* ─── AH Price Fetch (history → clean stats) ─────────────────── */
-// Primary source: day history (hourly) → cleanAHStats
-// Fallback: snapshot endpoint if history unavailable
-async function fetchAHPrice(id) {
+async function fetchAHPrice(id){
   if(ahPriceCache[id]) return ahPriceCache[id];
   try {
-    // Try day history first — much more reliable than raw snapshot
     const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=day`,{signal:AbortSignal.timeout(7000)});
     if(res.ok){
       const hist=await res.json();
       const stats=cleanAHStats(hist);
       if(stats){ ahPriceCache[id]=stats; return stats; }
     }
-    // Fallback: snapshot (less reliable but better than nothing)
     const res2=await fetch(`${WORKER}/ah-price/${encodeURIComponent(id)}`,{signal:AbortSignal.timeout(5000)});
     if(res2.ok){
       const d=await res2.json();
-      // Minimal sanity: if min is 0 or clearly wrong, use avg instead
       if(d.min===0||d.min==null) d.min=d.avg;
       ahPriceCache[id]=d; return d;
     }
@@ -598,7 +522,7 @@ async function fetchAHPrice(id) {
   return null;
 }
 
-async function fetchAHHistory(id,period) {
+async function fetchAHHistory(id,period){
   try {
     const res=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=${period}`,{signal:AbortSignal.timeout(7000)});
     if(!res.ok) return null;
@@ -606,24 +530,20 @@ async function fetchAHHistory(id,period) {
   } catch { return null; }
 }
 
-/* ─── Recipe Parsing ──────────────────────────────────────────── */
 const SLOT_KEYS=['A1','A2','A3','B1','B2','B3','C1','C2','C3'];
 
-function parseRecipe(neu) {
-  // NEU uses either a `recipe` object (A1-C3 keys) or a `recipes` array of the same
-  const raw = neu?.recipe ?? neu?.recipes?.[0] ?? null;
+function parseRecipe(neu){
+  const raw=neu?.recipe??neu?.recipes?.[0]??null;
   if(!raw) return null;
-  // Some entries in recipes[] wrap slots under a `recipe` sub-key
-  const recipeObj = (raw.A1 !== undefined) ? raw : (raw.recipe ?? null);
+  const recipeObj=(raw.A1!==undefined)?raw:(raw.recipe??null);
   if(!recipeObj) return null;
   const slots=SLOT_KEYS.map(k=>{
     const v=(recipeObj[k]||'').trim();
     if(!v||v==='null') return null;
-    // Format is "ITEM_ID:qty" — strip damage values that are just :0
-    const parts=v.split(':'), rawId=parts[0];
+    const parts=v.split(':'),rawId=parts[0];
     const n=parseInt(parts[1])||0;
     if(!rawId) return null;
-    return {id:rawId, qty:n>1?n:1};
+    return {id:rawId,qty:n>1?n:1};
   });
   const ingMap={};
   for(const s of slots){ if(!s) continue; ingMap[s.id]=(ingMap[s.id]||0)+s.qty; }
@@ -632,7 +552,7 @@ function parseRecipe(neu) {
   return {slots,ingMap,outQty:m?parseInt(m[1]):1};
 }
 
-function craftCost(ingMap, ahPrices={}) {
+function craftCost(ingMap,ahPrices={}){
   const r={};
   for(const [id,qty] of Object.entries(ingMap)){
     const p=products[id];
@@ -642,8 +562,7 @@ function craftCost(ingMap, ahPrices={}) {
       r[id]={qty,ip,op,iTotal:ip*qty,oTotal:op*qty,source:'bz'};
     } else if(ahPrices[id]){
       const ah=ahPrices[id];
-      // ip = lowest BIN (cheapest to acquire instantly), op = avg price (order-like)
-      const ip=ah.min??ah.avg??null, op=ah.avg??ah.min??null;
+      const ip=ah.min??ah.avg??null,op=ah.avg??ah.min??null;
       r[id]={qty,ip,op,iTotal:ip!=null?ip*qty:null,oTotal:op!=null?op*qty:null,source:'ah'};
     } else {
       r[id]={qty,ip:null,op:null,iTotal:null,oTotal:null,source:'unknown'};
@@ -652,13 +571,11 @@ function craftCost(ingMap, ahPrices={}) {
   return r;
 }
 
-/* ─── Slot Renderer ───────────────────────────────────────────── */
-function slotHTML(s,size=60) {
+function slotHTML(s,size=60){
   if(!s) return `<div class="g-slot mc-slot" style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:22px">·</div>`;
   const col=itemColor(s.id),abbr=getAbbr(s.id),name=toName(s.id);
   const inner=Math.round(size*0.6);
-  return `<div class="g-slot mc-slot clickable" data-id="${s.id}" data-name="${name}"
-    style="width:${size}px;height:${size}px;background:${col}18;border-color:${col}66 ${col}22 ${col}22 ${col}66;">
+  return `<div class="g-slot mc-slot clickable" data-id="${s.id}" data-name="${name}" style="width:${size}px;height:${size}px;background:${col}18;border-color:${col}66 ${col}22 ${col}22 ${col}66;">
     <span class="slot-tip">${name}</span>
     <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;">
       <div class="slot-abbr" style="width:${inner}px;height:${inner}px;background:${col}38;border:2px solid ${col}66;display:flex;align-items:center;justify-content:center;color:${col};">${abbr}</div>
@@ -667,10 +584,68 @@ function slotHTML(s,size=60) {
   </div>`;
 }
 
-/* ═══════════════════════════════════════════════════════════════ */
-/* ─── BAZAAR CARD ─────────────────────────────────────────────── */
-/* ═══════════════════════════════════════════════════════════════ */
-function renderCard(id) {
+function toggleFlip(){
+  flipOpen=!flipOpen;
+  document.getElementById('flip-body').style.display=flipOpen?'':'none';
+  document.getElementById('flip-toggle').textContent=flipOpen?'▲':'▼';
+}
+
+function setFlipSort(s){
+  flipSort=s;
+  ['spread','pct','vol'].forEach(k=>{
+    document.getElementById('fsort-'+k)?.classList.toggle('active',k===s);
+  });
+  renderFlips();
+}
+
+function renderFlips(){
+  const body=document.getElementById('flip-body');
+  if(!body) return;
+  if(!Object.keys(products).length){ body.innerHTML='<div class="flip-empty">Loading...</div>'; return; }
+
+  const rows=Object.entries(products).map(([id,p])=>{
+    const qs=p.quick_status;
+    const sellOrd=p.buy_summary?.[0]?.pricePerUnit??qs.sellPrice;
+    const buyOrd=p.sell_summary?.[0]?.pricePerUnit??qs.buyPrice;
+    const instaSell=qs.sellPrice;
+    const spread=instaSell-buyOrd;
+    const pct=buyOrd>0?(spread/buyOrd)*100:0;
+    const vol=qs.movingWeek||0;
+    return {id,name:toName(id),spread,pct,vol,instaSell,buyOrd};
+  }).filter(r=>r.spread>0&&r.vol>5000);
+
+  rows.sort((a,b)=>flipSort==='pct'?b.pct-a.pct:flipSort==='vol'?b.vol-a.vol:b.spread-a.spread);
+  const top=rows.slice(0,20);
+  document.getElementById('flip-count').textContent=`(${top.length} items)`;
+
+  if(!top.length){ body.innerHTML='<div class="flip-empty">No flippable items found.</div>'; return; }
+
+  body.innerHTML=`<table class="flip-table">
+    <thead><tr>
+      <th style="width:28px">#</th>
+      <th>ITEM</th>
+      <th class="r">BUY ORDER</th>
+      <th class="r">INSTA-SELL</th>
+      <th class="r">SPREAD</th>
+      <th class="r">MARGIN</th>
+      <th class="r">7D VOL</th>
+    </tr></thead>
+    <tbody>${top.map((r,i)=>{
+      const col=itemColor(r.id);
+      return `<tr onclick="pick('${r.id}')">
+        <td class="flip-rank">${i+1}</td>
+        <td><span class="flip-swatch" style="background:${col}"></span><span class="flip-name">${r.name}</span></td>
+        <td class="cell-r"><span class="flip-buy">${short(r.buyOrd)}</span></td>
+        <td class="cell-r"><span class="flip-sell">${short(r.instaSell)}</span></td>
+        <td class="cell-r"><span class="flip-spread">${short(r.spread)}</span></td>
+        <td class="cell-r"><span class="flip-pct">${r.pct.toFixed(1)}%</span></td>
+        <td class="cell-r"><span class="flip-vol">${short(r.vol)}</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function renderCard(id){
   const p=products[id]; if(!p) return;
   const qs=p.quick_status;
   const iSell=qs.sellPrice,iBuy=qs.buyPrice;
@@ -680,53 +655,32 @@ function renderCard(id) {
   document.getElementById('result').innerHTML=`
   <div class="card mc-panel" id="the-card">
     <div class="card-head">
-      <div>
-        <div class="item-name">${toName(id)}</div>
-        <div class="item-id">${id}</div>
-      </div>
+      <div><div class="item-name">${toName(id)}</div><div class="item-id">${id}</div></div>
       <div class="live-tag">LIVE</div>
     </div>
     <div class="tabs">
       <button class="tab-btn active" id="tab-prices" onclick="switchTab('prices')">📊 Prices</button>
       <button class="tab-btn" id="tab-history" onclick="switchTab('history')">📈 History</button>
       <button class="tab-btn" id="tab-crafting" onclick="switchTab('crafting')">⚒ Crafting</button>
+      <button class="tab-btn" id="tab-essence" onclick="switchTab('essence')">✦ Essence</button>
+      <button class="tab-btn" id="tab-itemdata" onclick="switchTab('itemdata')">📜 Item Data</button>
     </div>
-
-    <!-- PRICES TAB -->
     <div class="tab-content active" id="tc-prices">
       <div class="price-grid">
         <div class="price-col sell">
           <div class="col-label"><span class="col-dot"></span>SELLING</div>
-          <div class="price-row">
-            <div class="plabel">Insta-Sell</div>
-            <div class="pvalue">${full(iSell)}<span class="coin">g</span></div>
-            <span class="ptag ptag-i">INSTANT</span>
-          </div>
-          <div class="price-row">
-            <div class="plabel">Sell Order</div>
-            <div class="pvalue">${full(sellOrd)}<span class="coin">g</span></div>
-            <span class="ptag ptag-o">ORDER</span>
-          </div>
+          <div class="price-row"><div class="plabel">Insta-Sell</div><div class="pvalue">${full(iSell)}<span class="coin">g</span></div><span class="ptag ptag-i">INSTANT</span></div>
+          <div class="price-row"><div class="plabel">Sell Order</div><div class="pvalue">${full(sellOrd)}<span class="coin">g</span></div><span class="ptag ptag-o">ORDER</span></div>
         </div>
         <div class="price-col buy">
           <div class="col-label"><span class="col-dot"></span>BUYING</div>
-          <div class="price-row">
-            <div class="plabel">Insta-Buy</div>
-            <div class="pvalue">${full(iBuy)}<span class="coin">g</span></div>
-            <span class="ptag ptag-i">INSTANT</span>
-          </div>
-          <div class="price-row">
-            <div class="plabel">Buy Order</div>
-            <div class="pvalue">${full(buyOrd)}<span class="coin">g</span></div>
-            <span class="ptag ptag-o">ORDER</span>
-          </div>
+          <div class="price-row"><div class="plabel">Insta-Buy</div><div class="pvalue">${full(iBuy)}<span class="coin">g</span></div><span class="ptag ptag-i">INSTANT</span></div>
+          <div class="price-row"><div class="plabel">Buy Order</div><div class="pvalue">${full(buyOrd)}<span class="coin">g</span></div><span class="ptag ptag-o">ORDER</span></div>
         </div>
       </div>
       <div class="fill-strip">
-        <span class="fill-label">⏱ Buy order fill time:</span>
-        <span class="fill-val">${estimateFill(id,1)}</span>
-        <span class="fill-label" style="margin-left:8px">↔ Buy/Sell spread:</span>
-        <span class="fill-val gold">${full(spread)}g</span>
+        <span class="fill-label">⏱ Buy order fill time:</span><span class="fill-val">${estimateFill(id,1)}</span>
+        <span class="fill-label" style="margin-left:8px">↔ Buy/Sell spread:</span><span class="fill-val gold">${full(spread)}g</span>
       </div>
       <div class="stats-row">
         <div class="stat-cell"><div class="slabel">BUY VOL</div><div class="svalue">${short(qs.buyVolume)}</div></div>
@@ -739,8 +693,6 @@ function renderCard(id) {
         <div class="chart-wrap"><canvas id="depth-chart"></canvas></div>
       </div>
     </div>
-
-    <!-- HISTORY TAB -->
     <div class="tab-content" id="tc-history">
       <div class="chart-section" style="padding-top:20px">
         <div class="section-title">
@@ -750,19 +702,18 @@ function renderCard(id) {
             <button class="period-btn" id="hbtn-week" onclick="loadBZHistory('${id}','week')">1W</button>
           </div>
         </div>
-        <div class="chart-wrap" id="history-wrap">
-          <div class="craft-loading">Loading history...</div>
-        </div>
+        <div class="chart-wrap" id="history-wrap"><div class="craft-loading">Loading history...</div></div>
       </div>
     </div>
-
-    <!-- CRAFTING TAB -->
     <div class="tab-content" id="tc-crafting">
-      <div class="craft-section">
-        <div id="craft-body" class="craft-loading">Loading recipe data...</div>
-      </div>
+      <div class="craft-section"><div id="craft-body" class="craft-loading">Loading recipe data...</div></div>
     </div>
-
+    <div class="tab-content" id="tc-essence">
+      <div class="essence-section"><div id="essence-body" class="craft-loading">Loading essence data...</div></div>
+    </div>
+    <div class="tab-content" id="tc-itemdata">
+      <div class="item-data-section"><div id="itemdata-body" class="craft-loading">Loading item data...</div></div>
+    </div>
     <div class="card-foot">
       <span class="updated">Updated ${updated?.toLocaleTimeString()??'—'}</span>
       <button class="refresh-btn" onclick="doRefresh()">↻ REFRESH</button>
@@ -773,39 +724,31 @@ function renderCard(id) {
   fetchNEU(id);
 }
 
-/* ─── Bazaar History ──────────────────────────────────────────── */
-async function loadBZHistory(id, period) {
-  ['day','week'].forEach(p=>{
-    document.getElementById('hbtn-'+p)?.classList.toggle('active',p===period);
-  });
+async function loadBZHistory(id,period){
+  ['day','week'].forEach(p=>{ document.getElementById('hbtn-'+p)?.classList.toggle('active',p===period); });
   const wrap=document.getElementById('history-wrap');
   if(!wrap) return;
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
   const data=await fetchAHHistory(id,period);
-  if(!data||!Array.isArray(data)||!data.length){
-    wrap.innerHTML='<div class="no-recipe" style="padding:30px">No AH history data for this item.</div>';
-    return;
-  }
+  if(!data||!Array.isArray(data)||!data.length){ wrap.innerHTML='<div class="no-recipe" style="padding:30px">No AH history data for this item.</div>'; return; }
   wrap.innerHTML='<canvas id="history-chart"></canvas>';
   const stats=period==='day'?cleanAHStats(data):null;
   renderHistoryChart('history-chart',data,period,stats);
 }
 
-/* ─── Bazaar Tab Switch ───────────────────────────────────────── */
-function switchTab(t) {
+function switchTab(t){
   currentTab=t;
-  ['prices','history','crafting'].forEach(n=>{
+  ['prices','history','crafting','essence','itemdata'].forEach(n=>{
     document.getElementById('tab-'+n)?.classList.toggle('active',n===t);
     document.getElementById('tc-'+n)?.classList.toggle('active',n===t);
   });
   if(t==='crafting'&&currentId) renderCrafting(currentId);
   if(t==='history'&&currentId)  loadBZHistory(currentId,'day');
+  if(t==='essence'&&currentId)  renderEssence(currentId);
+  if(t==='itemdata'&&currentId) renderItemData(currentId);
 }
 
-/* ═══════════════════════════════════════════════════════════════ */
-/* ─── AUCTION HOUSE CARD ──────────────────────────────────────── */
-/* ═══════════════════════════════════════════════════════════════ */
-function renderAHCard(id) {
+function renderAHCard(id){
   const sbItem=sbAllItems.find(i=>i.id===id);
   const displayName=sbItem?sbItem.name:toName(id);
   const tier=sbItem?.tier||'';
@@ -824,14 +767,12 @@ function renderAHCard(id) {
       <button class="tab-btn active" id="ahtab-prices"   onclick="switchAHTab('prices','${id}')">📊 Prices</button>
       <button class="tab-btn"        id="ahtab-history"  onclick="switchAHTab('history','${id}')">📈 History</button>
       <button class="tab-btn"        id="ahtab-crafting" onclick="switchAHTab('crafting','${id}')">⚒ Crafting</button>
+      <button class="tab-btn"        id="ahtab-essence"  onclick="switchAHTab('essence','${id}')">✦ Essence</button>
+      <button class="tab-btn"        id="ahtab-itemdata" onclick="switchAHTab('itemdata','${id}')">📜 Item Data</button>
     </div>
-
-    <!-- PRICES -->
     <div class="tab-content active" id="ahtc-prices">
       <div class="craft-loading" id="ah-price-body">Loading price data...</div>
     </div>
-
-    <!-- HISTORY -->
     <div class="tab-content" id="ahtc-history">
       <div class="chart-section" style="padding-top:20px">
         <div class="section-title">
@@ -841,19 +782,18 @@ function renderAHCard(id) {
             <button class="period-btn"        id="ahbtn-week" onclick="loadAHHistory('${id}','week')">1W</button>
           </div>
         </div>
-        <div class="chart-wrap" id="ah-history-wrap">
-          <div class="craft-loading">Loading history...</div>
-        </div>
+        <div class="chart-wrap" id="ah-history-wrap"><div class="craft-loading">Loading history...</div></div>
       </div>
     </div>
-
-    <!-- CRAFTING -->
     <div class="tab-content" id="ahtc-crafting">
-      <div class="craft-section">
-        <div id="craft-body" class="craft-loading">Loading recipe data...</div>
-      </div>
+      <div class="craft-section"><div id="craft-body" class="craft-loading">Loading recipe data...</div></div>
     </div>
-
+    <div class="tab-content" id="ahtc-essence">
+      <div class="essence-section"><div id="essence-body" class="craft-loading">Loading essence data...</div></div>
+    </div>
+    <div class="tab-content" id="ahtc-itemdata">
+      <div class="item-data-section"><div id="itemdata-body" class="craft-loading">Loading item data...</div></div>
+    </div>
     <div class="card-foot">
       <span class="updated">AH data via Coflnet · ${new Date().toLocaleTimeString()}</span>
       <button class="refresh-btn" onclick="pick('${id}')">↻ REFRESH</button>
@@ -864,42 +804,24 @@ function renderAHCard(id) {
   fetchNEU(id);
 }
 
-async function loadAHPrices(id) {
+async function loadAHPrices(id){
   const el=document.getElementById('ah-price-body');
   if(!el) return;
   const stats=await fetchAHPrice(id);
   const container=el.parentElement;
   if(!container) return;
-
   if(!stats||(stats.avg==null&&stats.min==null)){
     container.innerHTML='<div class="no-recipe">⛏ No recent AH price data found.<br><small style="font-size:14px;color:var(--muted2)">This item may not have been sold recently.</small></div>';
     return;
   }
-
-  // Confidence indicator based on how many buckets survived filtering
-  const buckets = stats.buckets ?? 0;
-  const rawBuckets = stats.rawBuckets ?? buckets;
-  const filtered = stats.filtered ?? 0;
-  const confColor = buckets >= 12 ? 'var(--green)' : buckets >= 4 ? 'var(--gold)' : 'var(--red)';
-  const confLabel = buckets >= 12 ? 'HIGH' : buckets >= 4 ? 'MEDIUM' : 'LOW';
-
+  const buckets=stats.buckets??0,rawBuckets=stats.rawBuckets??buckets,filtered=stats.filtered??0;
+  const confColor=buckets>=12?'var(--green)':buckets>=4?'var(--gold)':'var(--red)';
+  const confLabel=buckets>=12?'HIGH':buckets>=4?'MEDIUM':'LOW';
   container.innerHTML=`
     <div class="ah-price-grid">
-      <div class="ah-cell">
-        <div class="plabel">Clean Min</div>
-        <div class="pvalue" style="color:var(--aqua)">${full(stats.min)}<span class="coin">g</span></div>
-        <div style="font-size:12px;color:var(--muted2);margin-top:3px">10th pct of clean data</div>
-      </div>
-      <div class="ah-cell">
-        <div class="plabel">Weighted Avg</div>
-        <div class="pvalue" style="color:var(--gold)">${full(stats.avg)}<span class="coin">g</span></div>
-        <div style="font-size:12px;color:var(--muted2);margin-top:3px">volume-weighted, ${buckets}h of data</div>
-      </div>
-      <div class="ah-cell">
-        <div class="plabel">Median</div>
-        <div class="pvalue">${full(stats.median)}<span class="coin">g</span></div>
-        <div style="font-size:12px;color:var(--muted2);margin-top:3px">midpoint of clean hours</div>
-      </div>
+      <div class="ah-cell"><div class="plabel">Clean Min</div><div class="pvalue" style="color:var(--aqua)">${full(stats.min)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">10th pct of clean data</div></div>
+      <div class="ah-cell"><div class="plabel">Weighted Avg</div><div class="pvalue" style="color:var(--gold)">${full(stats.avg)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">volume-weighted, ${buckets}h of data</div></div>
+      <div class="ah-cell"><div class="plabel">Median</div><div class="pvalue">${full(stats.median)}<span class="coin">g</span></div><div style="font-size:12px;color:var(--muted2);margin-top:3px">midpoint of clean hours</div></div>
     </div>
     <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="stat-cell"><div class="slabel">90TH PCT</div><div class="svalue">${short(stats.max)}</div></div>
@@ -913,96 +835,49 @@ async function loadAHPrices(id) {
     </div>`;
 }
 
-function switchAHTab(t, id) {
-  ['prices','history','crafting'].forEach(n=>{
+function switchAHTab(t,id){
+  ['prices','history','crafting','essence','itemdata'].forEach(n=>{
     document.getElementById('ahtab-'+n)?.classList.toggle('active',n===t);
     document.getElementById('ahtc-'+n)?.classList.toggle('active',n===t);
   });
   if(t==='history')  loadAHHistory(id,'day');
   if(t==='crafting') renderCrafting(id);
+  if(t==='essence')  renderEssence(id);
+  if(t==='itemdata') renderItemData(id);
 }
 
-async function loadAHHistory(id, period) {
-  ['day','week'].forEach(p=>{
-    document.getElementById('ahbtn-'+p)?.classList.toggle('active',p===period);
-  });
+async function loadAHHistory(id,period){
+  ['day','week'].forEach(p=>{ document.getElementById('ahbtn-'+p)?.classList.toggle('active',p===period); });
   const wrap=document.getElementById('ah-history-wrap');
   if(!wrap) return;
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
   const raw=await fetchAHHistory(id,period);
-  if(!raw||!Array.isArray(raw)||!raw.length){
-    wrap.innerHTML='<div class="no-recipe" style="padding:30px">No history data available.</div>';
-    return;
-  }
+  if(!raw||!Array.isArray(raw)||!raw.length){ wrap.innerHTML='<div class="no-recipe" style="padding:30px">No history data available.</div>'; return; }
   wrap.innerHTML='<canvas id="ah-history-chart"></canvas>';
-  // For week period use raw (already daily buckets, less manipulation noise)
-  // For day period, run the cleaner and visually flag outlier hours
-  if(period==='day'){
-    const stats=cleanAHStats(raw);
-    renderHistoryChart('ah-history-chart', raw, period, stats);
-  } else {
-    // Week: still clean but more lenient (3× IQR)
-    renderHistoryChart('ah-history-chart', raw, period, null);
-  }
+  if(period==='day'){ const stats=cleanAHStats(raw); renderHistoryChart('ah-history-chart',raw,period,stats); }
+  else { renderHistoryChart('ah-history-chart',raw,period,null); }
 }
 
-/* ─── History Chart Renderer ──────────────────────────────────── */
-function renderHistoryChart(canvasId, rawData, period, stats=null) {
+function renderHistoryChart(canvasId,rawData,period,stats=null){
   if(chartInst){chartInst.destroy();chartInst=null;}
   const ctx=document.getElementById(canvasId);
   if(!ctx) return;
-
-  // If we have clean stats, figure out which points are outliers
-  let cleanSet = null;
-  if(stats?.cleanPts){
-    const cleanTimes = new Set(stats.cleanPts.map(d=>d.time));
-    cleanSet = cleanTimes;
-  }
-
+  let cleanSet=null;
+  if(stats?.cleanPts){ const ct=new Set(stats.cleanPts.map(d=>d.time)); cleanSet=ct; }
   const labels=rawData.map(d=>{
     const dt=new Date(d.time);
-    return period==='day'
-      ? dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-      : dt.toLocaleDateString([],{month:'short',day:'numeric'});
+    return period==='day'?dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):dt.toLocaleDateString([],{month:'short',day:'numeric'});
   });
-
-  // Avg line: outlier points get null so they show as gaps
-  // We draw a second "outlier" scatter on top to show them dimmed
-  const avgClean  = rawData.map(d => (!cleanSet || cleanSet.has(d.time)) ? d.avg  : null);
-  const avgDirty  = rawData.map(d => (cleanSet  && !cleanSet.has(d.time)) ? d.avg : null);
-  const minData   = rawData.map(d => (!cleanSet || cleanSet.has(d.time)) ? (d.min>0?d.min:null) : null);
-  const maxData   = rawData.map(d => (!cleanSet || cleanSet.has(d.time)) ? d.max  : null);
-
-  const datasets = [
-    // Shaded area between min and max for clean points
-    {
-      label:'Max',data:maxData,
-      borderColor:'rgba(255,85,85,0)',backgroundColor:'rgba(255,85,85,.06)',
-      fill:'+1',tension:.3,pointRadius:0,borderWidth:0,spanGaps:true,
-    },{
-      label:'Min',data:minData,
-      borderColor:'rgba(85,255,85,0)',backgroundColor:'rgba(85,255,85,.06)',
-      fill:false,tension:.3,pointRadius:0,borderWidth:0,spanGaps:true,
-    },
-    // Main avg line (clean)
-    {
-      label:'Avg',data:avgClean,
-      borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.08)',
-      fill:false,tension:.3,pointRadius:0,borderWidth:2.5,spanGaps:false,
-    },
-    // Outlier hours — shown dimmed in red so user sees what was filtered
-    {
-      label:'Outlier',data:avgDirty,
-      borderColor:'rgba(255,85,85,.0)',
-      backgroundColor:'rgba(255,85,85,.5)',
-      pointRadius:rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?4:0),
-      pointStyle:'crossRot',
-      showLine:false,
-      tension:0,
-    },
+  const avgClean=rawData.map(d=>(!cleanSet||cleanSet.has(d.time))?d.avg:null);
+  const avgDirty=rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?d.avg:null);
+  const minData=rawData.map(d=>(!cleanSet||cleanSet.has(d.time))?(d.min>0?d.min:null):null);
+  const maxData=rawData.map(d=>(!cleanSet||cleanSet.has(d.time))?d.max:null);
+  const datasets=[
+    {label:'Max',data:maxData,borderColor:'rgba(255,85,85,0)',backgroundColor:'rgba(255,85,85,.06)',fill:'+1',tension:.3,pointRadius:0,borderWidth:0,spanGaps:true},
+    {label:'Min',data:minData,borderColor:'rgba(85,255,85,0)',backgroundColor:'rgba(85,255,85,.06)',fill:false,tension:.3,pointRadius:0,borderWidth:0,spanGaps:true},
+    {label:'Avg',data:avgClean,borderColor:'#ffaa00',backgroundColor:'rgba(255,170,0,.08)',fill:false,tension:.3,pointRadius:0,borderWidth:2.5,spanGaps:false},
+    {label:'Outlier',data:avgDirty,borderColor:'rgba(255,85,85,.0)',backgroundColor:'rgba(255,85,85,.5)',pointRadius:rawData.map(d=>(cleanSet&&!cleanSet.has(d.time))?4:0),pointStyle:'crossRot',showLine:false,tension:0},
   ];
-
-  // If no clean/dirty distinction, just show everything normally
   if(!cleanSet){
     datasets.length=0;
     datasets.push(
@@ -1011,59 +886,26 @@ function renderHistoryChart(canvasId, rawData, period, stats=null) {
       {label:'Max',data:rawData.map(d=>d.max),borderColor:'#ff555566',backgroundColor:'transparent',tension:.3,pointRadius:0,borderWidth:1.5,borderDash:[4,4]}
     );
   }
-
-  // Add a horizontal line for clean avg if available
-  const cleanAvgVal = stats?.avg ?? null;
-
   chartInst=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,
-          titleColor:'#666',bodyColor:'#fff',padding:8,
-          filter: item => item.dataset.label!=='Outlier'||item.parsed.y!=null,
-          callbacks:{
-            label:c=>{
-              if(c.parsed.y==null) return null;
-              if(c.dataset.label==='Outlier') return `⚠ Outlier: ${short(c.parsed.y)}`;
-              return `${c.dataset.label}: ${short(c.parsed.y)}`;
-            }
-          }
-        },
-        ...(cleanAvgVal!=null ? {
-          annotation:{
-            annotations:{
-              avgLine:{
-                type:'line',scaleID:'y',value:cleanAvgVal,
-                borderColor:'rgba(255,170,0,.4)',borderWidth:1,borderDash:[6,4],
-                label:{display:true,content:`Avg ${short(cleanAvgVal)}`,
-                  backgroundColor:'rgba(255,170,0,.15)',color:'#ffaa00',
-                  font:{family:'JetBrains Mono',size:9},position:'start',padding:3}
-              }
-            }
-          }
-        } : {})
-      },
-      scales:{
-        x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
+    type:'line',data:{labels,datasets},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
+        filter:item=>item.dataset.label!=='Outlier'||item.parsed.y!=null,
+        callbacks:{label:c=>{if(c.parsed.y==null)return null;if(c.dataset.label==='Outlier')return `⚠ Outlier: ${short(c.parsed.y)}`;return `${c.dataset.label}: ${short(c.parsed.y)}`;}}
+      }},
+      scales:{x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
         y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}
       }
     }
   });
 }
 
-/* ─── Depth Chart (Bazaar) ────────────────────────────────────── */
-function renderDepth(p) {
+function renderDepth(p){
   const buys=(p.buy_summary||[]).slice(0,20).reverse();
   const sells=(p.sell_summary||[]).slice(0,20);
   let cB=0,cS=0,bL=[],bV=[],sL=[],sV=[];
-  for(const o of buys)  {cB+=o.amount;bL.push(Math.round(o.pricePerUnit).toLocaleString());bV.push(cB);}
-  for(const o of sells) {cS+=o.amount;sL.push(Math.round(o.pricePerUnit).toLocaleString());sV.push(cS);}
+  for(const o of buys){cB+=o.amount;bL.push(Math.round(o.pricePerUnit).toLocaleString());bV.push(cB);}
+  for(const o of sells){cS+=o.amount;sL.push(Math.round(o.pricePerUnit).toLocaleString());sV.push(cS);}
   const labels=[...bL,...sL];
   const buyD=[...bV,...new Array(sL.length).fill(null)];
   const sellD=[...new Array(bL.length).fill(null),...sV];
@@ -1076,59 +918,39 @@ function renderDepth(p) {
       {label:'Buy',data:buyD,borderColor:'#55ff55',backgroundColor:'rgba(85,255,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false},
       {label:'Sell',data:sellD,borderColor:'#ff5555',backgroundColor:'rgba(255,85,85,.07)',fill:true,tension:.3,pointRadius:0,borderWidth:1.5,spanGaps:false}
     ]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
-          callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toLocaleString()??''}`}}
-      },
-      scales:{
-        x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:7,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#16161a',borderColor:'#363639',borderWidth:1,titleColor:'#666',bodyColor:'#fff',padding:8,
+        callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y?.toLocaleString()??''}`}
+      }},
+      scales:{x:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},maxTicksLimit:7,maxRotation:0},grid:{color:'rgba(0,0,0,.25)'}},
         y:{ticks:{color:'#444',font:{family:'JetBrains Mono',size:9},callback:v=>short(v)},grid:{color:'rgba(0,0,0,.25)'}}
       }
     }
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════ */
-/* ─── CRAFTING TAB (shared by both card types) ────────────────── */
-/* ═══════════════════════════════════════════════════════════════ */
-async function renderCrafting(id) {
+async function renderCrafting(id){
   const el=document.getElementById('craft-body');
   if(!el) return;
   el.className='craft-loading'; el.textContent='Loading recipe data...';
-
   const neu=await fetchNEU(id);
   if(!neu){el.className='no-recipe';el.innerHTML='⛏ No item data found in NEU repo.';return;}
-
   const recipe=parseRecipe(neu);
   if(!recipe){el.className='no-recipe';el.innerHTML='⛏ This item has no crafting recipe in the NEU repo.';return;}
-
   const {slots,ingMap,outQty}=recipe;
-
-  // Batch-fetch AH prices for any ingredient NOT on bazaar
   const ahIngIds=Object.keys(ingMap).filter(iid=>!products[iid]);
   const ahPrices={};
   if(ahIngIds.length){
     el.textContent=`Loading recipe data... (fetching ${ahIngIds.length} AH prices)`;
-    await Promise.all(ahIngIds.map(async iid=>{
-      const p=await fetchAHPrice(iid);
-      if(p) ahPrices[iid]=p;
-    }));
+    await Promise.all(ahIngIds.map(async iid=>{ const p=await fetchAHPrice(iid); if(p) ahPrices[iid]=p; }));
   }
-
-  const costs=craftCost(ingMap, ahPrices);
+  const costs=craftCost(ingMap,ahPrices);
   const dispName=stripMC(neu.displayname)||toName(id);
-
   let iTotal=0,oTotal=0,allKnown=true;
   for(const c of Object.values(costs)){
     if(c.iTotal!==null) iTotal+=c.iTotal; else allKnown=false;
     if(c.oTotal!==null) oTotal+=c.oTotal;
   }
-
-  // For sell price: use bazaar if available, else AH price
   let sellI=null,sellO=null;
   if(products[id]){
     const p=products[id];
@@ -1136,42 +958,31 @@ async function renderCrafting(id) {
     sellO=(p.buy_summary?.[0]?.pricePerUnit??p.quick_status.sellPrice)*outQty;
   } else {
     const ahp=await fetchAHPrice(id);
-    if(ahp?.min!=null){ sellI=ahp.min*outQty; }
-    if(ahp?.avg!=null){ sellO=ahp.avg*outQty; }
+    if(ahp?.min!=null) sellI=ahp.min*outQty;
+    if(ahp?.avg!=null) sellO=ahp.avg*outQty;
   }
-
   const oc=itemColor(id),oa=getAbbr(id);
-  const outSlotHTML=`
-    <div class="out-slot mc-slot" onclick="pick('${id}')" style="position:relative;background:${oc}18;border-color:${oc}66 ${oc}22 ${oc}22 ${oc}66;" title="${toName(id)}">
-      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-        <div class="slot-abbr" style="width:46px;height:46px;background:${oc}44;border:2px solid ${oc}88;display:flex;align-items:center;justify-content:center;color:${oc};font-size:13px;">${oa}</div>
-        ${outQty>1?`<span class="slot-qty" style="font-size:13px">${outQty}</span>`:''}
-      </div>
-    </div>`;
-
+  const outSlotHTML=`<div class="out-slot mc-slot" onclick="pick('${id}')" style="position:relative;background:${oc}18;border-color:${oc}66 ${oc}22 ${oc}22 ${oc}66;" title="${toName(id)}">
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+      <div class="slot-abbr" style="width:46px;height:46px;background:${oc}44;border:2px solid ${oc}88;display:flex;align-items:center;justify-content:center;color:${oc};font-size:13px;">${oa}</div>
+      ${outQty>1?`<span class="slot-qty" style="font-size:13px">${outQty}</span>`:''}
+    </div>
+  </div>`;
   const ingRows=Object.entries(costs).map(([iid,c])=>{
     const ft=estimateFill(iid,c.qty);
     const col=itemColor(iid);
     const isAH=c.source==='ah';
     const badge=isAH?`<span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--blue);border:1px solid #334488;padding:1px 4px;margin-left:6px;background:rgba(85,153,255,.08)">AH</span>`:'';
-    const iC=c.iTotal!==null
-      ?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`
-      :`<span class="price-na">N/A</span>`;
-    const oC=c.oTotal!==null
-      ?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`
-      :`<span class="price-na">N/A</span>`;
-    const iLabel=isAH?'LOWEST BIN':'INSTA-BUY';
-    const oLabel=isAH?'AH AVG':'BUY ORDER';
+    const iC=c.iTotal!==null?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
+    const oC=c.oTotal!==null?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
     return `<tr class="ing-row" onclick="pick('${iid}')">
       <td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span>${badge}</td>
       <td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td>
-      <td class="cell-r" title="${iLabel}">${iC}</td>
-      <td class="cell-r" title="${oLabel}">${oC}</td>
+      <td class="cell-r">${iC}</td><td class="cell-r">${oC}</td>
       <td class="cell-r"><span class="fill-t">${ft}</span></td>
     </tr>`;
   }).join('');
-
-  function pCard(label,cost,sell,best=false) {
+  function pCard(label,cost,sell,best=false){
     if(cost===null||sell===null) return `<div class="ps"><div class="ps-lbl">${label}</div><div class="ps-val" style="color:var(--muted2)">N/A</div></div>`;
     const profit=sell-cost,pct=cost>0?((profit/cost)*100).toFixed(1):'—';
     const cls=profit>=0?'pos':'neg',sign=profit>=0?'+':'';
@@ -1181,48 +992,28 @@ async function renderCrafting(id) {
       <div class="ps-pct" style="color:${profit>=0?'var(--green)':'var(--red)'}">${sign}${pct}%</div>
     </div>`;
   }
-
   const isBZ=!!products[id];
-  const sellLabel1=isBZ?'Order mats → Insta-sell':'Order/AH mats → Min AH';
-  const sellLabel2=isBZ?'Order mats → Sell order':'Order/AH mats → Avg AH';
-  const sellLabel3=isBZ?'Insta-buy mats → Insta-sell':'Min BIN mats → Min AH';
-  const sellLabel4=isBZ?'Insta-buy mats → Sell order':'Min BIN mats → Avg AH';
-
   const scenarios=[
-    {label:sellLabel1,cost:allKnown?oTotal:null,sell:sellI},
-    {label:sellLabel2,cost:allKnown?oTotal:null,sell:sellO},
-    {label:sellLabel3,cost:allKnown?iTotal:null,sell:sellI},
-    {label:sellLabel4,cost:allKnown?iTotal:null,sell:sellO},
+    {label:isBZ?'Order mats → Insta-sell':'Order/AH mats → Min AH',cost:allKnown?oTotal:null,sell:sellI},
+    {label:isBZ?'Order mats → Sell order':'Order/AH mats → Avg AH',cost:allKnown?oTotal:null,sell:sellO},
+    {label:isBZ?'Insta-buy mats → Insta-sell':'Min BIN mats → Min AH',cost:allKnown?iTotal:null,sell:sellI},
+    {label:isBZ?'Insta-buy mats → Sell order':'Min BIN mats → Avg AH',cost:allKnown?iTotal:null,sell:sellO},
   ];
   let bestIdx=-1,bestProfit=-Infinity;
   scenarios.forEach((s,i)=>{if(s.cost!==null&&s.sell!==null){const p=s.sell-s.cost;if(p>bestProfit){bestProfit=p;bestIdx=i;}}});
-
-  // Detect if any ingredient uses AH prices to show a note
   const hasAHIngs=Object.values(costs).some(c=>c.source==='ah');
-  const ahNote=hasAHIngs
-    ?`<div style="padding:8px 20px 0;font-size:14px;color:var(--muted2)">
-        <span style="color:var(--blue)">■</span> Blue costs = AH prices (Coflnet avg). 
-        <span style="color:var(--aqua)">■</span> Cyan = AH avg sell price.
-      </div>`:'';
-
+  const ahNote=hasAHIngs?`<div style="padding:8px 20px 0;font-size:14px;color:var(--muted2)"><span style="color:var(--blue)">■</span> Blue costs = AH prices (Coflnet avg). <span style="color:var(--aqua)">■</span> Cyan = AH avg sell price.</div>`:'';
   el.className='';
   el.innerHTML=`
-    <div class="section-title" style="margin-bottom:16px">
-      CRAFTING RECIPE — ${dispName.toUpperCase()} ${outQty>1?`× ${outQty}`:''}
-    </div>
+    <div class="section-title" style="margin-bottom:16px">CRAFTING RECIPE — ${dispName.toUpperCase()} ${outQty>1?`× ${outQty}`:''}</div>
     <div class="craft-grid-area">
       <div class="craft-grid">${slots.map(s=>slotHTML(s)).join('')}</div>
-      <div class="craft-arrow">
-        <svg width="26" height="18" viewBox="0 0 26 18"><polygon points="0,4 15,4 15,0 26,9 15,18 15,14 0,14" fill="currentColor"/></svg>
-        ${outQty>1?`<span>×${outQty}</span>`:''}
-      </div>
+      <div class="craft-arrow"><svg width="26" height="18" viewBox="0 0 26 18"><polygon points="0,4 15,4 15,0 26,9 15,18 15,14 0,14" fill="currentColor"/></svg>${outQty>1?`<span>×${outQty}</span>`:''}</div>
       ${outSlotHTML}
     </div>
     <div class="section-title">INGREDIENT COSTS <small>(CLICK ANY ROW OR SLOT TO VIEW ITEM)</small></div>
     <table class="ing-table">
-      <thead><tr>
-        <th>ITEM</th><th class="r">QTY</th><th class="r">INSTA-BUY</th><th class="r">BUY ORDER</th><th class="r">EST. FILL</th>
-      </tr></thead>
+      <thead><tr><th>ITEM</th><th class="r">QTY</th><th class="r">INSTA-BUY</th><th class="r">BUY ORDER</th><th class="r">EST. FILL</th></tr></thead>
       <tbody>${ingRows}</tbody>
       <tfoot><tr>
         <td colspan="2"><span class="total-lbl">TOTAL CRAFT COST</span></td>
@@ -1234,18 +1025,270 @@ async function renderCrafting(id) {
     ${ahNote}
     <div class="profit-box">
       <div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div>
-      <div class="profit-grid">
-        ${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}
-      </div>
+      <div class="profit-grid">${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}</div>
     </div>`;
-
-  el.querySelectorAll('.g-slot.clickable').forEach(sl=>
-    sl.addEventListener('click',()=>{const tid=sl.dataset.id; if(tid) pick(tid);})
-  );
+  el.querySelectorAll('.g-slot.clickable').forEach(sl=>sl.addEventListener('click',()=>{ const tid=sl.dataset.id; if(tid) pick(tid); }));
 }
 
-/* ─── Refresh ─────────────────────────────────────────────────── */
-async function doRefresh() {
+const ESSENCE_ICONS={
+  WITHER:'💀',SPIDER:'🕷',UNDEAD:'☠',DRAGON:'🐉',GOLD:'✨',
+  DIAMOND:'💎',ICE:'❄',CRIMSON:'🔥',DWARVEN:'⛏'
+};
+
+const MASTER_STAR_REQS=[
+  {label:'Floor 6 Cata',val:'Catacombs 24'},
+  {label:'Floor 7 Cata',val:'Catacombs 27'},
+  {label:'Floor 7 Cata',val:'Catacombs 30'},
+  {label:'Floor 7 Cata',val:'Catacombs 33'},
+  {label:'Floor 7 Cata',val:'Catacombs 36'},
+];
+
+async function renderEssence(id){
+  const el=document.getElementById('essence-body');
+  if(!el) return;
+  el.className='craft-loading'; el.textContent='Loading essence data...';
+
+  const neu=await fetchNEU(id);
+  if(!neu){ el.className='no-recipe'; el.innerHTML='⛏ No item data found in NEU repo.'; return; }
+
+  const upgradeCosts=neu.upgrade_costs??neu.dungeon_item_conversion_cost??null;
+
+  if(!upgradeCosts||!Array.isArray(upgradeCosts)||!upgradeCosts.length){
+    el.className='no-recipe';
+    el.innerHTML=`⛏ This item cannot be upgraded with essence.<br><small style="font-size:14px;color:var(--muted2)">Only dungeon-eligible equipment can be starred up.</small>`;
+    return;
+  }
+
+  let essenceType=null;
+  let starsData=[];
+
+  for(const starEntry of upgradeCosts){
+    if(!Array.isArray(starEntry)){ continue; }
+    for(const cost of starEntry){
+      if(cost.type&&cost.type!=='COINS'){
+        essenceType=cost.type.replace('ESSENCE_','');
+        break;
+      }
+    }
+    if(essenceType) break;
+  }
+
+  if(!essenceType){
+    for(const starEntry of upgradeCosts){
+      if(typeof starEntry==='object'&&!Array.isArray(starEntry)&&starEntry.type){
+        essenceType=starEntry.type.replace('ESSENCE_','');
+        break;
+      }
+    }
+  }
+
+  for(let i=0;i<upgradeCosts.length;i++){
+    const starEntry=upgradeCosts[i];
+    let essAmt=0,coins=0;
+    const arr=Array.isArray(starEntry)?starEntry:[starEntry];
+    for(const c of arr){
+      if(!c||!c.type) continue;
+      if(c.type==='COINS') coins=c.amount||0;
+      else essAmt=c.amount||0;
+      if(!essenceType&&c.type!=='COINS') essenceType=c.type.replace('ESSENCE_','');
+    }
+    starsData.push({star:i+1,essAmt,coins});
+  }
+
+  const bzEssId=essenceType?`ESSENCE_${essenceType}`:null;
+  const essProduct=bzEssId?products[bzEssId]:null;
+  const essInstaBuy=essProduct?.quick_status?.buyPrice??null;
+  const essBuyOrder=essProduct?.sell_summary?.[0]?.pricePerUnit??essProduct?.quick_status?.buyPrice??null;
+
+  let cumEss=0,cumCostI=0,cumCostO=0;
+
+  const isMaster=starsData.length>5;
+  const baseStars=starsData.slice(0,5);
+  const masterStars=starsData.slice(5);
+
+  function starRow(entry,idx,isMasterStar){
+    const {star,essAmt,coins}=entry;
+    cumEss+=essAmt;
+    const rowCostI=essInstaBuy!=null?Math.round(essAmt*essInstaBuy+coins):null;
+    const rowCostO=essBuyOrder!=null?Math.round(essAmt*essBuyOrder+coins):null;
+    if(rowCostI!=null) cumCostI+=rowCostI;
+    if(rowCostO!=null) cumCostO+=rowCostO;
+    const starsBefore=Array.from({length:star-1},(_,i)=>i<5?`<span class="star-gold">★</span>`:`<span class="star-master">✦</span>`).join('');
+    const thisStar=isMasterStar?`<span class="star-master">✦</span>`:`<span class="star-gold">★</span>`;
+    const starsAfter=Array.from({length:(isMasterStar?10:5)-star},()=>`<span class="star-plain">☆</span>`).join('');
+    const starDisp=starsBefore+thisStar+starsAfter;
+    const reqLabel=isMasterStar&&idx<MASTER_STAR_REQS.length?`<span class="ess-req">${MASTER_STAR_REQS[idx].val}</span>`:'—';
+    return `<tr class="${isMasterStar?'master-star':''}">
+      <td><div class="star-cell">${starDisp}</div></td>
+      <td class="cell-r"><span class="ess-amt">${essAmt.toLocaleString()}</span>${coins>0?`<br><span style="font-size:12px;color:var(--gold)">${short(coins)}g</span>`:''}</td>
+      <td class="cell-r">${rowCostI!=null?`<span class="ess-cost-i">${short(rowCostI)}</span>`:'<span class="price-na">—</span>'}</td>
+      <td class="cell-r">${rowCostO!=null?`<span class="ess-cost-o">${short(rowCostO)}</span>`:'<span class="price-na">—</span>'}</td>
+      <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
+      <td class="cell-r">${reqLabel}</td>
+    </tr>`;
+  }
+
+  const baseRows=baseStars.map((e,i)=>starRow(e,i,false)).join('');
+  const masterRows=masterStars.map((e,i)=>starRow(e,i,true)).join('');
+
+  const essColor=({WITHER:'#aa44ff',SPIDER:'#886644',UNDEAD:'#55ff55',DRAGON:'#ff5555',
+    GOLD:'#ffaa00',DIAMOND:'#55ffff',ICE:'#aaddff',CRIMSON:'#ff6600',DWARVEN:'#ffcc33'})[essenceType]||'#aaaaaa';
+
+  el.className='';
+  el.innerHTML=`
+    <div class="essence-header">
+      <div class="essence-icon">${ESSENCE_ICONS[essenceType]||'✨'}</div>
+      <div class="essence-meta">
+        <div class="essence-type" style="color:${essColor}">${essenceType||'UNKNOWN'} ESSENCE</div>
+        <div class="essence-sub">${starsData.length} upgradeable star${starsData.length!==1?'s':''} · ${isMaster?'Base + Master stars':'Base stars only'}</div>
+      </div>
+      ${essProduct?`<div class="essence-bz-price">
+        <div class="essence-bz-label">BZ INSTA-BUY</div>
+        <div class="essence-bz-val">${short(essInstaBuy)}<span class="coin" style="font-size:12px;color:var(--gold);margin-left:3px">g</span></div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:1px">order: ${short(essBuyOrder)}g</div>
+      </div>`:`<div class="essence-bz-price"><div class="essence-bz-label">BZ PRICE</div><div class="essence-bz-val" style="color:var(--muted2)">N/A</div></div>`}
+    </div>
+    <table class="essence-table">
+      <thead><tr>
+        <th>STARS</th>
+        <th class="r">ESSENCE / COINS</th>
+        <th class="r">INSTA-BUY COST</th>
+        <th class="r">BUY ORDER COST</th>
+        <th class="r">CUM. ESSENCE</th>
+        <th class="r">REQUIREMENT</th>
+      </tr></thead>
+      <tbody>
+        ${baseRows}
+        ${masterRows.length?`<tr><td colspan="6" style="padding:6px 10px;font-family:'Press Start 2P',monospace;font-size:6px;color:var(--purple);letter-spacing:.1em;background:rgba(187,85,255,.06);border-top:2px solid rgba(187,85,255,.2);border-bottom:2px solid rgba(187,85,255,.2)">✦ MASTER STARS</td></tr>${masterRows}`:''}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td><span class="total-lbl">TOTAL TO MAX</span></td>
+          <td class="cell-r"><span class="ess-amt">${cumEss.toLocaleString()}</span></td>
+          <td class="cell-r"><span class="ess-cost-i" style="font-size:18px">${cumCostI>0?short(cumCostI):'N/A'}</span></td>
+          <td class="cell-r"><span class="ess-cost-o" style="font-size:18px">${cumCostO>0?short(cumCostO):'N/A'}</span></td>
+          <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+    ${essProduct?`<div class="ess-note">Costs calculated from live bazaar prices. <span style="color:var(--red)">Insta-buy</span> = immediate purchase. <span style="color:var(--green)">Buy order</span> = waiting for sellers. Master star requirements are approximate — check your Catacombs level in-game.</div>`
+    :`<div class="ess-note" style="color:var(--gold)">⚠ ${essenceType||'This'} essence is not on the bazaar. Costs shown as N/A — price it manually on the AH.</div>`}`;
+}
+
+const STAT_LABELS={
+  DAMAGE:'⚔ Damage',STRENGTH:'💪 Strength',CRIT_CHANCE:'🎯 Crit Chance',CRIT_DAMAGE:'💥 Crit Damage',
+  ATTACK_SPEED:'⚡ Attack Speed',HEALTH:'❤ Health',DEFENSE:'🛡 Defense',SPEED:'👟 Speed',
+  INTELLIGENCE:'🔮 Intelligence',SEA_CREATURE_CHANCE:'🐟 Sea Creature Chance',MAGIC_FIND:'✨ Magic Find',
+  PET_LUCK:'🍀 Pet Luck',FEROCITY:'🗡 Ferocity',ABILITY_DAMAGE:'🌀 Ability Damage',
+  MINING_SPEED:'⛏ Mining Speed',MINING_FORTUNE:'🍀 Mining Fortune',FARMING_FORTUNE:'🌾 Farming Fortune',
+  FORAGING_FORTUNE:'🌲 Foraging Fortune',PRISTINE:'💎 Pristine',TRUE_DEFENSE:'🛡 True Defense',
+};
+
+const GEM_COLORS={
+  RUBY:'gem-ruby',SAPPHIRE:'gem-sapphire',AMBER:'gem-amber',AMETHYST:'gem-amethyst',
+  JADE:'gem-jade',TOPAZ:'gem-topaz',JASPER:'gem-jasper',OPAL:'gem-opal',
+  PERIDOT:'gem-peridot',AQUAMARINE:'gem-aquamarine',UNIVERSAL:'gem-universal',
+  COMBAT:'gem-combat',DEFENSIVE:'gem-defensive',MINING:'gem-mining',SPEED:'gem-speed',
+};
+
+const GEM_EMOJI={
+  RUBY:'🔴',SAPPHIRE:'🔵',AMBER:'🟠',AMETHYST:'🟣',JADE:'🟢',TOPAZ:'🟡',
+  JASPER:'🟤',OPAL:'⚪',PERIDOT:'🟩',AQUAMARINE:'🩵',UNIVERSAL:'⬜',
+  COMBAT:'⚔',DEFENSIVE:'🛡',MINING:'⛏',SPEED:'💨',
+};
+
+async function renderItemData(id){
+  const el=document.getElementById('itemdata-body');
+  if(!el) return;
+  el.className='craft-loading'; el.textContent='Loading item data...';
+  const neu=await fetchNEU(id);
+  if(!neu){ el.className='no-recipe'; el.innerHTML='⛏ No item data found in NEU repo.'; return; }
+
+  const sbItem=sbAllItems.find(i=>i.id===id);
+  const tier=sbItem?.tier||neu.tier||'';
+  const tierCol=tierColor(tier);
+  const dispName=stripMC(neu.displayname)||toName(id);
+
+  const lore=Array.isArray(neu.lore)?neu.lore:[];
+  const loreHTML=lore.map(line=>`<span class="lore-line">${renderMCLore(line)||'&nbsp;'}</span>`).join('');
+
+  const stats=neu.stats||{};
+  const statKeys=Object.keys(stats).filter(k=>stats[k]!==0);
+
+  let statsHTML='';
+  if(statKeys.length){
+    statsHTML=`<div class="section-title" style="margin-bottom:8px">COMBAT STATS</div>
+    <div class="item-stats-grid">
+      ${statKeys.map(k=>{
+        const v=stats[k];
+        const label=STAT_LABELS[k]||k.replace(/_/g,' ');
+        const isPos=v>0;
+        const suffix=k.includes('CHANCE')||k.includes('SPEED')||k.includes('FORTUNE')||k.includes('DAMAGE')&&k!=='DAMAGE'?'%':'';
+        return `<div class="stat-box"><div class="stat-box-label">${label}</div><div class="stat-box-val ${isPos?'pos':'neg'}">${isPos?'+':''}${v.toLocaleString()}${suffix}</div></div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  const gemSlots=neu.gemstone_slots||[];
+  let gemsHTML='';
+  if(gemSlots.length){
+    gemsHTML=`<div class="section-title" style="margin-bottom:8px">GEMSTONE SLOTS (${gemSlots.length})</div>
+    <div style="padding:10px 0;margin-bottom:16px">
+    <div class="gem-slots">
+      ${gemSlots.map(slot=>{
+        const type=(slot.slot_type||slot.type||'UNIVERSAL').toUpperCase();
+        const cls=GEM_COLORS[type]||'gem-unknown';
+        const emoji=GEM_EMOJI[type]||'💠';
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:18px">
+          <div class="gem-slot ${cls}" title="${type} slot">${emoji}</div>
+          <span style="font-size:11px;color:var(--muted2);font-family:'JetBrains Mono',monospace">${type.slice(0,3)}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    </div>`;
+  }
+
+  const reqs=[];
+  if(neu.dungeon_item_conversion_cost||neu.upgrade_costs) reqs.push({icon:'🏰',label:'Dungeon Item',val:'Eligible for starring'});
+  if(neu.requirements){
+    const r=neu.requirements;
+    if(r.level)      reqs.push({icon:'⚔',label:'Combat Level',val:`${r.level}`});
+    if(r.skill)      reqs.push({icon:'📊',label:'Skill',val:`${r.skill.type} ${r.skill.level}`});
+    if(r.dungeon)    reqs.push({icon:'🏰',label:'Dungeon',val:`${r.dungeon.type} Floor ${r.dungeon.level}`});
+    if(r.slayer)     reqs.push({icon:'☠',label:'Slayer',val:`${r.slayer.slayer_boss_type} ${r.slayer.level}`});
+  }
+  const catacombsReq=lore.find(l=>l.includes('Catacombs'));
+  if(catacombsReq&&!reqs.find(r=>r.label==='Dungeon')) reqs.push({icon:'🏰',label:'Requirement',val:stripMC(catacombsReq)});
+
+  let reqsHTML='';
+  if(reqs.length){
+    reqsHTML=`<div class="section-title" style="margin-bottom:8px">REQUIREMENTS</div>
+    <div class="req-list mc-slot" style="margin-bottom:16px">
+      ${reqs.map(r=>`<div class="req-item"><span class="req-icon">${r.icon}</span><span class="req-label">${r.label}</span><span class="req-val">${r.val}</span></div>`).join('')}
+    </div>`;
+  }
+
+  const soulbound=lore.some(l=>l.includes('SOULBOUND'));
+  const unstackable=neu.stackable===false||neu.stackable===0;
+  const catSection=neu.category||neu.itemid||'';
+
+  const badges=[];
+  if(soulbound) badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#ff5555;border:1px solid #770000;padding:2px 6px;background:rgba(255,85,85,.08)">SOULBOUND</span>`);
+  if(tier) badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:${tierCol};border:1px solid ${tierCol}44;padding:2px 6px;background:${tierCol}11">${tier}</span>`);
+  if(neu.museum) badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--aqua);border:1px solid #336666;padding:2px 6px;background:rgba(85,255,255,.06)">MUSEUM</span>`);
+
+  el.className='';
+  el.innerHTML=`
+    ${badges.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px">${badges.join('')}</div>`:''}
+    ${loreHTML?`<div class="section-title" style="margin-bottom:8px">LORE</div><div class="item-lore-box">${loreHTML}</div>`:''}
+    ${reqsHTML}
+    ${statsHTML}
+    ${gemsHTML}
+    ${!statKeys.length&&!loreHTML&&!reqsHTML&&!gemsHTML?'<div class="no-recipe">No detailed item data available for this item.</div>':''}`;
+}
+
+async function doRefresh(){
   await loadBazaar();
   if(currentId){
     if(isBazaar(currentId)){renderCard(currentId);if(currentTab==='crafting')setTimeout(()=>switchTab('crafting'),60);}
@@ -1253,29 +1296,26 @@ async function doRefresh() {
   }
 }
 
-/* ─── Search ──────────────────────────────────────────────────── */
-function scoreItem(item,q) {
+function scoreItem(item,q){
   const n=item.name.toLowerCase(),id=(item.id||'').toLowerCase().replace(/_/g,' ');
   const ql=q.toLowerCase().trim();
   if(n.startsWith(ql)) return 100;
-  if(n.includes(ql))   return 80;
-  if(id.includes(ql))  return 70;
+  if(n.includes(ql)) return 80;
+  if(id.includes(ql)) return 70;
   const words=ql.split(/\s+/).filter(w=>w.length>=2);
   let hits=0; for(const w of words) if(n.includes(w)||id.includes(w)) hits++;
   return words.length?(hits/words.length)*50:0;
 }
 
-function filterItems(q) {
+function filterItems(q){
   if(!q.trim()) return [];
-  // Merge bazaar items + AH-only SB items
   const bazaarIds=new Set(items.map(i=>i.id));
   const ahOnly=sbAllItems.filter(i=>!bazaarIds.has(i.id));
   const allSearchable=[...items,...ahOnly];
-  return allSearchable.map(i=>({i,s:scoreItem(i,q)}))
-    .filter(r=>r.s>0).sort((a,b)=>b.s-a.s).slice(0,14).map(r=>r.i);
+  return allSearchable.map(i=>({i,s:scoreItem(i,q)})).filter(r=>r.s>0).sort((a,b)=>b.s-a.s).slice(0,14).map(r=>r.i);
 }
 
-function renderDD(list,q) {
+function renderDD(list,q){
   const dd=document.getElementById('dd'); activeIdx=-1;
   if(!list.length){dd.innerHTML=`<div class="dd-empty">No results for "${q}"</div>`;dd.style.display='block';return;}
   dd.innerHTML=list.map((item,i)=>{
@@ -1285,39 +1325,26 @@ function renderDD(list,q) {
     const col=itemColor(item.id);
     return `<div class="dd-item" data-id="${item.id}" data-i="${i}">
       <span class="dname"><span class="dd-px" style="background:${col};"></span>${item.name}</span>
-      <span class="dd-right">
-        ${price?`<span class="dprice">${price}</span>`:''}
-        <span class="dd-type ${bz?'dd-bz':'dd-ah'}">${bz?'BZ':'AH'}</span>
-      </span>
+      <span class="dd-right">${price?`<span class="dprice">${price}</span>`:''}<span class="dd-type ${bz?'dd-bz':'dd-ah'}">${bz?'BZ':'AH'}</span></span>
     </div>`;
   }).join('');
   dd.style.display='block';
-  dd.querySelectorAll('.dd-item').forEach(el=>
-    el.addEventListener('mousedown',e=>{e.preventDefault();pick(el.dataset.id);})
-  );
+  dd.querySelectorAll('.dd-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();pick(el.dataset.id);}));
 }
 
 function hideDD(){document.getElementById('dd').style.display='none';activeIdx=-1;}
 
-/* ─── Pick Item ───────────────────────────────────────────────── */
-function pick(id) {
-  // Find name from bazaar items OR sb items
+function pick(id){
   const bazaarItem=items.find(i=>i.id===id);
   const sbItem=sbAllItems.find(i=>i.id===id);
   const displayName=sbItem?.name||bazaarItem?.name||toName(id);
-
   document.getElementById('search').value=displayName;
   currentId=id; currentTab='prices';
   hideDD();
-
-  if(isBazaar(id)){
-    renderCard(id);
-  } else {
-    renderAHCard(id);
-  }
+  if(isBazaar(id)) renderCard(id);
+  else renderAHCard(id);
 }
 
-/* ─── Input Events ────────────────────────────────────────────── */
 const searchEl=document.getElementById('search');
 searchEl.addEventListener('input',()=>{
   const q=searchEl.value;
@@ -1335,7 +1362,6 @@ searchEl.addEventListener('keydown',e=>{
 });
 document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap')) hideDD();});
 
-/* ─── Init ────────────────────────────────────────────────────── */
 loadBazaar();
 </script>
 </body>
