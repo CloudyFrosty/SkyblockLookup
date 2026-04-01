@@ -155,6 +155,8 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .ing-table tfoot td{padding:8px;border-top:2px solid var(--dk);background:rgba(0,0,0,.2);}
 .ing-table tbody tr.ing-row{cursor:pointer}
 .ing-table tbody tr.ing-row:hover td{background:rgba(255,170,0,.06)}
+.ing-table tbody tr.sub-row td{background:rgba(85,153,255,.025)}
+.ing-table tbody tr.sub-row:hover td{background:rgba(85,153,255,.06)}
 .ing-swatch{display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:8px;flex-shrink:0;}
 .ing-name{color:var(--text)}
 .ing-qty{color:var(--muted);font-size:15px}
@@ -172,6 +174,15 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .ps-val.pos{color:var(--green)}.ps-val.neg{color:var(--red)}
 .ps-pct{font-size:14px;color:var(--muted);margin-top:3px}
 .ps-best{position:absolute;top:6px;right:8px;font-family:'Press Start 2P',monospace;font-size:5px;color:var(--yellow);border:1px solid rgba(255,255,85,.3);padding:2px 5px;background:rgba(255,255,85,.05);letter-spacing:.08em;}
+.cpu-strip{display:flex;align-items:center;gap:18px;margin-top:14px;padding:10px 14px;background:rgba(255,170,0,.05);border:1px solid rgba(255,170,0,.15);}
+.cpu-lbl{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--gold);letter-spacing:.07em;}
+.cpu-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--gold)}
+.cpu-sep{color:var(--muted2);font-size:14px}
+.expand-btn{font-family:'Press Start 2P',monospace;font-size:7px;background:none;border:1px solid var(--lt);color:var(--muted2);cursor:pointer;padding:2px 7px;margin-left:6px;vertical-align:middle;transition:all .1s;min-width:28px;text-align:center;}
+.expand-btn:hover{border-color:var(--gold-dk);color:var(--gold)}
+.expand-btn.open{border-color:var(--green-dk);color:var(--green)}
+.expand-btn.none{border-color:var(--dk);color:var(--muted2);opacity:.35;cursor:default}
+.sub-connector{color:var(--muted2);margin-right:4px;font-size:13px;font-family:'JetBrains Mono',monospace;}
 .essence-section{padding:20px}
 .essence-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:14px 16px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.05);}
 .essence-icon{font-size:24px;flex-shrink:0}
@@ -199,6 +210,10 @@ body{font-family:'VT323',monospace;background:var(--bg);color:var(--text);min-he
 .ess-cum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
 .ess-req{font-size:13px;color:var(--muted2)}
 .ess-note{padding:10px 16px;font-size:14px;color:var(--muted2);border-top:1px solid var(--dk);background:rgba(0,0,0,.15);line-height:1.5}
+.dungeon-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;margin-bottom:14px;background:rgba(187,85,255,.08);border:1px solid rgba(187,85,255,.3);font-size:15px;color:var(--purple);}
+.dungeon-badge span{font-family:'Press Start 2P',monospace;font-size:6px;}
+.conv-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;margin-bottom:14px;background:rgba(85,153,255,.08);border:1px solid rgba(85,153,255,.3);font-size:15px;color:var(--blue);}
+.conv-badge span{font-family:'Press Start 2P',monospace;font-size:6px;}
 .floor-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;margin-bottom:14px;background:rgba(85,85,255,.08);border:1px solid rgba(85,85,255,.3);font-size:16px;color:var(--blue);}
 .floor-badge span{font-family:'Press Start 2P',monospace;font-size:7px;}
 .item-data-section{padding:20px}
@@ -305,7 +320,7 @@ footer strong{color:var(--muted)}
     </div>
   </div>
 </div>
-<footer>made by <strong>XxSweat v.0.0.1</strong></footer>
+<footer>made by <strong>XxSweat v.0.0.2</strong></footer>
 <script>
 const WORKER   = 'https://solitary-lake-43dd.xxsweatapi.workers.dev';
 const NEU_BASE = 'https://raw.githubusercontent.com/NotEnoughUpdates/NotEnoughUpdates-REPO/master/items/';
@@ -314,6 +329,8 @@ let products={}, items=[], sbAllItems=[], updated=null;
 let currentId=null, currentTab='prices', chartInst=null;
 let neuCache={}, ahPriceCache={}, activeIdx=-1;
 let marketOpen=true, compareList=[];
+let craftExpandState=new Map();
+let craftCurrentId=null;
 
 function isBazaar(id){return !!products[id];}
 function tierColor(t){return({COMMON:'#ffffff',UNCOMMON:'#55ff55',RARE:'#5599ff',EPIC:'#bb55ff',LEGENDARY:'#ffaa00',MYTHIC:'#ff55ff',DIVINE:'#55ffff',SPECIAL:'#ff5555',VERY_SPECIAL:'#ff5555'})[t]||'#aaaaaa';}
@@ -445,75 +462,106 @@ async function fetchAHHistory(id,period){
   try{const r=await fetch(`${WORKER}/ah-history/${encodeURIComponent(id)}?period=${period}`,{signal:AbortSignal.timeout(7000)});if(!r.ok)return null;return await r.json();}catch{return null;}
 }
 
-/* ── Essence Parser ── */
-/* NEU has multiple formats depending on item:
-   1. upgrade_costs: [ {type:"ESSENCE_WITHER",amount:150}, ... ] — one object per star, flat
-   2. upgrade_costs: [ [{type:"ESSENCE_WITHER",amount:150},{type:"COINS",amount:50000}], ... ] — array of arrays
-   3. dungeon_item_conversion_cost: {essence_type:"WITHER",amount:100,coins:50000} — the initial conversion step
-   We handle all three and also scan every top-level key for anything that looks like star data.
-*/
-function parseEssenceData(neu){
+const ESSENCE_ICONS={WITHER:'💀',SPIDER:'🕷',UNDEAD:'☠',DRAGON:'🐉',GOLD:'✨',DIAMOND:'💎',ICE:'❄',CRIMSON:'🔥',DWARVEN:'⛏',JUNGLE:'🌿',WOODED:'🌲'};
+const ESSENCE_COLORS={WITHER:'#aa44ff',SPIDER:'#886644',UNDEAD:'#55ff55',DRAGON:'#ff5555',GOLD:'#ffaa00',DIAMOND:'#55ffff',ICE:'#aaddff',CRIMSON:'#ff6600',DWARVEN:'#ffcc33',JUNGLE:'#55ff55',WOODED:'#8B6431'};
+const MASTER_REQS=['Catacombs 24','Catacombs 27','Catacombs 30','Catacombs 33','Catacombs 36'];
+
+function inferEssenceType(id,neu){
+  const lore=Array.isArray(neu?.lore)?neu.lore.map(l=>stripMC(l).toLowerCase()).join(' '):'';
+  const sid=id.toLowerCase();
+  const combined=sid+' '+lore;
+  if(/wither|necron|goldor|storm|maxor|shadow_fury|shadow fury|dark claymore|livid dagger/.test(combined))return'WITHER';
+  if(/spider|tarantula/.test(combined))return'SPIDER';
+  if(/revenant|zombie|rotten|undead|zombie_soldier/.test(combined))return'UNDEAD';
+  if(/dragon|superior|strong|young|old|wise|protector|holy|unstable|ender|mastiff/.test(combined))return'DRAGON';
+  if(/crimson|terror|hollow|aurora|fervor|magma/.test(combined))return'CRIMSON';
+  if(/dwarven|mineral|gemstone|mithril|titanium/.test(combined))return'DWARVEN';
+  if(/jungle|tiger/.test(combined))return'JUNGLE';
+  if(/ice|frozen|crystal/.test(combined))return'ICE';
+  if(/gold/.test(sid))return'GOLD';
+  return null;
+}
+
+function parseSingleCostEntry(entry){
+  let essAmt=0,coins=0,foundType=null;
+  if(!entry)return{essAmt,coins,foundType};
+  if(Array.isArray(entry)){
+    for(const c of entry){
+      if(!c||typeof c!=='object')continue;
+      const t=String(c.type||c.essence_type||'').toUpperCase();
+      const amt=c.amount||c.essence_amount||0;
+      if(t==='COINS')coins+=amt;
+      else if(t.includes('ESSENCE')){foundType=t.replace('ESSENCE_','').replace('_ESSENCE','');essAmt+=amt;}
+      else if(t&&amt>0&&!foundType){foundType=t;essAmt+=amt;}
+    }
+  }else if(typeof entry==='object'){
+    const t=String(entry.type||entry.essence_type||'').toUpperCase();
+    const amt=entry.amount||entry.essence_amount||0;
+    if(t==='COINS')coins=amt;
+    else if(t.includes('ESSENCE')){foundType=t.replace('ESSENCE_','').replace('_ESSENCE','');essAmt=amt;}
+    else if(t&&amt>0){foundType=t;essAmt=amt;}
+    if(entry.coins)coins+=entry.coins;
+  }
+  return{essAmt,coins,foundType};
+}
+
+function parseEssenceData(neu,itemId){
   if(!neu)return null;
   let conversionStep=null;
   let starSteps=[];
   let essenceType=null;
+  let isDungeon=false;
 
-  // Step 1: check dungeon_item_conversion_cost (the "add first star" conversion)
+  const loreStr=Array.isArray(neu.lore)?neu.lore.map(l=>stripMC(l)).join(' '):'';
+  if(loreStr.toLowerCase().includes('dungeon')||neu.dungeon_item_conversion_cost||neu.upgrade_costs)isDungeon=true;
+
   const conv=neu.dungeon_item_conversion_cost;
   if(conv&&typeof conv==='object'&&!Array.isArray(conv)){
-    const etype=(conv.essence_type||'').replace('ESSENCE_','');
-    if(etype){
+    const rawType=String(conv.essence_type||conv.type||'').toUpperCase();
+    const etype=rawType.replace('ESSENCE_','').replace('_ESSENCE','');
+    if(etype&&etype!=='COINS'){
       essenceType=etype;
-      conversionStep={essAmt:conv.amount||0,coins:conv.coins||0,label:'Convert to Dungeon Item'};
+      conversionStep={essAmt:conv.amount||conv.essence_amount||0,coins:conv.coins||conv.gold_cost||0,label:'Convert to Dungeon Item'};
     }
   }
 
-  // Step 2: parse upgrade_costs
-  const raw=neu.upgrade_costs;
-  if(Array.isArray(raw)&&raw.length){
-    for(const entry of raw){
-      let essAmt=0,coins=0,foundType=null;
-      // Format A: entry is a plain object {type,amount}
-      if(entry&&typeof entry==='object'&&!Array.isArray(entry)&&entry.type){
-        if(entry.type==='COINS')coins=entry.amount||0;
-        else{foundType=entry.type.replace('ESSENCE_','');essAmt=entry.amount||0;}
-      }
-      // Format B: entry is an array of cost objects
-      else if(Array.isArray(entry)){
-        for(const c of entry){
-          if(!c||!c.type)continue;
-          if(c.type==='COINS')coins=c.amount||0;
-          else{foundType=c.type.replace('ESSENCE_','');essAmt=c.amount||0;}
-        }
-      }
+  const UPGRADE_KEYS=['upgrade_costs','item_upgrade_costs','star_upgrade_costs','dungeon_upgrade_costs','upgrade_cost'];
+  let rawUpgrades=null;
+  for(const k of UPGRADE_KEYS){
+    if(Array.isArray(neu[k])&&neu[k].length){rawUpgrades=neu[k];break;}
+  }
+
+  if(rawUpgrades){
+    for(const entry of rawUpgrades){
+      const{essAmt,coins,foundType}=parseSingleCostEntry(entry);
       if(!essenceType&&foundType)essenceType=foundType;
       starSteps.push({essAmt,coins});
     }
   }
 
-  // Step 3: if still nothing found, scan ALL keys for arrays that look like star cost lists
-  if(!essenceType&&!starSteps.length){
+  if(!essenceType&&!conversionStep&&!starSteps.length){
     for(const key of Object.keys(neu)){
       const val=neu[key];
-      if(!Array.isArray(val)||!val.length)continue;
-      // Check if it smells like essence cost data: array of objects with type+amount or array of arrays with same
-      const first=val[0];
+      if(!Array.isArray(val)||!val.length||UPGRADE_KEYS.includes(key))continue;
+      if(key==='gemstone_slots'||key==='lore'||key==='recipes')continue;
       let looksLikeEssence=false;
-      if(first&&typeof first==='object'&&!Array.isArray(first)&&first.type&&typeof first.amount==='number'){
-        if(String(first.type).includes('ESSENCE'))looksLikeEssence=true;
-      }else if(Array.isArray(first)&&first.length){
-        const fc=first[0];
-        if(fc&&fc.type&&String(fc.type).includes('ESSENCE'))looksLikeEssence=true;
+      for(const entry of val.slice(0,3)){
+        if(Array.isArray(entry)){
+          for(const c of entry){
+            if(c&&typeof c==='object'){
+              const t=String(c.type||c.essence_type||'').toUpperCase();
+              if(t.includes('ESSENCE')){looksLikeEssence=true;break;}
+            }
+          }
+        }else if(entry&&typeof entry==='object'){
+          const t=String(entry.type||entry.essence_type||'').toUpperCase();
+          if(t.includes('ESSENCE')){looksLikeEssence=true;break;}
+        }
+        if(looksLikeEssence)break;
       }
       if(!looksLikeEssence)continue;
       for(const entry of val){
-        let essAmt=0,coins=0,foundType=null;
-        if(entry&&typeof entry==='object'&&!Array.isArray(entry)&&entry.type){
-          if(entry.type==='COINS')coins=entry.amount||0;
-          else{foundType=entry.type.replace('ESSENCE_','');essAmt=entry.amount||0;}
-        }else if(Array.isArray(entry)){
-          for(const c of entry){if(!c||!c.type)continue;if(c.type==='COINS')coins=c.amount||0;else{foundType=c.type.replace('ESSENCE_','');essAmt=c.amount||0;}}
-        }
+        const{essAmt,coins,foundType}=parseSingleCostEntry(entry);
         if(!essenceType&&foundType)essenceType=foundType;
         starSteps.push({essAmt,coins});
       }
@@ -521,12 +569,21 @@ function parseEssenceData(neu){
     }
   }
 
-  if(!essenceType&&!conversionStep&&!starSteps.length)return null;
+  if(!essenceType&&(starSteps.length||conversionStep)){
+    essenceType=inferEssenceType(itemId||'',neu)||'UNKNOWN';
+  }
 
-  return{essenceType:essenceType||'UNKNOWN',conversionStep,starSteps};
+  if(!essenceType&&!conversionStep&&!starSteps.length){
+    if(isDungeon){
+      const inferred=inferEssenceType(itemId||'',neu);
+      if(inferred)return{essenceType:inferred,conversionStep:null,starSteps:[],noData:true};
+    }
+    return null;
+  }
+
+  return{essenceType:essenceType||'UNKNOWN',conversionStep,starSteps,isDungeon};
 }
 
-/* ── Floor drop detection from lore ── */
 function detectFloorDrop(neu){
   if(!neu)return null;
   const lore=Array.isArray(neu.lore)?neu.lore:[];
@@ -567,14 +624,13 @@ function slotHTML(s,size=60){
   const col=itemColor(s.id),abbr=getAbbr(s.id),name=toName(s.id),inner=Math.round(size*.6);
   return`<div class="g-slot mc-slot clickable" data-id="${s.id}" data-name="${name}" style="width:${size}px;height:${size}px;background:${col}18;border-color:${col}66 ${col}22 ${col}22 ${col}66;">
     <span class="slot-tip">${name}</span>
-    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;">
+    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:position:relative;">
       <div class="slot-abbr" style="width:${inner}px;height:${inner}px;background:${col}38;border:2px solid ${col}66;display:flex;align-items:center;justify-content:center;color:${col};">${abbr}</div>
       ${s.qty>1?`<span class="slot-qty">${s.qty}</span>`:''}
     </div>
   </div>`;
 }
 
-/* ── Market Summary ── */
 function toggleMarket(){
   marketOpen=!marketOpen;
   document.getElementById('market-body').style.display=marketOpen?'':'none';
@@ -584,7 +640,6 @@ function toggleMarket(){
 function renderMarket(){
   const body=document.getElementById('market-body');
   if(!body||!Object.keys(products).length){body.innerHTML='<div class="market-loading">Loading...</div>';return;}
-
   const rows=Object.entries(products).map(([id,p])=>{
     const qs=p.quick_status;
     const sell=qs.sellPrice,buy=qs.buyPrice,vol=qs.movingWeek||0;
@@ -592,10 +647,8 @@ function renderMarket(){
     const pct=buy>0?(spread/buy)*100:0;
     return{id,name:toName(id),sell,buy,vol,spread,pct};
   });
-
   const byVol=[...rows].sort((a,b)=>b.vol-a.vol).slice(0,5);
   const bySpread=[...rows].filter(r=>r.vol>10000).sort((a,b)=>b.pct-a.pct).slice(0,5);
-
   function mrow(r,valKey,cls){
     const col=itemColor(r.id);
     const val=valKey==='vol'?short(r.vol):r.pct.toFixed(1)+'%';
@@ -604,7 +657,6 @@ function renderMarket(){
       <span class="mrow-val ${cls}">${val}</span>
     </div>`;
   }
-
   body.innerHTML=`<div class="market-body">
     <div class="market-col">
       <div class="market-col-title vol">⚡ MOST TRADED (7D)</div>
@@ -617,7 +669,6 @@ function renderMarket(){
   </div>`;
 }
 
-/* ── Compare ── */
 function updateCompareBar(){
   const bar=document.getElementById('compare-bar');
   const slots=document.getElementById('compare-slots');
@@ -626,7 +677,7 @@ function updateCompareBar(){
   bar.style.display='block';
   slots.innerHTML=compareList.map(id=>{
     const name=(sbAllItems.find(i=>i.id===id)||items.find(i=>i.id===id))?.name||toName(id);
-    return`<span class="compare-chip" onclick="removeCompare('${id}')"><span>${name}</span><span class="compare-chip-x">✕</span></span>`;
+    return`<span class="compare-chip" onclick="removeCompare('${id}')"><span>${name}</span><span>✕</span></span>`;
   }).join('');
   btn.disabled=compareList.length<2;
 }
@@ -649,10 +700,8 @@ async function openCompare(){
   if(compareList.length<2)return;
   const result=document.getElementById('result');
   result.innerHTML=`<div class="mc-panel compare-view"><div class="compare-view-header"><div class="compare-view-title">⚖ COMPARING ${compareList.length} ITEMS</div><button class="compare-back" onclick="closeCompare()">← BACK</button></div><div class="compare-loading">Loading item data...</div></div>`;
-
   const neuData=await Promise.all(compareList.map(id=>fetchNEU(id)));
   const ahData=await Promise.all(compareList.map(id=>isBazaar(id)?null:fetchAHPrice(id)));
-
   const cols=compareList.map((id,i)=>{
     const neu=neuData[i];
     const sbItem=sbAllItems.find(x=>x.id===id);
@@ -661,22 +710,17 @@ async function openCompare(){
     const name=sbItem?.name||toName(id);
     const p=products[id];
     const ah=ahData[i];
-
     const priceInstaBuy=p?p.quick_status.buyPrice:(ah?.min??ah?.avg??null);
     const priceBuyOrder=p?(p.sell_summary?.[0]?.pricePerUnit??p.quick_status.buyPrice):(ah?.avg??null);
     const priceInstaSell=p?p.quick_status.sellPrice:null;
     const vol=p?p.quick_status.movingWeek:null;
     const stats=neu?.stats||{};
-
     return{id,name,col,tier,priceInstaBuy,priceBuyOrder,priceInstaSell,vol,stats,neu,isBZ:!!p};
   });
-
   const allStatKeys=[...new Set(cols.flatMap(c=>Object.keys(c.stats)))];
   const STAT_LABELS={DAMAGE:'⚔ Damage',STRENGTH:'💪 Strength',CRIT_CHANCE:'🎯 Crit Chance',CRIT_DAMAGE:'💥 Crit Damage',ATTACK_SPEED:'⚡ Atk Speed',HEALTH:'❤ Health',DEFENSE:'🛡 Defense',SPEED:'👟 Speed',INTELLIGENCE:'🔮 Intelligence',FEROCITY:'🗡 Ferocity',TRUE_DEFENSE:'🛡 True Def',ABILITY_DAMAGE:'🌀 Ability Dmg'};
-
   const colCount=cols.length;
   const gridStyle=`grid-template-columns:repeat(${colCount},1fr)`;
-
   function compRow(label,vals,format=(v=>v!=null?short(v):'—')){
     const numVals=vals.filter(v=>v!=null&&typeof v==='number');
     const maxVal=numVals.length?Math.max(...numVals):null;
@@ -693,43 +737,37 @@ async function openCompare(){
       }).join('')}
     </div>`;
   }
-
   const colHeaders=`<div class="compare-grid" style="${gridStyle}">
     ${cols.map(c=>`<div class="compare-col-head">
       <div class="compare-col-name" style="color:${c.col}">${c.name}</div>
       <div class="compare-col-id">${c.id}${c.tier?` · ${c.tier}`:''}</div>
     </div>`).join('')}
   </div>`;
-
   const priceSection=`<div class="compare-grid" style="${gridStyle}"><div class="compare-section-lbl" style="grid-column:1/-1">💰 PRICES</div></div>`+
     compRow('Insta-Buy',cols.map(c=>c.priceInstaBuy),v=>v!=null?full(v)+'g':'—')+
     compRow('Buy Order / AH Avg',cols.map(c=>c.priceBuyOrder),v=>v!=null?full(v)+'g':'—')+
     compRow('Insta-Sell',cols.map(c=>c.priceInstaSell),v=>v!=null?full(v)+'g':'N/A (AH)')+
     compRow('7D Volume',cols.map(c=>c.vol),v=>v!=null?short(v):'N/A (AH)');
-
   const statsSection=allStatKeys.length?`<div class="compare-grid" style="${gridStyle}"><div class="compare-section-lbl" style="grid-column:1/-1">⚔ STATS</div></div>`+
     allStatKeys.map(k=>compRow(STAT_LABELS[k]||k.replace(/_/g,' '),cols.map(c=>c.stats[k]??null),v=>v!=null?(v>0?'+':'')+v:'—')).join(''):'';
-
-  const essenceSection=await(async()=>{
-    const parsed=cols.map(c=>c.neu?parseEssenceData(c.neu):null);
-    const anyEssence=parsed.some(x=>x);if(!anyEssence)return'';
-    const totals=parsed.map(p=>{if(!p)return null;let t=0;if(p.conversionStep)t+=p.conversionStep.essAmt;for(const s of p.starSteps)t+=s.essAmt;return t||null;});
+  const essenceParsed=cols.map(c=>c.neu?parseEssenceData(c.neu,c.id):null);
+  const anyEssence=essenceParsed.some(x=>x&&!x.noData);
+  const essenceSection=anyEssence?(()=>{
+    const totals=essenceParsed.map(p=>{if(!p||p.noData)return null;let t=0;if(p.conversionStep)t+=p.conversionStep.essAmt;for(const s of p.starSteps)t+=s.essAmt;return t||null;});
     return`<div class="compare-grid" style="${gridStyle}"><div class="compare-section-lbl" style="grid-column:1/-1">✦ ESSENCE</div></div>`+
-      compRow('Essence Type',parsed.map(p=>p?.essenceType??null),v=>v||'—')+
-      compRow('Total Stars',parsed.map(p=>p?p.starSteps.length:null))+
+      compRow('Essence Type',essenceParsed.map(p=>p?.essenceType??null),v=>v||'—')+
+      compRow('Total Stars',essenceParsed.map(p=>p&&!p.noData?p.starSteps.length:null))+
       compRow('Total Essence to Max',totals);
-  })();
-
+  })():'';
   result.innerHTML=`<div class="mc-panel compare-view">
     <div class="compare-view-header">
       <div class="compare-view-title">⚖ COMPARING ${compareList.length} ITEMS</div>
       <button class="compare-back" onclick="closeCompare()">← BACK</button>
     </div>
-    ${colHeaders}${priceSection}${statsSection}${await essenceSection}
+    ${colHeaders}${priceSection}${statsSection}${essenceSection}
     <div style="padding:10px 16px;font-size:14px;color:var(--muted2);border-top:1px solid var(--dk);background:rgba(0,0,0,.15)">
       <span style="color:var(--green)">■</span> Best value &nbsp;
-      <span style="color:var(--red)">■</span> Worst value &nbsp;
-      For prices: lower insta-buy = better buy, higher insta-sell = better sell.
+      <span style="color:var(--red)">■</span> Worst value
     </div>
   </div>`;
 }
@@ -739,14 +777,12 @@ function closeCompare(){
   else document.getElementById('result').innerHTML='<div class="empty-state"><span class="empty-icon">⛏</span>Search for an item above to get started.</div>';
 }
 
-/* ── Render Bazaar Card ── */
 function renderCard(id){
   const p=products[id];if(!p)return;
   const qs=p.quick_status,iSell=qs.sellPrice,iBuy=qs.buyPrice;
   const sellOrd=p.buy_summary?.[0]?.pricePerUnit,buyOrd=p.sell_summary?.[0]?.pricePerUnit;
   const spread=iBuy-(buyOrd||iBuy);
   const isInCompare=compareList.includes(id);
-
   document.getElementById('result').innerHTML=`
   <div class="card mc-panel" id="the-card">
     <div class="card-head">
@@ -819,7 +855,7 @@ async function loadBZHistory(id,period){
   const wrap=document.getElementById('history-wrap');if(!wrap)return;
   wrap.innerHTML='<div class="craft-loading">Loading history...</div>';
   const data=await fetchAHHistory(id,period);
-  if(!data||!Array.isArray(data)||!data.length){wrap.innerHTML='<div class="no-recipe" style="padding:30px">No AH history data for this item.</div>';return;}
+  if(!data||!Array.isArray(data)||!data.length){wrap.innerHTML='<div class="no-recipe" style="padding:30px">No history data for this item.</div>';return;}
   wrap.innerHTML='<canvas id="history-chart"></canvas>';
   renderHistoryChart('history-chart',data,period,period==='day'?cleanAHStats(data):null);
 }
@@ -836,13 +872,11 @@ function switchTab(t){
   if(t==='itemdata'&&currentId)renderItemData(currentId);
 }
 
-/* ── AH Card ── */
 function renderAHCard(id){
   const sbItem=sbAllItems.find(i=>i.id===id);
   const displayName=sbItem?sbItem.name:toName(id);
   const tier=sbItem?.tier||'',col=tierColor(tier);
   const isInCompare=compareList.includes(id);
-
   document.getElementById('result').innerHTML=`
   <div class="card mc-panel" id="the-card">
     <div class="card-head">
@@ -983,9 +1017,103 @@ function renderDepth(p){
   }});
 }
 
-/* ── Crafting ── */
+function ingRowHTML(iid, c, depth, rowKey, connector){
+  const indent=depth*18;
+  const col=itemColor(iid);
+  const isAH=c.source==='ah';
+  const ft=isBazaar(iid)?estimateFill(iid,c.qty):'?';
+  const badge=isAH?`<span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--blue);border:1px solid #334488;padding:1px 4px;margin-left:5px">AH</span>`:'';
+  const iC=c.iTotal!=null?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
+  const oC=c.oTotal!=null?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
+  const connHTML=connector?`<span class="sub-connector">${connector}</span>`:'';
+  return`<tr class="${depth>0?'sub-row':'ing-row'}" data-row-key="${rowKey}" style="${depth>0?`border-left:2px solid rgba(85,153,255,.2);`:''}">
+    <td style="padding-left:${8+indent}px">
+      ${connHTML}<span class="ing-swatch" style="background:${col};border:1px solid ${col}99;display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:8px;flex-shrink:0;"></span>
+      <span class="ing-name" style="cursor:pointer" onclick="pick('${iid}')">${toName(iid)}</span>${badge}
+    </td>
+    <td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td>
+    <td class="cell-r">${iC}</td>
+    <td class="cell-r">${oC}</td>
+    <td class="cell-r" style="white-space:nowrap">
+      ${isBazaar(iid)?`<span class="fill-t">${ft}</span>`:''}
+      <button class="expand-btn" data-expand-id="${iid}" data-expand-key="${rowKey}" data-expand-depth="${depth}" onclick="toggleCraftExpand(this)">▶</button>
+    </td>
+  </tr>`;
+}
+
+async function toggleCraftExpand(btn){
+  const id=btn.dataset.expandId;
+  const key=btn.dataset.expandKey;
+  const depth=parseInt(btn.dataset.expandDepth);
+  const tbody=document.getElementById('craft-tbody');
+  if(!tbody)return;
+
+  if(btn.classList.contains('open')){
+    collapseRows(key,tbody);
+    btn.classList.remove('open');
+    btn.textContent='▶';
+    return;
+  }
+
+  btn.textContent='...';
+  btn.disabled=true;
+
+  const MAX_DEPTH=8;
+  if(depth>=MAX_DEPTH){btn.classList.add('none');btn.textContent='max';btn.disabled=true;return;}
+
+  const neu=await fetchNEU(id);
+  const recipe=neu?parseRecipe(neu):null;
+  if(!recipe||!Object.keys(recipe.ingMap).length){
+    btn.classList.add('none');btn.textContent='—';btn.disabled=true;return;
+  }
+
+  const ahIds=Object.keys(recipe.ingMap).filter(iid=>!products[iid]);
+  if(ahIds.length){
+    await Promise.all(ahIds.map(async iid=>{
+      if(!ahPriceCache[iid]){const p=await fetchAHPrice(iid);if(p)ahPriceCache[iid]=p;}
+    }));
+  }
+
+  const costs=craftCost(recipe.ingMap,ahPriceCache);
+  const parentRow=tbody.querySelector(`[data-row-key="${key}"]`);
+  if(!parentRow){btn.textContent='▶';btn.disabled=false;return;}
+
+  let insertAfter=parentRow;
+  const ingEntries=Object.entries(costs);
+  ingEntries.forEach(([iid,c],idx)=>{
+    const isLast=idx===ingEntries.length-1;
+    const connector=depth===0?'':(isLast?'└ ':'├ ');
+    const childKey=`${key}::${iid}::${depth+1}::${idx}`;
+    const tr=document.createElement('tr');
+    tr.outerHTML;
+    const tmp=document.createElement('tbody');
+    tmp.innerHTML=ingRowHTML(iid,c,depth+1,childKey,connector);
+    const newRow=tmp.firstChild;
+    newRow.dataset.parentKey=key;
+    insertAfter.after(newRow);
+    insertAfter=newRow;
+  });
+
+  btn.classList.add('open');
+  btn.textContent='▼';
+  btn.disabled=false;
+}
+
+function collapseRows(parentKey,tbody){
+  const children=[...tbody.querySelectorAll(`[data-parent-key="${parentKey}"]`)];
+  for(const child of children){
+    const childKey=child.dataset.rowKey;
+    if(childKey)collapseRows(childKey,tbody);
+    child.remove();
+  }
+}
+
 async function renderCrafting(id){
   const el=document.getElementById('craft-body');if(!el)return;
+  if(craftCurrentId!==id){
+    craftCurrentId=id;
+    craftExpandState.clear();
+  }
   el.className='craft-loading';el.textContent='Loading recipe data...';
   const neu=await fetchNEU(id);
   if(!neu){el.className='no-recipe';el.innerHTML='⛏ No item data found in NEU repo.';return;}
@@ -993,9 +1121,11 @@ async function renderCrafting(id){
   if(!recipe){el.className='no-recipe';el.innerHTML='⛏ This item has no crafting recipe.';return;}
   const{slots,ingMap,outQty}=recipe;
   const ahIngIds=Object.keys(ingMap).filter(iid=>!products[iid]);
-  const ahPrices={};
-  if(ahIngIds.length){el.textContent=`Loading recipe... (fetching ${ahIngIds.length} AH prices)`;await Promise.all(ahIngIds.map(async iid=>{const p=await fetchAHPrice(iid);if(p)ahPrices[iid]=p;}));}
-  const costs=craftCost(ingMap,ahPrices);
+  if(ahIngIds.length){
+    el.textContent=`Loading recipe... (fetching ${ahIngIds.length} AH prices)`;
+    await Promise.all(ahIngIds.map(async iid=>{if(!ahPriceCache[iid]){const p=await fetchAHPrice(iid);if(p)ahPriceCache[iid]=p;}}));
+  }
+  const costs=craftCost(ingMap,ahPriceCache);
   const dispName=stripMC(neu.displayname)||toName(id);
   let iTotal=0,oTotal=0,allKnown=true;
   for(const c of Object.values(costs)){if(c.iTotal!==null)iTotal+=c.iTotal;else allKnown=false;if(c.oTotal!==null)oTotal+=c.oTotal;}
@@ -1009,18 +1139,15 @@ async function renderCrafting(id){
       ${outQty>1?`<span class="slot-qty" style="font-size:13px">${outQty}</span>`:''}
     </div>
   </div>`;
-  const ingRows=Object.entries(costs).map(([iid,c])=>{
-    const ft=estimateFill(iid,c.qty),col=itemColor(iid),isAH=c.source==='ah';
-    const badge=isAH?`<span style="font-family:'Press Start 2P',monospace;font-size:5px;color:var(--blue);border:1px solid #334488;padding:1px 4px;margin-left:6px">AH</span>`:'';
-    const iC=c.iTotal!=null?`<span class="${isAH?'':'price-i'}" style="${isAH?'color:var(--blue);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.iTotal)}</span>`:`<span class="price-na">N/A</span>`;
-    const oC=c.oTotal!=null?`<span class="${isAH?'':'price-o'}" style="${isAH?'color:var(--aqua);font-family:\'JetBrains Mono\',monospace;font-size:14px':''}">${short(c.oTotal)}</span>`:`<span class="price-na">N/A</span>`;
-    return`<tr class="ing-row" onclick="pick('${iid}')"><td><span class="ing-swatch" style="background:${col};border:1px solid ${col}99;"></span><span class="ing-name">${toName(iid)}</span>${badge}</td><td class="cell-r"><span class="ing-qty">×${c.qty.toLocaleString()}</span></td><td class="cell-r">${iC}</td><td class="cell-r">${oC}</td><td class="cell-r"><span class="fill-t">${ft}</span></td></tr>`;
-  }).join('');
+
+  const ingRows=Object.entries(costs).map(([iid,c],idx)=>ingRowHTML(iid,c,0,`root::${iid}::0::${idx}`,'')).join('');
+
   function pCard(label,cost,sell,best=false){
     if(cost===null||sell===null)return`<div class="ps"><div class="ps-lbl">${label}</div><div class="ps-val" style="color:var(--muted2)">N/A</div></div>`;
     const profit=sell-cost,pct=cost>0?((profit/cost)*100).toFixed(1):'—',cls=profit>=0?'pos':'neg',sign=profit>=0?'+':'';
     return`<div class="ps">${best&&profit>0?'<span class="ps-best">BEST</span>':''}<div class="ps-lbl">${label}</div><div class="ps-val ${cls}">${sign}${short(profit)}</div><div class="ps-pct" style="color:${profit>=0?'var(--green)':'var(--red)'}">${sign}${pct}%</div></div>`;
   }
+
   const isBZ=!!products[id];
   const scenarios=[
     {label:isBZ?'Order mats → Insta-sell':'Order/AH → Min AH',cost:allKnown?oTotal:null,sell:sellI},
@@ -1030,28 +1157,32 @@ async function renderCrafting(id){
   ];
   let bestIdx=-1,bestProfit=-Infinity;
   scenarios.forEach((s,i)=>{if(s.cost!==null&&s.sell!==null){const p=s.sell-s.cost;if(p>bestProfit){bestProfit=p;bestIdx=i;}}});
+
+  const cpuI=outQty>1&&iTotal>0?`<span class="cpu-val">${short(iTotal/outQty)}g</span><span class="cpu-sep">/unit (insta)</span>`:'';
+  const cpuO=outQty>1&&oTotal>0?`<span class="cpu-val" style="color:var(--green)">${short(oTotal/outQty)}g</span><span class="cpu-sep">/unit (order)</span>`:'';
+  const cpuStrip=(outQty>1&&(iTotal>0||oTotal>0))?`<div class="cpu-strip"><span class="cpu-lbl">COST PER UNIT</span>${cpuI}${cpuI&&cpuO?'<span class="cpu-sep" style="opacity:.4">·</span>':''}${cpuO}</div>`:'';
+
   el.className='';
   el.innerHTML=`
-    <div class="section-title" style="margin-bottom:16px">CRAFTING RECIPE — ${dispName.toUpperCase()} ${outQty>1?`× ${outQty}`:''}</div>
+    <div class="section-title" style="margin-bottom:16px">CRAFTING RECIPE — ${dispName.toUpperCase()}${outQty>1?` × ${outQty}`:''}</div>
     <div class="craft-grid-area">
-      <div class="craft-grid">${slots.map(s=>slotHTML(s)).join('')}</div>
+      <div class="craft-grid" id="craft-grid-slots">${slots.map(s=>slotHTML(s)).join('')}</div>
       <div class="craft-arrow"><svg width="26" height="18" viewBox="0 0 26 18"><polygon points="0,4 15,4 15,0 26,9 15,18 15,14 0,14" fill="currentColor"/></svg>${outQty>1?`<span>×${outQty}</span>`:''}</div>
       ${outSlotHTML}
     </div>
-    <div class="section-title">INGREDIENT COSTS <small style="font-size:6px;opacity:.7">(CLICK ROW OR SLOT TO VIEW)</small></div>
+    <div class="section-title" style="margin-bottom:0">INGREDIENTS <small style="font-size:5px;opacity:.6">▶ EXPAND SUB-RECIPE</small></div>
     <table class="ing-table">
-      <thead><tr><th>ITEM</th><th class="r">QTY</th><th class="r">INSTA-BUY</th><th class="r">BUY ORDER</th><th class="r">FILL</th></tr></thead>
-      <tbody>${ingRows}</tbody>
-      <tfoot><tr><td colspan="2"><span class="total-lbl">TOTAL</span></td><td class="cell-r"><span class="price-i" style="font-size:18px">${allKnown?short(iTotal):'~'+short(iTotal)}</span></td><td class="cell-r"><span class="price-o" style="font-size:18px">${allKnown?short(oTotal):'~'+short(oTotal)}</span></td><td></td></tr></tfoot>
+      <thead><tr><th>ITEM</th><th class="r">QTY</th><th class="r">INSTA-BUY</th><th class="r">BUY ORDER</th><th class="r">FILL / EXP</th></tr></thead>
+      <tbody id="craft-tbody">${ingRows}</tbody>
+      <tfoot><tr><td colspan="2"><span class="total-lbl">TOTAL${!allKnown?' (PARTIAL)':''}</span></td><td class="cell-r"><span class="price-i" style="font-size:18px">${short(iTotal)}</span></td><td class="cell-r"><span class="price-o" style="font-size:18px">${short(oTotal)}</span></td><td></td></tr></tfoot>
     </table>
-    <div class="profit-box"><div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div><div class="profit-grid">${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}</div></div>`;
+    <div class="profit-box">
+      <div class="section-title" style="margin-bottom:0">PROFIT CALCULATOR</div>
+      <div class="profit-grid">${scenarios.map((s,i)=>pCard(s.label,s.cost,s.sell,i===bestIdx)).join('')}</div>
+      ${cpuStrip}
+    </div>`;
   el.querySelectorAll('.g-slot.clickable').forEach(sl=>sl.addEventListener('click',()=>{const tid=sl.dataset.id;if(tid)pick(tid);}));
 }
-
-/* ── Essence Tab ── */
-const ESSENCE_ICONS={WITHER:'💀',SPIDER:'🕷',UNDEAD:'☠',DRAGON:'🐉',GOLD:'✨',DIAMOND:'💎',ICE:'❄',CRIMSON:'🔥',DWARVEN:'⛏',JUNGLE:'🌿',WOODED:'🌲'};
-const ESSENCE_COLORS={WITHER:'#aa44ff',SPIDER:'#886644',UNDEAD:'#55ff55',DRAGON:'#ff5555',GOLD:'#ffaa00',DIAMOND:'#55ffff',ICE:'#aaddff',CRIMSON:'#ff6600',DWARVEN:'#ffcc33',JUNGLE:'#55ff55',WOODED:'#8B6431'};
-const MASTER_REQS=['Catacombs 24','Catacombs 27','Catacombs 30','Catacombs 33','Catacombs 36'];
 
 async function renderEssence(id){
   const el=document.getElementById('essence-body');if(!el)return;
@@ -1059,11 +1190,27 @@ async function renderEssence(id){
   const neu=await fetchNEU(id);
   if(!neu){el.className='no-recipe';el.innerHTML='⛏ No item data found in NEU repo.';return;}
 
-  const parsed=parseEssenceData(neu);
+  const parsed=parseEssenceData(neu,id);
 
   if(!parsed){
     el.className='no-recipe';
-    el.innerHTML=`⛏ This item cannot be upgraded with essence.<br><small style="font-size:14px;color:var(--muted2)">Only dungeon-eligible equipment can be starred up.</small>`;
+    el.innerHTML=`⛏ No essence upgrade data found for this item.<br><small style="font-size:14px;color:var(--muted2)">Only dungeon items can be starred with essence.</small>`;
+    return;
+  }
+
+  if(parsed.noData){
+    const essCol=ESSENCE_COLORS[parsed.essenceType]||'#aaaaaa';
+    const essIcon=ESSENCE_ICONS[parsed.essenceType]||'✨';
+    el.className='';
+    el.innerHTML=`<div class="dungeon-badge">🏰 <span>DUNGEON ITEM DETECTED</span></div>
+    <div class="essence-header">
+      <div class="essence-icon">${essIcon}</div>
+      <div class="essence-meta">
+        <div class="essence-type" style="color:${essCol}">${parsed.essenceType} ESSENCE</div>
+        <div class="essence-sub">Upgrade cost data not in NEU repo for this item</div>
+      </div>
+    </div>
+    <div class="ess-note">⚠ This item appears to use <strong style="color:${essCol}">${parsed.essenceType} Essence</strong> for upgrades, but the specific per-star costs weren't found in the NEU item database. Check the Hypixel SkyBlock wiki or in-game for exact costs.</div>`;
     return;
   }
 
@@ -1072,11 +1219,8 @@ async function renderEssence(id){
   const essProduct=products[bzEssId]||null;
   const essInstaBuy=essProduct?.quick_status?.buyPrice??null;
   const essBuyOrder=essProduct?.sell_summary?.[0]?.pricePerUnit??essProduct?.quick_status?.buyPrice??null;
-
   const essCol=ESSENCE_COLORS[essenceType]||'#aaaaaa';
   const essIcon=ESSENCE_ICONS[essenceType]||'✨';
-
-  // detect floor drop from lore
   const floorDrop=detectFloorDrop(neu);
   let floorHTML='';
   if(floorDrop!=null){
@@ -1084,10 +1228,16 @@ async function renderEssence(id){
     floorHTML=`<div class="floor-badge">🏰 <span>DROPS FROM: ${floorLabel.toUpperCase()}</span></div>`;
   }
 
+  const hasConv=!!conversionStep;
+  if(hasConv){
+    floorHTML=`<div class="conv-badge">🔓 <span>CAN BE DUNGEONIZED</span></div>`+floorHTML;
+  }else if(starSteps.length){
+    floorHTML=`<div class="dungeon-badge">⭐ <span>DUNGEON ITEM — STAR UPGRADES</span></div>`+floorHTML;
+  }
+
   const isMaster=starSteps.length>5;
   const baseStars=starSteps.slice(0,5);
   const masterStars=starSteps.slice(5);
-
   let cumEss=0,cumCostI=0,cumCostO=0;
 
   function buildStarHTML(stars,base){
@@ -1095,24 +1245,19 @@ async function renderEssence(id){
       const globalStar=base?idx+1:5+idx+1;
       const{essAmt,coins}=entry;
       cumEss+=essAmt;
-      const rowCostI=essInstaBuy!=null?Math.round(essAmt*essInstaBuy+coins):null;
-      const rowCostO=essBuyOrder!=null?Math.round(essAmt*essBuyOrder+coins):null;
+      const rowCostI=essInstaBuy!=null?Math.round(essAmt*essInstaBuy+(coins||0)):null;
+      const rowCostO=essBuyOrder!=null?Math.round(essAmt*essBuyOrder+(coins||0)):null;
       if(rowCostI!=null)cumCostI+=rowCostI;
       if(rowCostO!=null)cumCostO+=rowCostO;
-
-      // Build star display — filled up to current star
       let starDisp='';
       for(let s=1;s<=10;s++){
         if(s>5){starDisp+=s<=globalStar?`<span class="star-master">✦</span>`:`<span class="star-plain">✦</span>`;}
         else{starDisp+=s<=globalStar?`<span class="star-gold">★</span>`:`<span class="star-plain">★</span>`;}
       }
-
       const reqLabel=!base&&idx<MASTER_REQS.length?`<span class="ess-req">${MASTER_REQS[idx]}</span>`:'<span class="ess-req" style="color:var(--muted2)">—</span>';
-      const isMasterRow=!base;
-
-      return`<tr class="${isMasterRow?'master-star-row':''}">
+      return`<tr class="${!base?'master-star-row':''}">
         <td><div class="star-cell">${starDisp}</div></td>
-        <td class="cell-r"><span class="ess-amt">${essAmt.toLocaleString()}</span>${coins>0?`<br><span style="font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace">${short(coins)}g</span>`:''}</td>
+        <td class="cell-r"><span class="ess-amt">${essAmt.toLocaleString()}</span>${(coins||0)>0?`<br><span style="font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace">${short(coins)}g</span>`:''}</td>
         <td class="cell-r">${rowCostI!=null?`<span class="ess-cost-i">${short(rowCostI)}</span>`:'<span class="price-na">—</span>'}</td>
         <td class="cell-r">${rowCostO!=null?`<span class="ess-cost-o">${short(rowCostO)}</span>`:'<span class="price-na">—</span>'}</td>
         <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
@@ -1121,29 +1266,29 @@ async function renderEssence(id){
     }).join('');
   }
 
-  // Build conversion step row if present
   let convRow='';
   if(conversionStep){
-    const ci=essInstaBuy!=null?Math.round(conversionStep.essAmt*essInstaBuy+conversionStep.coins):null;
-    const co=essBuyOrder!=null?Math.round(conversionStep.essAmt*essBuyOrder+conversionStep.coins):null;
-    cumEss+=conversionStep.essAmt;
+    const essAmt=conversionStep.essAmt||0;
+    const coins=conversionStep.coins||0;
+    const ci=essInstaBuy!=null?Math.round(essAmt*essInstaBuy+coins):null;
+    const co=essBuyOrder!=null?Math.round(essAmt*essBuyOrder+coins):null;
+    cumEss+=essAmt;
     if(ci!=null)cumCostI+=ci;
     if(co!=null)cumCostO+=co;
     let starDisp='<span class="star-gold" style="font-size:14px">★</span>'+'<span class="star-plain" style="font-size:14px">★★★★★★★★★</span>';
     convRow=`<tr class="conv-row">
-      <td><div class="star-cell">${starDisp}</div><div style="font-size:11px;color:var(--blue);font-family:'Press Start 2P',monospace;margin-top:2px">CONVERT</div></td>
-      <td class="cell-r"><span class="ess-amt">${conversionStep.essAmt.toLocaleString()}</span>${conversionStep.coins>0?`<br><span style="font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace">${short(conversionStep.coins)}g</span>`:''}</td>
+      <td><div class="star-cell">${starDisp}</div><div style="font-size:10px;color:var(--blue);font-family:'Press Start 2P',monospace;margin-top:3px">DUNGEONIZE</div></td>
+      <td class="cell-r"><span class="ess-amt">${essAmt.toLocaleString()}</span>${coins>0?`<br><span style="font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace">${short(coins)}g</span>`:''}</td>
       <td class="cell-r">${ci!=null?`<span class="ess-cost-i">${short(ci)}</span>`:'<span class="price-na">—</span>'}</td>
       <td class="cell-r">${co!=null?`<span class="ess-cost-o">${short(co)}</span>`:'<span class="price-na">—</span>'}</td>
-      <td class="cell-r"><span class="ess-cum">${conversionStep.essAmt.toLocaleString()}</span></td>
+      <td class="cell-r"><span class="ess-cum">${cumEss.toLocaleString()}</span></td>
       <td class="cell-r"><span class="ess-req">—</span></td>
     </tr>`;
   }
 
   const baseRows=buildStarHTML(baseStars,true);
   const masterRows=buildStarHTML(masterStars,false);
-
-  const totalStars=(conversionStep?1:0)+starSteps.length;
+  const totalSteps=(conversionStep?1:0)+starSteps.length;
 
   el.className='';
   el.innerHTML=`
@@ -1152,7 +1297,7 @@ async function renderEssence(id){
       <div class="essence-icon">${essIcon}</div>
       <div class="essence-meta">
         <div class="essence-type" style="color:${essCol}">${essenceType} ESSENCE</div>
-        <div class="essence-sub">${totalStars} upgrade step${totalStars!==1?'s':''} · ${isMaster?'Base + Master stars':'Base stars only'}${conversionStep?' · includes conversion':''}</div>
+        <div class="essence-sub">${totalSteps} upgrade step${totalSteps!==1?'s':''}${hasConv?' · Includes dungeonization step':''}${isMaster?' · Base + Master stars':''}${starSteps.length&&!isMaster?' · Base stars only':''}</div>
       </div>
       ${essProduct?`<div class="essence-bz-price">
         <div class="essence-bz-label">BZ INSTA-BUY</div>
@@ -1160,6 +1305,7 @@ async function renderEssence(id){
         <div style="font-size:12px;color:var(--muted2);margin-top:1px">order: ${short(essBuyOrder)}g</div>
       </div>`:`<div class="essence-bz-price"><div class="essence-bz-label">BZ PRICE</div><div class="essence-bz-val" style="color:var(--gold)">AH ONLY</div></div>`}
     </div>
+    ${!totalSteps?`<div class="ess-note" style="border-top:none">No per-star cost data found. The item uses ${essenceType} essence but star cost data wasn't in the NEU repo.</div>`:`
     <table class="essence-table">
       <thead><tr>
         <th>STARS</th>
@@ -1183,26 +1329,12 @@ async function renderEssence(id){
         <td></td>
       </tr></tfoot>
     </table>
-    <div class="ess-note">${essProduct?`Costs from live bazaar prices. <span style="color:var(--red)">Insta-buy</span> = pay now. <span style="color:var(--green)">Buy order</span> = wait for sellers.`:`⚠ ${essenceType} essence is not on the bazaar — price it manually on the AH.`} Master star requirements are approximate.</div>`;
+    <div class="ess-note">${essProduct?`Live bazaar prices. <span style="color:var(--red)">Insta-buy</span> = pay immediately. <span style="color:var(--green)">Buy order</span> = wait for sellers to fill.`:`⚠ ${essenceType} essence is not on the bazaar — price it manually on the AH.`}${hasConv?' Dungeonize step required before starring.':''} Master star reqs are approximate.</div>`}`;
 }
 
-/* ── Item Data ── */
 const STAT_LABELS_MAP={DAMAGE:'⚔ Damage',STRENGTH:'💪 Strength',CRIT_CHANCE:'🎯 Crit Chance',CRIT_DAMAGE:'💥 Crit Damage',ATTACK_SPEED:'⚡ Attack Speed',HEALTH:'❤ Health',DEFENSE:'🛡 Defense',SPEED:'👟 Speed',INTELLIGENCE:'🔮 Intelligence',SEA_CREATURE_CHANCE:'🐟 Sea Creature',MAGIC_FIND:'✨ Magic Find',PET_LUCK:'🍀 Pet Luck',FEROCITY:'🗡 Ferocity',ABILITY_DAMAGE:'🌀 Ability Dmg',MINING_SPEED:'⛏ Mining Speed',MINING_FORTUNE:'🍀 Mining Fortune',FARMING_FORTUNE:'🌾 Farming Fortune',FORAGING_FORTUNE:'🌲 Foraging Fortune',TRUE_DEFENSE:'🛡 True Defense',PRISTINE:'💎 Pristine'};
 const GEM_COLORS_MAP={RUBY:'gem-ruby',SAPPHIRE:'gem-sapphire',AMBER:'gem-amber',AMETHYST:'gem-amethyst',JADE:'gem-jade',TOPAZ:'gem-topaz',JASPER:'gem-jasper',OPAL:'gem-opal',PERIDOT:'gem-peridot',AQUAMARINE:'gem-aquamarine',UNIVERSAL:'gem-universal',COMBAT:'gem-combat',DEFENSIVE:'gem-defensive',MINING:'gem-mining',SPEED:'gem-speed'};
 const GEM_EMOJI_MAP={RUBY:'🔴',SAPPHIRE:'🔵',AMBER:'🟠',AMETHYST:'🟣',JADE:'🟢',TOPAZ:'🟡',JASPER:'🟤',OPAL:'⚪',PERIDOT:'🟩',AQUAMARINE:'🩵',UNIVERSAL:'⬜',COMBAT:'⚔',DEFENSIVE:'🛡',MINING:'⛏',SPEED:'💨'};
-
-function detectFloorDrop(neu){
-  if(!neu)return null;
-  const lore=Array.isArray(neu.lore)?neu.lore:[];
-  for(const line of lore){
-    const s=stripMC(line);
-    const m=s.match(/Floor\s*(\d+)|F(\d+)/i);
-    if(m)return parseInt(m[1]||m[2]);
-    if(/Master\s*Mode/i.test(s))return'M';
-    if(/Boss\s*Drop/i.test(s))return'boss';
-  }
-  return null;
-}
 
 async function renderItemData(id){
   const el=document.getElementById('itemdata-body');if(!el)return;
@@ -1232,7 +1364,12 @@ async function renderItemData(id){
     </div>`;
   }
   const reqs=[];
-  if(parseEssenceData(neu))reqs.push({icon:'🏰',label:'Dungeon Item',val:'Eligible for starring'});
+  const essData=parseEssenceData(neu,id);
+  if(essData){
+    if(essData.conversionStep)reqs.push({icon:'🔓',label:'Dungeonizable',val:'Has conversion step'});
+    else if(!essData.noData)reqs.push({icon:'⭐',label:'Dungeon Item',val:`${essData.essenceType} Essence · ${essData.starSteps.length} stars`});
+    else reqs.push({icon:'🏰',label:'Dungeon Item',val:`Uses ${essData.essenceType} Essence`});
+  }
   const floorDrop=detectFloorDrop(neu);
   if(floorDrop!=null){const label=floorDrop==='M'?'Master Mode':floorDrop==='boss'?'Boss Drop':`Floor ${floorDrop}`;reqs.push({icon:'⚔',label:'Drops From',val:label});}
   if(neu.requirements){const r=neu.requirements;if(r.level)reqs.push({icon:'⚔',label:'Combat Level',val:`${r.level}`});if(r.skill)reqs.push({icon:'📊',label:'Skill',val:`${r.skill.type} ${r.skill.level}`});if(r.dungeon)reqs.push({icon:'🏰',label:'Dungeon',val:`${r.dungeon.type} Floor ${r.dungeon.level}`});if(r.slayer)reqs.push({icon:'☠',label:'Slayer',val:`${r.slayer.slayer_boss_type} ${r.slayer.level}`});}
@@ -1243,6 +1380,8 @@ async function renderItemData(id){
   if(soulbound)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#ff5555;border:1px solid #770000;padding:2px 6px;background:rgba(255,85,85,.08)">SOULBOUND</span>`);
   if(tier)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:${tierCol};border:1px solid ${tierCol}44;padding:2px 6px;background:${tierCol}11">${tier}</span>`);
   if(neu.museum)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--aqua);border:1px solid #336666;padding:2px 6px;background:rgba(85,255,255,.06)">MUSEUM</span>`);
+  if(essData&&essData.conversionStep)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);border:1px solid #334488;padding:2px 6px;background:rgba(85,153,255,.08)">DUNGEONIZABLE</span>`);
+  if(essData&&!essData.conversionStep&&!essData.noData&&essData.starSteps.length)badges.push(`<span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--purple);border:1px solid rgba(187,85,255,.3);padding:2px 6px;background:rgba(187,85,255,.08)">DUNGEON ITEM</span>`);
   el.className='';
   el.innerHTML=`
     ${badges.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px">${badges.join('')}</div>`:''}
